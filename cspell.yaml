@@ -1,0 +1,13 @@
+version: "0.2"
+language: en
+allowCompoundWords: true
+dictionaries:
+  - node
+  - typescript
+words:
+ignorePaths:
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/dist-dev/**"
+enableFiletypes:
+  - cadl
