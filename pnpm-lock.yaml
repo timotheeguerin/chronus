@@ -53,18 +53,23 @@ importers:
   packages/kronos:
     specifiers:
       '@cadl-lang/eslint-config-cadl': ^0.4.1
+      '@jest/globals': ^29.3.1
+      '@types/cross-spawn': ^6.0.2
       '@types/js-yaml': ^4.0.5
       '@types/node': ^18.7.16
       '@types/node-fetch': ^2.6.2
       '@types/xml2js': ^0.4.11
       '@types/yargs': ^17.0.12
       ajv: 8.11.0
+      cross-spawn: ^7.0.3
       eslint: ^8.23.1
+      jest: ^29.3.1
       js-yaml: ^4.1.0
       picocolors: ^1.0.0
       prettier: ^2.7.1
       rimraf: ^3.0.2
       source-map-support: ^0.5.21
+      ts-jest: ^29.0.0
       typescript: ^4.9.3
       yargs: ^17.5.1
     dependencies:
@@ -76,13 +81,18 @@ importers:
       yargs: 17.6.2
     devDependencies:
       '@cadl-lang/eslint-config-cadl': 0.4.1_prettier@2.8.0
+      '@jest/globals': 29.3.1
+      '@types/cross-spawn': 6.0.2
       '@types/js-yaml': 4.0.5
       '@types/node': 18.11.9
       '@types/node-fetch': 2.6.2
       '@types/xml2js': 0.4.11
       '@types/yargs': 17.0.14
+      cross-spawn: 7.0.3
       eslint: 8.28.0
+      jest: 29.3.1_@types+node@18.11.9
       rimraf: 3.0.2
+      ts-jest: 29.0.3_6crhf7ajeizammv76u753sn6i4
       typescript: 4.9.3
 
 packages:
@@ -1046,6 +1056,12 @@ packages:
     resolution: {integrity: sha512-FcFaxOr2V5KZCviw1TnutEMVUVsGt4D2hP1TAfXZAMKuHYW3xQhe3jTxNPWutgCJ3/X1c5yX8ZoGVEItxKbwBg==}
     dependencies:
       '@babel/types': 7.20.2
+    dev: true
+
+  /@types/cross-spawn/6.0.2:
+    resolution: {integrity: sha512-KuwNhp3eza+Rhu8IFI5HUXRP0LIhqH5cAjubUvGXXthh4YYBuP2ntwEX+Cz8GJoZUHlKo247wPWOfA9LYEq4cw==}
+    dependencies:
+      '@types/node': 18.11.9
     dev: true
 
   /@types/graceful-fs/4.1.5:
@@ -2823,6 +2839,34 @@ packages:
       - ts-node
     dev: true
 
+  /jest-cli/29.3.1_@types+node@18.11.9:
+    resolution: {integrity: sha512-TO/ewvwyvPOiBBuWZ0gm04z3WWP8TIK8acgPzE4IxgsLKQgb377NYGrQLc3Wl/7ndWzIH2CDNNsUjGxwLL43VQ==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    hasBin: true
+    peerDependencies:
+      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
+    peerDependenciesMeta:
+      node-notifier:
+        optional: true
+    dependencies:
+      '@jest/core': 29.3.1
+      '@jest/test-result': 29.3.1
+      '@jest/types': 29.3.1
+      chalk: 4.1.2
+      exit: 0.1.2
+      graceful-fs: 4.2.10
+      import-local: 3.1.0
+      jest-config: 29.3.1_@types+node@18.11.9
+      jest-util: 29.3.1
+      jest-validate: 29.3.1
+      prompts: 2.4.2
+      yargs: 17.6.2
+    transitivePeerDependencies:
+      - '@types/node'
+      - supports-color
+      - ts-node
+    dev: true
+
   /jest-config/29.3.1:
     resolution: {integrity: sha512-y0tFHdj2WnTEhxmGUK1T7fgLen7YK4RtfvpLFBXfQkh2eMJAQq24Vx9472lvn5wg0MAO6B+iPfJfzdR9hJYalg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -3201,6 +3245,26 @@ packages:
       '@jest/types': 29.3.1
       import-local: 3.1.0
       jest-cli: 29.3.1
+    transitivePeerDependencies:
+      - '@types/node'
+      - supports-color
+      - ts-node
+    dev: true
+
+  /jest/29.3.1_@types+node@18.11.9:
+    resolution: {integrity: sha512-6iWfL5DTT0Np6UYs/y5Niu7WIfNv/wRTtN5RSXt2DIEft3dx3zPuw/3WJQBCJfmEzvDiEKwoqMbGD9n49+qLSA==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    hasBin: true
+    peerDependencies:
+      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
+    peerDependenciesMeta:
+      node-notifier:
+        optional: true
+    dependencies:
+      '@jest/core': 29.3.1
+      '@jest/types': 29.3.1
+      import-local: 3.1.0
+      jest-cli: 29.3.1_@types+node@18.11.9
     transitivePeerDependencies:
       - '@types/node'
       - supports-color
@@ -4007,7 +4071,7 @@ packages:
       '@babel/core': 7.20.2
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
-      jest: 29.3.1
+      jest: 29.3.1_@types+node@18.11.9
       jest-util: 29.3.1
       json5: 2.2.1
       lodash.memoize: 4.1.2
