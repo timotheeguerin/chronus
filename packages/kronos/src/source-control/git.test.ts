@@ -1,38 +1,7 @@
 import { beforeEach, describe, expect, it } from "@jest/globals";
-import { randomBytes } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { createTestDir, TestDir } from "../testing/index.js";
 import { execAsync } from "../utils/exec-async.js";
 import { createGitSourceControl, GitSourceControl } from "./git.js";
-
-async function tempdir(): Promise<string> {
-  const date = new Date().toJSON().slice(0, -5);
-  const uid = randomBytes(8).toString("hex");
-  const path = join(process.cwd(), `.temp/tests/${date}/${uid}`);
-  await mkdir(path, { recursive: true });
-  return path;
-}
-
-export interface TestDir {
-  readonly path: string;
-  addFile(path: string, content?: string): Promise<void>;
-}
-
-async function createTestDir(): Promise<TestDir> {
-  const testDirPath = await tempdir();
-
-  return {
-    path: testDirPath,
-    addFile,
-  };
-
-  async function addFile(path: string, content: string = "") {
-    const fullpath = join(testDirPath, path);
-    const dir = dirname(fullpath);
-    await mkdir(dir, { recursive: true });
-    await writeFile(fullpath, content);
-  }
-}
 
 describe("git", () => {
   let cwd: string;
@@ -45,26 +14,17 @@ describe("git", () => {
 
     // Init mock repo
     await execAsync("git", ["init"], { cwd });
+    // Need to set fake email and name
+    await execAsync("git", ["config", "user.email", "a@b.c"], { cwd });
+    await execAsync("git", ["config", "user.name", "abc"], { cwd });
   });
 
   async function listStaggedFiles(): Promise<string[]> {
-    const result = await execAsync("git", ["ls-files", "--cached"], {
-      cwd,
-    });
-    return result.stdout
-      .toString()
-      .split("\n")
-      .filter((a) => a);
+    return git.listStagedFiles(cwd);
   }
 
-  async function listUntrackedChanges(): Promise<string[]> {
-    const result = await execAsync("git", ["ls-files", "--others"], {
-      cwd,
-    });
-    return result.stdout
-      .toString()
-      .split("\n")
-      .filter((a) => a);
+  async function listUntrackedFiles(): Promise<string[]> {
+    return git.listUntrackedFiles(cwd);
   }
 
   describe("add", () => {
@@ -112,7 +72,51 @@ describe("git", () => {
       const commitMessage = gitCmd.stdout.toString().trim();
       expect(commitMessage).toEqual("Adding pkg-a index.ts only");
 
-      expect(await listUntrackedChanges()).toEqual(["packages/pkg-a/package.json", "packages/pkg-a/src/index.test.ts"]);
+      expect(await listUntrackedFiles()).toEqual(["packages/pkg-a/package.json", "packages/pkg-a/src/index.test.ts"]);
+    });
+  });
+
+  describe("list files", () => {
+    beforeEach(async () => {
+      await testDir.addFile("packages/pkg-a/tracked-not-modified.ts");
+      await testDir.addFile("packages/pkg-a/tracked-modified.ts");
+      await testDir.addFile("packages/pkg-a/staged.ts");
+      await testDir.addFile("packages/pkg-a/not-tracked.ts");
+
+      await git.add("packages/pkg-a/tracked-not-modified.ts", cwd);
+      await git.add("packages/pkg-a/tracked-modified.ts", cwd);
+      await git.commit("Adding pkg-a index.ts only", cwd);
+
+      await git.add("packages/pkg-a/staged.ts", cwd);
+
+      await testDir.writeFile("packages/pkg-a/tracked-modified.ts", "export default {};");
+    });
+
+    describe("listUntrackedFiles", () => {
+      it("should only list untracked files", async () => {
+        expect(await git.listUntrackedFiles(cwd)).toEqual(["packages/pkg-a/not-tracked.ts"]);
+      });
+    });
+
+    describe("listModifiedFiles", () => {
+      it("should only tracked files that are modified", async () => {
+        expect(await git.listModifiedFiles(cwd)).toEqual(["packages/pkg-a/tracked-modified.ts"]);
+      });
+    });
+
+    describe("listUntrackedOrModifiedFiles", () => {
+      it("should list untracked and modified files that are not staged", async () => {
+        expect(await git.listUntrackedOrModifiedFiles(cwd)).toEqual([
+          "packages/pkg-a/not-tracked.ts",
+          "packages/pkg-a/tracked-modified.ts",
+        ]);
+      });
+    });
+
+    describe("listStagedFiles", () => {
+      it("should only list staged files", async () => {
+        expect(await git.listStagedFiles(cwd)).toEqual(["packages/pkg-a/staged.ts"]);
+      });
     });
   });
 });
