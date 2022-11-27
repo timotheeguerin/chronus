@@ -164,11 +164,7 @@ jspm_packages/
 .next
 
 # Common toolchain intermediate files
-temp
-
-# Rush files
-common/temp/**
-package-deps.json
+.temp/
 
 # Default Cadl output
 cadl-output/
