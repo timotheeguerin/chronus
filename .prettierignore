@@ -288,11 +288,8 @@ jspm_packages/
 .next
 
 # Common toolchain intermediate files
-temp
+.temp
 
-# Rush files
-common/temp/**
-package-deps.json
 
 # Code generation output for regression tests
 core/test/regression

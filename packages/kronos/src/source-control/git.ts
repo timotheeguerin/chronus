@@ -1,19 +1,29 @@
 import { execAsync, ExecResult } from "../utils/exec-async.js";
 
-export interface GitSourceControl {
+export interface GitRepository {
+  /**
+   * Get the repository root.
+   * @path path to stage
+   */
+  getRepoRoot(): Promise<string>;
+
   /**
    * Stage the given path(file or directory).
    * @path path to stage
-   * @param repoDir Repository directory
    */
-  add(path: string, repoDir: string): Promise<boolean>;
+  add(path: string): Promise<boolean>;
 
   /**
    * Commit the current staged changes
    * @param message Commit message.
+   */
+  commit(message: string): Promise<boolean>;
+
+  /**
+   * Return the current commit id.
    * @param dir Repository directory
    */
-  commit(message: string, dir: string): Promise<boolean>;
+  getCurrentCommitId(): Promise<string>;
 
   /**
    * List untracked files. (Only files that are not tracked at all by git yet, doesn't include files with unstaged changes.)
@@ -21,7 +31,7 @@ export interface GitSourceControl {
    * git ls-files --others --exclude-standard
    * ```
    */
-  listUntrackedFiles(dir: string): Promise<string[]>;
+  listUntrackedFiles(): Promise<string[]>;
 
   /**
    * List tracked files that are modfied since last commit.(Does not include staged files.)
@@ -29,7 +39,7 @@ export interface GitSourceControl {
    * git ls-files --modified --exclude-standard
    * ```
    */
-  listModifiedFiles(dir: string): Promise<string[]>;
+  listModifiedFiles(): Promise<string[]>;
 
   /**
    * List untracked files and modifed files
@@ -37,14 +47,27 @@ export interface GitSourceControl {
    * git ls-files --modified --others --exclude-standard
    * ```
    */
-  listUntrackedOrModifiedFiles(dir: string): Promise<string[]>;
+  listUntrackedOrModifiedFiles(): Promise<string[]>;
   /**
    * List files currently staged.
    * ```bash
    * git diff --name-only --cached
    * ```
    */
-  listStagedFiles(dir: string): Promise<string[]>;
+  listStagedFiles(): Promise<string[]>;
+
+  /**
+   * Get the merge base from HEAD and the given ref.
+   * @param ref Target ref.
+   */
+  getMergeBase(ref: string): Promise<string>;
+
+  /**
+   * Returns files changed since the given ref. Does not include any uncomitted file change.
+   * @param ref Git ref
+   * @param dir Repository directory
+   */
+  listChangedFilesSince(ref: string): Promise<string[]>;
 }
 
 export class GitError extends Error {
@@ -56,8 +79,8 @@ export class GitError extends Error {
   }
 }
 
-async function execGit(args: string[], { dir }: { dir: string }): Promise<ExecResult> {
-  const result = await execAsync("git", args, { cwd: dir });
+async function execGit(args: string[], { repositoryPath }: { repositoryPath: string }): Promise<ExecResult> {
+  const result = await execAsync("git", args, { cwd: repositoryPath });
 
   if (result.code !== 0) {
     throw new GitError(args, result.stderr.toString());
@@ -65,39 +88,71 @@ async function execGit(args: string[], { dir }: { dir: string }): Promise<ExecRe
   return result;
 }
 
-export function createGitSourceControl(): GitSourceControl {
+/**
+ * Create a git manipulation tool for the given repo.
+ */
+export function createGitSourceControl(repositoryPath: string): GitRepository {
+  let repoRoot: string | undefined;
   return {
+    getRepoRoot,
     add,
     commit,
+    getCurrentCommitId,
     listUntrackedFiles,
     listModifiedFiles,
     listUntrackedOrModifiedFiles,
     listStagedFiles,
+    getMergeBase,
+    listChangedFilesSince,
   };
 
-  async function add(path: string, dir: string) {
-    const gitCmd = await execGit(["add", path], { dir });
-    return gitCmd.code === 0;
+  async function getRepoRoot(): Promise<string> {
+    if (repoRoot === undefined) {
+      const { stdout } = await execGit(["rev-parse", "--show-toplevel"], { repositoryPath });
+      repoRoot = stdout.toString().trim().replace(/\n|\r/g, "");
+    }
+    return repoRoot;
   }
 
-  async function commit(message: string, dir: string) {
-    const gitCmd = await execGit(["commit", "-m", message, "--allow-empty"], { dir });
-    return gitCmd.code === 0;
+  async function add(path: string) {
+    const { code } = await execGit(["add", path], { repositoryPath });
+    return code === 0;
   }
 
-  async function listUntrackedFiles(dir: string): Promise<string[]> {
-    return splitStdoutLines(await execGit(["ls-files", "--others", "--exclude-standard"], { dir }));
-  }
-  async function listModifiedFiles(dir: string) {
-    return splitStdoutLines(await execGit(["ls-files", "--modified", "--exclude-standard"], { dir }));
+  async function commit(message: string) {
+    const { code } = await execGit(["commit", "-m", message, "--allow-empty"], { repositoryPath });
+    return code === 0;
   }
 
-  async function listUntrackedOrModifiedFiles(dir: string) {
-    return splitStdoutLines(await execGit(["ls-files", "--modified", "--others", "--exclude-standard"], { dir }));
+  async function getCurrentCommitId(): Promise<string> {
+    const { stdout } = await execGit(["rev-parse", "--short", "HEAD"], { repositoryPath });
+    return stdout.toString().trim();
   }
 
-  async function listStagedFiles(dir: string) {
-    return splitStdoutLines(await execGit(["diff", "--name-only", "--cached"], { dir }));
+  async function listUntrackedFiles(): Promise<string[]> {
+    return splitStdoutLines(await execGit(["ls-files", "--others", "--exclude-standard"], { repositoryPath }));
+  }
+  async function listModifiedFiles() {
+    return splitStdoutLines(await execGit(["ls-files", "--modified", "--exclude-standard"], { repositoryPath }));
+  }
+
+  async function listUntrackedOrModifiedFiles() {
+    return splitStdoutLines(
+      await execGit(["ls-files", "--modified", "--others", "--exclude-standard"], { repositoryPath }),
+    );
+  }
+
+  async function listStagedFiles() {
+    return splitStdoutLines(await execGit(["diff", "--name-only", "--cached"], { repositoryPath }));
+  }
+
+  async function getMergeBase(ref: string) {
+    const { stdout } = await execGit(["merge-base", "HEAD", ref], { repositoryPath });
+    return stdout.toString().trim();
+  }
+
+  async function listChangedFilesSince(ref: string) {
+    return splitStdoutLines(await execGit(["diff", "--name-only", `${ref}...`], { repositoryPath }));
   }
 }
 
