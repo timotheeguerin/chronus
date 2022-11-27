@@ -1,6 +1,4 @@
 {
-  "references": [
-    { "path": "packages/kronos/tsconfig.build.json" }
-  ],
+  "references": [{ "path": "packages/kronos/tsconfig.build.json" }],
   "files": []
 }
