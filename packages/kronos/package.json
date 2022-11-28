@@ -49,6 +49,7 @@
     "@types/yargs": "^17.0.12",
     "cross-spawn": "^7.0.3",
     "eslint": "^8.23.1",
+    "globby": "^13.1.2",
     "jest": "^29.3.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^29.0.0",
