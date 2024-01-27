@@ -1,15 +1,15 @@
-import type { GlobOptions, KronosHost } from "../utils/host.js";
+import type { GlobOptions, ChronusHost } from "../utils/host.js";
 import micromatch from "micromatch";
 import { getDirectoryPath } from "../utils/path-utils.js";
 
 export interface TestHost {
-  host: KronosHost;
+  host: ChronusHost;
   addFile(path: string, content: string): void;
 }
 
 export function createTestHost(files: Record<string, string> = {}): TestHost {
   const fs: Record<string, string> = files;
-  const host: KronosHost = {
+  const host: ChronusHost = {
     readFile: (path: string) => {
       const content = fs[path];
       return Promise.resolve({ path, content });

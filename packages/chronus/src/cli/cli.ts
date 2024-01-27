@@ -1,12 +1,13 @@
 import "source-map-support/register.js";
 import yargs from "yargs";
 import { addChangeset } from "./commands/add-changeset.js";
+import { verifyChangeset } from "./commands/verify-changeset.js";
 
 export const DEFAULT_PORT = 3000;
 
 async function main() {
   await yargs(process.argv.slice(2))
-    .scriptName("kronos")
+    .scriptName("chronus")
     .strict()
     .help()
     .parserConfiguration({
@@ -19,6 +20,7 @@ async function main() {
       default: false,
     })
     .command("add", "Add a new changeset", () => addChangeset(process.cwd()))
+    .command("verify", "Verify all packages changes have been documented", () => verifyChangeset(process.cwd()))
     .parse();
 }
 

@@ -3,8 +3,8 @@ import {
   isPathAccessible,
   joinPaths,
   lookup,
-  type KronosHost,
-  KronosError,
+  type ChronusHost,
+  chronusError,
   resolvePath,
 } from "../utils/index.js";
 import type { Package, Workspace, WorkspaceManager } from "./types.js";
@@ -15,7 +15,7 @@ interface PnpmWorkspaceConfig {
   packages: string[];
 }
 
-export function createPnpmWorkspaceManager(host: KronosHost): WorkspaceManager {
+export function createPnpmWorkspaceManager(host: ChronusHost): WorkspaceManager {
   return {
     async load(dir: string): Promise<Workspace> {
       const root = await lookup(dir, (current) => {
@@ -31,10 +31,10 @@ export function createPnpmWorkspaceManager(host: KronosHost): WorkspaceManager {
       const config: PnpmWorkspaceConfig = load(file.content) as any;
 
       if (config.packages === undefined) {
-        throw new KronosError("packages entry missing in pnpm-workspace.yaml");
+        throw new chronusError("packages entry missing in pnpm-workspace.yaml");
       }
       if (Array.isArray(config.packages) === false) {
-        throw new KronosError("packages is not an array in pnpm-workspace.yaml");
+        throw new chronusError("packages is not an array in pnpm-workspace.yaml");
       }
       const packages: Package[] = (
         await Promise.all(config.packages.map((pattern) => findPackagesFromPattern(host, root, pattern)))
@@ -47,7 +47,7 @@ export function createPnpmWorkspaceManager(host: KronosHost): WorkspaceManager {
   };
 }
 
-export async function findPackagesFromPattern(host: KronosHost, root: string, pattern: string): Promise<Package[]> {
+export async function findPackagesFromPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
   const packageRoots = await host.glob(pattern, {
     baseDir: root,
     onlyDirectories: true,
@@ -57,7 +57,7 @@ export async function findPackagesFromPattern(host: KronosHost, root: string, pa
   return packages.filter(isDefined);
 }
 
-async function tryLoadNodePackage(host: KronosHost, root: string, relativePath: string): Promise<Package | undefined> {
+async function tryLoadNodePackage(host: ChronusHost, root: string, relativePath: string): Promise<Package | undefined> {
   const pkgJsonPath = resolvePath(root, relativePath, "package.json");
   if (await isPathAccessible(host, pkgJsonPath)) {
     const file = await host.readFile(pkgJsonPath);

@@ -1,9 +1,9 @@
 {
-  "name": "@kronos/monorepo",
+  "name": "@chronus/monorepo",
   "private": true,
   "version": "0.1.0",
   "packageManager": "pnpm@8.13.1",
-  "description": "Monorepo for kronos",
+  "description": "Monorepo for chronus",
   "type": "module",
   "workspaces": [
     "packages/*"
@@ -29,20 +29,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/timotheeguerin/kronos.git"
+    "url": "git+https://github.com/timotheeguerin/chronus.git"
   },
   "author": "Microsoft",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/timotheeguerin/kronos/issues"
+    "url": "https://github.com/timotheeguerin/chronus/issues"
   },
-  "homepage": "https://github.com/timotheeguerin/kronos#readme",
+  "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "devDependencies": {
     "cspell": "^8.3.2",
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-unicorn": "^50.0.1",
     "prettier": "^3.2.4",
+    "prettier-plugin-organize-imports": "^3.2.4",
     "rimraf": "^5.0.5",
     "syncpack": "^12.3.0",
     "typescript": "^5.3.3"

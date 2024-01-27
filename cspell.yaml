@@ -5,6 +5,7 @@ dictionaries:
   - node
   - typescript
 words:
+  - picocolors
 ignorePaths:
   - "**/node_modules/**"
   - "**/dist/**"

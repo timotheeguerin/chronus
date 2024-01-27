@@ -1,24 +1,25 @@
 import { createGitSourceControl } from "../../source-control/git.js";
-import { NodeKronosHost } from "../../utils/node-host.js";
+import { NodechronusHost } from "../../utils/node-host.js";
 import { createPnpmWorkspaceManager } from "../../workspace-manager/pnpm.js";
 import type { Package } from "../../workspace-manager/types.js";
 import prompts from "prompts";
 import writeChangeset from "@changesets/write";
+import { findChangeStatus } from "../../change/index.js";
+import type { ChangeStatus } from "../../change/find.js";
+import pc from "picocolors";
 
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
   console.log(...args);
 }
 export async function addChangeset(cwd: string): Promise<void> {
-  const host = NodeKronosHost;
+  const host = NodechronusHost;
   const pnpm = createPnpmWorkspaceManager(host);
   const workspace = await pnpm.load(cwd);
   const sourceControl = createGitSourceControl(workspace.path);
-  const filesChanged = await sourceControl.listChangedFilesFromBase();
+  const status = await findChangeStatus(host, sourceControl, workspace);
 
-  const publicPackages = workspace.packages.filter((x) => !x.manifest.private);
-  const packageChanged = findPackageChanges(publicPackages, filesChanged);
-  const packageToInclude = await promptForPackages(publicPackages, packageChanged);
+  const packageToInclude = await promptForPackages(status);
 
   if (packageToInclude.length === 0) {
     log("No package selected. Exiting.");
@@ -37,25 +38,29 @@ export async function addChangeset(cwd: string): Promise<void> {
   log("Wrote changeset ", result);
 }
 
-function findPackageChanges(packages: Package[], fileChanged: string[]): Package[] {
-  const packageChanged = new Set<Package>();
+async function promptForPackages(status: ChangeStatus): Promise<Package[]> {
+  const undocummentedPackages = status.committed.packageChanged.filter(
+    (x) => !status.all.packagesDocumented.find((y) => x.name === y.name),
+  );
+  const documentedPackages = status.committed.packageChanged.filter((x) =>
+    status.all.packagesDocumented.find((y) => x.name === y.name),
+  );
 
-  for (const file of fileChanged) {
-    const pkg = packages.find((x) => file.startsWith(x.relativePath + "/"));
-    if (pkg) {
-      packageChanged.add(pkg);
-    }
-  }
-  return [...packageChanged];
-}
-
-async function promptForPackages(allPackages: Package[], packageChanged: Package[]): Promise<Package[]> {
   const response = await prompts({
     type: "multiselect",
     name: "value",
     instructions: false,
     message: "Select packages to include in this changeset",
-    choices: packageChanged.map((x) => ({ title: x.name, value: x })),
+    choices: [
+      ...undocummentedPackages.map((x) => ({
+        title: x.name,
+        value: x,
+      })),
+      ...documentedPackages.map((x) => ({
+        title: `${x.name} ${pc.green("(Already documented)")}`,
+        value: x,
+      })),
+    ],
   });
   return response.value;
 }
