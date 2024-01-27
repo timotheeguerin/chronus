@@ -37,7 +37,7 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
 
-  packages/kronos:
+  packages/chronus:
     dependencies:
       '@changesets/write':
         specifier: ^0.3.0
