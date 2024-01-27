@@ -6,6 +6,7 @@ import prompts from "prompts";
 import writeChangeset from "@changesets/write";
 import { findChangeStatus } from "../../change/index.js";
 import type { ChangeStatus } from "../../change/find.js";
+import pc from "picocolors";
 
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
@@ -55,13 +56,8 @@ async function promptForPackages(status: ChangeStatus): Promise<Package[]> {
         title: x.name,
         value: x,
       })),
-      {
-        title: "------------------",
-        value: "",
-        disabled: true,
-      },
       ...documentedPackages.map((x) => ({
-        title: x.name,
+        title: `${x.name} ${pc.green("(Already documented)")}`,
         value: x,
       })),
     ],
