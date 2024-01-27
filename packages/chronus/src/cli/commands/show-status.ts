@@ -23,7 +23,7 @@ export async function showStatus(cwd: string): Promise<void> {
       .filter((x) => x.toLowerCase() !== ".changeset/readme.md")
       .map(async (x) => {
         const file = await host.readFile(x);
-        return parseChangeset(file.content);
+        return { ...parseChangeset(file.content), id: x.slice(".changeset/".length, -3) };
       }),
   );
 

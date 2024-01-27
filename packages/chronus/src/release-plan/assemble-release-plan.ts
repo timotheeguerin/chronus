@@ -1,4 +1,4 @@
-import type { Changeset } from "@changesets/types";
+import type { Changeset, NewChangeset } from "@changesets/types";
 import type { ChronusConfig } from "../config/types.js";
 import { getDependentsGraph } from "../dependency-graph/index.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
@@ -7,7 +7,11 @@ import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
 import type { ReleaseAction, ReleasePlan } from "./types.js";
 
-export function assembleReleasePlan(changesets: Changeset[], workspace: Workspace, config: ChronusConfig): ReleasePlan {
+export function assembleReleasePlan(
+  changesets: NewChangeset[],
+  workspace: Workspace,
+  config: ChronusConfig,
+): ReleasePlan {
   const packagesByName = new Map(workspace.packages.map((pkg) => [pkg.name, pkg]));
   const requested = flattenReleases(changesets, packagesByName, []);
 
@@ -48,10 +52,14 @@ export function assembleReleasePlan(changesets: Changeset[], workspace: Workspac
     return {
       ...incompleteRelease,
       newVersion: getNewVersion(incompleteRelease),
+      changesets: changesets.filter((changeset) =>
+        changeset.releases.some((release) => release.name === incompleteRelease.packageName),
+      ),
     };
   });
 
   return {
+    changesets,
     actions,
   };
 }
