@@ -1,4 +1,4 @@
-import { KronosHost } from "../utils/host.js";
+import type { KronosHost } from "../utils/host.js";
 
 export interface TestHost {
   host: KronosHost;

@@ -1,4 +1,4 @@
-import { SpawnOptions } from "child_process";
+import type { SpawnOptions } from "child_process";
 import crosspawn from "cross-spawn";
 
 export interface ExecResult {

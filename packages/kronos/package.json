@@ -31,7 +31,6 @@
   },
   "homepage": "https://github.com/timotheeguerin/kronos#readme",
   "dependencies": {
-    "ajv": "8.11.0",
     "js-yaml": "^4.1.0",
     "picocolors": "^1.0.0",
     "prettier": "^2.7.1",

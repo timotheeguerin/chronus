@@ -1,4 +1,4 @@
-import { execAsync, ExecResult } from "../utils/exec-async.js";
+import { execAsync, type ExecResult } from "../utils/exec-async.js";
 
 export interface GitRepository {
   /**

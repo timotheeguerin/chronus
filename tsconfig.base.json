@@ -11,6 +11,7 @@
     "noImplicitThis": true,
     "sourceMap": true,
     "declarationMap": true,
+    "verbatimModuleSyntax": true,
     "strict": true,
     "declaration": true,
     "stripInternal": true,
@@ -18,7 +19,6 @@
     "target": "ES2022",
     "types": ["node"],
     "lib": ["ES2022"],
-    "experimentalDecorators": true,
     "skipLibCheck": true, // Issue with Node16 module resolution for now.
     "newLine": "LF"
   }

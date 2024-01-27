@@ -1,5 +1,5 @@
-import { isDefined, isPathAccessible, joinPaths, KronosHost, lookup } from "../utils/index.js";
-import { Package, Workspace, WorkspaceManager } from "./types.js";
+import { isDefined, isPathAccessible, joinPaths, lookup, type KronosHost } from "../utils/index.js";
+import type { Package, Workspace, WorkspaceManager } from "./types.js";
 import { load } from "js-yaml";
 import { globby } from "globby";
 interface PnpmWorkspaceConfig {

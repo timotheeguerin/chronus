@@ -1,5 +1,5 @@
 import { readFile } from "fs/promises";
-import { File, KronosHost } from "./host.js";
+import type { File, KronosHost } from "./host.js";
 import { normalizePath } from "./path-utils.js";
 
 /**
