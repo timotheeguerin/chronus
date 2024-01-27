@@ -1,4 +1,3 @@
-import { access } from "node:fs/promises";
 import { getDirectoryPath } from "./path-utils.js";
 import type { KronosHost } from "./host.js";
 

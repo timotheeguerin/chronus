@@ -40,14 +40,15 @@
     "yargs": "^17.5.1"
   },
   "devDependencies": {
-    "@cadl-lang/eslint-config-cadl": "^0.4.1",
     "@types/cross-spawn": "^6.0.2",
     "@types/js-yaml": "^4.0.5",
     "@types/micromatch": "^4.0.6",
-    "@types/node": "^18.7.16",
     "@types/node-fetch": "^2.6.2",
+    "@types/node": "^18.7.16",
     "@types/xml2js": "^0.4.11",
     "@types/yargs": "^17.0.12",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
     "cross-spawn": "^7.0.3",
     "eslint": "^8.56.0",
     "globby": "^13.1.2",
