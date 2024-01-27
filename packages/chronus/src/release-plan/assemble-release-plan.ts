@@ -2,7 +2,7 @@ import type { Changeset } from "@changesets/types";
 import type { ChronusConfig } from "../config/types.js";
 import { getDependentsGraph } from "../dependency-graph/index.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
-import determineDependents from "./determine-dependents.js";
+import { applyDependents } from "./determine-dependents.js";
 import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
 import type { ReleaseAction, ReleasePlan } from "./types.js";
@@ -12,8 +12,6 @@ export function assembleReleasePlan(changesets: Changeset[], workspace: Workspac
   const requested = flattenReleases(changesets, packagesByName, []);
 
   const dependentsGraph = getDependentsGraph(workspace.packages);
-  console.log("dependentsGraph", dependentsGraph);
-
   const internalActions = new Map<string, InternalReleaseAction>();
   if (config.versionPolicies) {
     for (const policy of config.versionPolicies) {
@@ -40,7 +38,7 @@ export function assembleReleasePlan(changesets: Changeset[], workspace: Workspac
   }
 
   // The map passed in to determineDependents will be mutated
-  const dependentAdded = determineDependents({
+  applyDependents({
     actions: internalActions,
     packagesByName,
     dependentsGraph,
@@ -52,8 +50,6 @@ export function assembleReleasePlan(changesets: Changeset[], workspace: Workspac
       newVersion: getNewVersion(incompleteRelease),
     };
   });
-
-  console.log("New versions", actions);
 
   return {
     actions,

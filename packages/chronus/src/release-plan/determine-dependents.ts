@@ -16,7 +16,7 @@ import type { InternalReleaseAction } from "./types.internal.js";
   We could solve this by inlining this function, or by returning a deep-cloned then
   modified array, but we decided both of those are worse than this solution.
 */
-export default function determineDependents({
+export function applyDependents({
   actions,
   packagesByName,
   dependentsGraph,
@@ -61,7 +61,12 @@ export default function determineDependents({
               nextRelease,
             })
           ) {
-            type = "major";
+            // We only bump to minor for 0. version as they are already considered breaking in semver
+            if (dependentPackage.version.startsWith("0.")) {
+              type = "minor";
+            } else {
+              type = "major";
+            }
           } else if (
             (!actions.has(dependent) || actions.get(dependent)!.type === "none") &&
             !semverSatisfies(incrementVersion(nextRelease), versionRange)
@@ -89,16 +94,21 @@ export default function determineDependents({
         return {
           name: dependent,
           type,
-          pkgJSON: dependentPackage.manifest,
+          manifest: dependentPackage.manifest,
         };
       })
       .filter((dependentItem): dependentItem is typeof dependentItem & { type: VersionType } => !!dependentItem.type)
-      .forEach(({ name, type, pkgJSON }) => {
+      .forEach(({ name, type, manifest }) => {
         // At this point, we know if we are making a change
         updated = true;
 
         const existing = actions.get(name);
         if (existing && existing.policy.type === "lockstep") {
+          return;
+        }
+
+        // We don't bump private packages
+        if (manifest.private) {
           return;
         }
         // For things that are being given a major bump, we check if we have already
@@ -114,7 +124,7 @@ export default function determineDependents({
           const newDependent: InternalReleaseAction = {
             packageName: name,
             type,
-            oldVersion: pkgJSON.version!,
+            oldVersion: manifest.version!,
             policy: { name: "<auto>", type: "independent", packages: [name] },
           };
 
