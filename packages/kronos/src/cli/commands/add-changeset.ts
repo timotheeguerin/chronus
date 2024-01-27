@@ -28,8 +28,10 @@ export async function addChangeset(cwd: string): Promise<void> {
     log("No package selected. Exiting.");
     return;
   }
+  const changeType = await promptBumpType();
   console.log(
-    "Packages to include in changeset",
+    "Packages to include in changeset ",
+    changeType,
     packageToInclude.map((x) => x.name),
   );
 }
@@ -53,6 +55,21 @@ async function promptForPackages(allPackages: Package[], packageChanged: Package
     instructions: false,
     message: "Select packages to include in this changeset",
     choices: packageChanged.map((x) => ({ title: x.name, value: x })),
+  });
+  return response.value;
+}
+
+async function promptBumpType(): Promise<"major" | "minor" | "patch"> {
+  const response = await prompts({
+    type: "select",
+    name: "value",
+    instructions: false,
+    message: "Describe the type of change",
+    choices: [
+      { title: "patch", value: "patch" },
+      { title: "minor", value: "minor" },
+      { title: "major", value: "major" },
+    ],
   });
   return response.value;
 }
