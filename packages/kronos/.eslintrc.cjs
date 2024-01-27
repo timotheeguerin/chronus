@@ -1,7 +1,11 @@
-require("@cadl-lang/eslint-config-cadl/patch/modern-module-resolution");
-
 module.exports = {
-  plugins: [],
-  extends: ["@cadl-lang/eslint-config-cadl"],
-  parserOptions: { tsconfigRootDir: __dirname },
+  root: true,
+  env: { browser: true, es2020: true },
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  ignorePatterns: ["dist", ".eslintrc.cjs"],
+  parser: "@typescript-eslint/parser",
+  rules: {
+    "no-console": "warn",
+    "@typescript-eslint/no-explicit-any": "off",
+  },
 };

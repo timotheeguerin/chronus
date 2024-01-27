@@ -2,13 +2,15 @@
   "name": "@kronos/monorepo",
   "private": true,
   "version": "0.1.0",
+  "packageManager": "pnpm@8.13.1",
   "description": "Monorepo for kronos",
   "type": "module",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "vitest run",
+    "test:watch": "vitest -w",
     "preinstall": "npx only-allow pnpm",
     "watch": "tsc --build ./tsconfig.ws.json --watch",
     "build": "pnpm -r run build",
@@ -36,19 +38,19 @@
   },
   "homepage": "https://github.com/timotheeguerin/kronos#readme",
   "devDependencies": {
-    "@cadl-lang/prettier-plugin-cadl": "^0.5.15",
-    "cspell": "^6.8.1",
-    "eslint": "^8.23.1",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-unicorn": "^43.0.2",
-    "jest": "^29.3.1",
-    "prettier": "^2.7.1",
-    "rimraf": "^3.0.2",
-    "syncpack": "^8.2.4",
-    "ts-jest": "^29.0.0",
-    "typescript": "^4.9.3"
+    "cspell": "^8.3.2",
+    "eslint": "^8.56.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-unicorn": "^50.0.1",
+    "prettier": "^3.2.4",
+    "rimraf": "^5.0.5",
+    "syncpack": "^12.3.0",
+    "typescript": "^5.3.3"
   },
   "syncpack": {
     "workspace": false
+  },
+  "dependencies": {
+    "vitest": "^1.2.2"
   }
 }
