@@ -31,7 +31,6 @@ export function createTestHost(files: Record<string, string> = {}): TestHost {
 
       for (const file of filesInBaseDir) {
         let current = file;
-        console.log("File", file, getDirectoryPath(file));
         while (current !== getDirectoryPath(current)) {
           content.add(current);
           current = getDirectoryPath(current);

@@ -18,7 +18,7 @@ async function main() {
       description: "Output debug log messages.",
       default: false,
     })
-.command("add", "Add a new changeset",  () => addChangeset(process.cwd()))
+    .command("add", "Add a new changeset", () => addChangeset(process.cwd()))
     .parse();
 }
 

@@ -1,4 +1,3 @@
-import { globby } from "globby";
 import {
   isDefined,
   isPathAccessible,
@@ -30,7 +29,7 @@ export function createPnpmWorkspaceManager(host: KronosHost): WorkspaceManager {
 
       const file = await host.readFile(workspaceFilePath);
       const config: PnpmWorkspaceConfig = load(file.content) as any;
-      
+
       if (config.packages === undefined) {
         throw new KronosError("packages entry missing in pnpm-workspace.yaml");
       }
