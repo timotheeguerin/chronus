@@ -15,7 +15,6 @@
     "strict": true,
     "declaration": true,
     "stripInternal": true,
-    "noEmitHelpers": false,
     "target": "ES2022",
     "types": ["node"],
     "lib": ["ES2022"],
