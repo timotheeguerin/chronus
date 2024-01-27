@@ -3,7 +3,7 @@ import {
   isPathAccessible,
   joinPaths,
   lookup,
-  type chronusHost,
+  type ChronusHost,
   chronusError,
   resolvePath,
 } from "../utils/index.js";
@@ -15,7 +15,7 @@ interface PnpmWorkspaceConfig {
   packages: string[];
 }
 
-export function createPnpmWorkspaceManager(host: chronusHost): WorkspaceManager {
+export function createPnpmWorkspaceManager(host: ChronusHost): WorkspaceManager {
   return {
     async load(dir: string): Promise<Workspace> {
       const root = await lookup(dir, (current) => {
@@ -47,7 +47,7 @@ export function createPnpmWorkspaceManager(host: chronusHost): WorkspaceManager 
   };
 }
 
-export async function findPackagesFromPattern(host: chronusHost, root: string, pattern: string): Promise<Package[]> {
+export async function findPackagesFromPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
   const packageRoots = await host.glob(pattern, {
     baseDir: root,
     onlyDirectories: true,
@@ -57,7 +57,7 @@ export async function findPackagesFromPattern(host: chronusHost, root: string, p
   return packages.filter(isDefined);
 }
 
-async function tryLoadNodePackage(host: chronusHost, root: string, relativePath: string): Promise<Package | undefined> {
+async function tryLoadNodePackage(host: ChronusHost, root: string, relativePath: string): Promise<Package | undefined> {
   const pkgJsonPath = resolvePath(root, relativePath, "package.json");
   if (await isPathAccessible(host, pkgJsonPath)) {
     const file = await host.readFile(pkgJsonPath);

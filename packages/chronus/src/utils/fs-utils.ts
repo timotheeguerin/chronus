@@ -1,7 +1,7 @@
 import { getDirectoryPath } from "./path-utils.js";
-import type { chronusHost } from "./host.js";
+import type { ChronusHost } from "./host.js";
 
-export async function isPathAccessible(host: chronusHost, path: string): Promise<boolean> {
+export async function isPathAccessible(host: ChronusHost, path: string): Promise<boolean> {
   try {
     await host.access(path);
     return true;
