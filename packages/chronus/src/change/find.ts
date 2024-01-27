@@ -1,7 +1,7 @@
+import readChangeset from "@changesets/parse";
 import type { GitRepository } from "../source-control/git.js";
 import type { ChronusHost } from "../utils/host.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
-import readChangeset from "@changesets/parse";
 
 export type ChangeArea = "committed" | "untrackedOrModified" | "staged";
 
