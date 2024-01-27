@@ -2,7 +2,7 @@ import type { DependencyType, VersionType } from "@changesets/types";
 import semverSatisfies from "semver/functions/satisfies.js";
 import type { Package, PackageJson } from "../workspace-manager/types.js";
 import { incrementVersion } from "./increment-version.js";
-import type { InternalRelease } from "./types.internal.js";
+import type { InternalReleaseAction } from "./types.internal.js";
 
 /*
   WARNING:
@@ -17,17 +17,17 @@ import type { InternalRelease } from "./types.internal.js";
   modified array, but we decided both of those are worse than this solution.
 */
 export default function determineDependents({
-  releases,
+  actions,
   packagesByName,
   dependentsGraph,
 }: {
-  releases: Map<string, InternalRelease>;
+  actions: Map<string, InternalReleaseAction>;
   packagesByName: Map<string, Package>;
   dependentsGraph: Map<string, string[]>;
 }): boolean {
   let updated = false;
   // NOTE this is intended to be called recursively
-  const pkgsToSearch = [...releases.values()];
+  const pkgsToSearch = [...actions.values()];
 
   while (pkgsToSearch.length > 0) {
     // nextRelease is our dependency, think of it as "avatar"
@@ -57,13 +57,13 @@ export default function determineDependents({
               dependent,
               depType,
               versionRange,
-              releases,
+              releases: actions,
               nextRelease,
             })
           ) {
             type = "major";
           } else if (
-            (!releases.has(dependent) || releases.get(dependent)!.type === "none") &&
+            (!actions.has(dependent) || actions.get(dependent)!.type === "none") &&
             !semverSatisfies(incrementVersion(nextRelease), versionRange)
           ) {
             switch (depType) {
@@ -83,7 +83,7 @@ export default function determineDependents({
             }
           }
         }
-        if (releases.has(dependent) && releases.get(dependent)!.type === type) {
+        if (actions.has(dependent) && actions.get(dependent)!.type === type) {
           type = undefined;
         }
         return {
@@ -97,7 +97,10 @@ export default function determineDependents({
         // At this point, we know if we are making a change
         updated = true;
 
-        const existing = releases.get(name);
+        const existing = actions.get(name);
+        if (existing && existing.policy.type === "lockstep") {
+          return;
+        }
         // For things that are being given a major bump, we check if we have already
         // added them here. If we have, we update the existing item instead of pushing it on to search.
         // It is safe to not add it to pkgsToSearch because it should have already been searched at the
@@ -108,14 +111,15 @@ export default function determineDependents({
 
           pkgsToSearch.push(existing);
         } else {
-          const newDependent: InternalRelease = {
+          const newDependent: InternalReleaseAction = {
             packageName: name,
             type,
             oldVersion: pkgJSON.version!,
+            policy: { name: "<auto>", type: "independent", packages: [name] },
           };
 
           pkgsToSearch.push(newDependent);
-          releases.set(name, newDependent);
+          actions.set(name, newDependent);
         }
       });
   }
@@ -130,7 +134,7 @@ export default function determineDependents({
 */
 function getDependencyVersionRanges(
   dependentPkgJSON: PackageJson,
-  dependencyRelease: InternalRelease,
+  dependencyRelease: InternalReleaseAction,
 ): {
   depType: DependencyType;
   versionRange: string;
@@ -175,8 +179,8 @@ function shouldBumpMajor({
   dependent: string;
   depType: DependencyType;
   versionRange: string;
-  releases: Map<string, InternalRelease>;
-  nextRelease: InternalRelease;
+  releases: Map<string, InternalReleaseAction>;
+  nextRelease: InternalReleaseAction;
 }) {
   // we check if it is a peerDependency because if it is, our dependent bump type might need to be major.
   return (

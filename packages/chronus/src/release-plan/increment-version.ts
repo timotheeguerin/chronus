@@ -1,7 +1,7 @@
 import semverInc from "semver/functions/inc.js";
-import type { InternalRelease } from "./types.internal.js";
+import type { InternalReleaseAction } from "./types.internal.js";
 
-export function incrementVersion(release: InternalRelease) {
+export function incrementVersion(release: InternalReleaseAction) {
   if (release.type === "none") {
     return release.oldVersion;
   }

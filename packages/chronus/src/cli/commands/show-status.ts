@@ -1,6 +1,7 @@
 import parseChangeset from "@changesets/parse";
 import type { VersionType } from "@changesets/types";
 import pc from "picocolors";
+import { resolveConfig } from "../../config/parse.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { ReleaseAction } from "../../release-plan/types.js";
 import { NodechronusHost } from "../../utils/node-host.js";
@@ -13,6 +14,7 @@ function log(...args: any[]) {
 export async function showStatus(cwd: string): Promise<void> {
   const host = NodechronusHost;
   const pnpm = createPnpmWorkspaceManager(host);
+  const config = await resolveConfig(host, cwd);
   const workspace = await pnpm.load(cwd);
 
   const changelogs = await host.glob(".changeset/*.md", { baseDir: workspace.path });
@@ -25,7 +27,7 @@ export async function showStatus(cwd: string): Promise<void> {
       }),
   );
 
-  const releasePlan = assembleReleasePlan(changesets, workspace);
+  const releasePlan = assembleReleasePlan(changesets, workspace, config);
 
   log("");
   log(pc.bold("Change summary:"));

@@ -1,4 +1,5 @@
 import parseChangeset from "@changesets/parse";
+import { resolveConfig } from "../../config/parse.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import { createGitSourceControl } from "../../source-control/git.js";
 import { NodechronusHost } from "../../utils/node-host.js";
@@ -12,6 +13,7 @@ export async function applyChangesets(cwd: string): Promise<void> {
   const host = NodechronusHost;
   const pnpm = createPnpmWorkspaceManager(host);
   const workspace = await pnpm.load(cwd);
+  const config = await resolveConfig(host, cwd);
   const sourceControl = createGitSourceControl(workspace.path);
 
   const changelogs = await host.glob(".changeset/*.md", { baseDir: workspace.path });
@@ -24,5 +26,5 @@ export async function applyChangesets(cwd: string): Promise<void> {
       }),
   );
 
-  assembleReleasePlan(changesets, workspace);
+  assembleReleasePlan(changesets, workspace, config);
 }
