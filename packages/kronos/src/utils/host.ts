@@ -1,7 +1,7 @@
 /**
  *
  */
-export interface KronosHost {
+export interface chronusHost {
   /**
    * Read a file.
    * @param path Path to the file.

@@ -1,1 +1,1 @@
-export class KronosError extends Error {}
+export class chronusError extends Error {}

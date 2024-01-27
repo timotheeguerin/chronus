@@ -6,7 +6,7 @@ export const DEFAULT_PORT = 3000;
 
 async function main() {
   await yargs(process.argv.slice(2))
-    .scriptName("kronos")
+    .scriptName("chronus")
     .strict()
     .help()
     .parserConfiguration({

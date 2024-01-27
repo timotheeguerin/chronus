@@ -1,5 +1,5 @@
 import { createGitSourceControl } from "../../source-control/git.js";
-import { NodeKronosHost } from "../../utils/node-host.js";
+import { NodechronusHost } from "../../utils/node-host.js";
 import { createPnpmWorkspaceManager } from "../../workspace-manager/pnpm.js";
 import type { Package } from "../../workspace-manager/types.js";
 import prompts from "prompts";
@@ -10,7 +10,7 @@ function log(...args: any[]) {
   console.log(...args);
 }
 export async function addChangeset(cwd: string): Promise<void> {
-  const host = NodeKronosHost;
+  const host = NodechronusHost;
   const pnpm = createPnpmWorkspaceManager(host);
   const workspace = await pnpm.load(cwd);
   const sourceControl = createGitSourceControl(workspace.path);

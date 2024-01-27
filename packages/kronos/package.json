@@ -1,12 +1,12 @@
 {
-  "name": "@kronos/kronos",
+  "name": "@chronus/chronus",
   "version": "0.1.0",
-  "description": "Kronos",
+  "description": "chronus",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
     "kro": "./cmd/cli.mjs",
-    "kronos": "./cmd/cli.mjs"
+    "chronus": "./cmd/cli.mjs"
   },
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
@@ -22,14 +22,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/timotheeguerin/kronos.git"
+    "url": "git+https://github.com/timotheeguerin/chronus.git"
   },
   "author": "Microsoft",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/timotheeguerin/kronos/issues"
+    "url": "https://github.com/timotheeguerin/chronus/issues"
   },
-  "homepage": "https://github.com/timotheeguerin/kronos#readme",
+  "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "dependencies": {
     "@changesets/write": "^0.3.0",
     "js-yaml": "^4.1.0",
