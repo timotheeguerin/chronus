@@ -18,11 +18,6 @@ export async function addChangeset(cwd: string): Promise<void> {
 
   const publicPackages = workspace.packages.filter((x) => !x.manifest.private);
   const packageChanged = findPackageChanges(publicPackages, filesChanged);
-
-  console.log(
-    "Packages changed",
-    packageChanged.map((x) => x.name),
-  );
   const packageToInclude = await promptForPackages(publicPackages, packageChanged);
 
   if (packageToInclude.length === 0) {
