@@ -19,6 +19,7 @@ export interface Package {
 export interface PackageJson {
   readonly name?: string;
   readonly version?: string;
+  readonly private?: boolean;
 }
 
 export interface WorkspaceManager {

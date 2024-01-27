@@ -64,10 +64,15 @@ export interface GitRepository {
 
   /**
    * Returns files changed since the given ref. Does not include any uncomitted file change.
-   * @param ref Git ref
    * @param dir Repository directory
    */
   listChangedFilesSince(ref: string): Promise<string[]>;
+
+  /**
+   * Returns files changed from the base remote branch.
+   * @param dir Repository directory
+   */
+  listChangedFilesFromBase(): Promise<string[]>;
 }
 
 export class GitError extends Error {
@@ -103,6 +108,7 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     listUntrackedOrModifiedFiles,
     listStagedFiles,
     getMergeBase,
+    listChangedFilesFromBase,
     listChangedFilesSince,
   };
 
@@ -151,8 +157,20 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     return stdout.toString().trim();
   }
 
+  async function listChangedFilesFromBase() {
+    const remoteBase = await findRemoteForBranch("main");
+    return await listChangedFilesSince(remoteBase);
+  }
+
   async function listChangedFilesSince(ref: string) {
     return splitStdoutLines(await execGit(["diff", "--name-only", `${ref}...`], { repositoryPath }));
+  }
+
+  async function findRemoteForBranch(branch: string) {
+    const ref = splitStdoutLines(await execGit(["rev-parse", `--symbolic-full-name`, branch], { repositoryPath }))[0];
+    return splitStdoutLines(
+      await execGit(["for-each-ref", "--format", "%(upstream:short)", ref], { repositoryPath }),
+    )[0];
   }
 }
 
