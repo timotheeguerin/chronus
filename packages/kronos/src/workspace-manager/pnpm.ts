@@ -1,3 +1,4 @@
+import { globby } from "globby";
 import {
   isDefined,
   isPathAccessible,
@@ -29,7 +30,7 @@ export function createPnpmWorkspaceManager(host: KronosHost): WorkspaceManager {
 
       const file = await host.readFile(workspaceFilePath);
       const config: PnpmWorkspaceConfig = load(file.content) as any;
-
+      
       if (config.packages === undefined) {
         throw new KronosError("packages entry missing in pnpm-workspace.yaml");
       }
@@ -50,6 +51,7 @@ export function createPnpmWorkspaceManager(host: KronosHost): WorkspaceManager {
 export async function findPackagesFromPattern(host: KronosHost, root: string, pattern: string): Promise<Package[]> {
   const packageRoots = await host.glob(pattern, {
     baseDir: root,
+    onlyDirectories: true,
   });
 
   const packages = await Promise.all(packageRoots.map((x) => tryLoadNodePackage(host, root, x)));

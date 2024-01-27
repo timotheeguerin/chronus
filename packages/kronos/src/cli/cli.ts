@@ -1,5 +1,6 @@
 import "source-map-support/register.js";
 import yargs from "yargs";
+import { addChangeset } from "./commands/add-changeset.js";
 
 export const DEFAULT_PORT = 3000;
 
@@ -17,7 +18,7 @@ async function main() {
       description: "Output debug log messages.",
       default: false,
     })
-
+.command("add", "Add a new changeset",  () => addChangeset(process.cwd()))
     .parse();
 }
 

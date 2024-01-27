@@ -27,6 +27,6 @@ export const NodeKronosHost: KronosHost = {
   },
 
   async glob(pattern: string, options?: GlobOptions): Promise<string[]> {
-    return globby(pattern, { cwd: options?.baseDir });
+    return globby(pattern, { cwd: options?.baseDir, onlyDirectories: options?.onlyDirectories});
   },
 };

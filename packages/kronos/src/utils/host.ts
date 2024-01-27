@@ -25,6 +25,7 @@ export interface KronosHost {
 
 export interface GlobOptions {
   baseDir: string;
+  onlyDirectories?: boolean;
 }
 
 export interface File {

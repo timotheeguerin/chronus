@@ -9,8 +9,6 @@
     "dist": true
   },
   "files.eol": "\n",
-  "prettier.prettierPath": "./node_modules/prettier",
+  "prettier.prettierPath": "./node_modules/prettier/index.cjs",
   "typescript.tsdk": "node_modules/typescript/lib",
-  "jest.jestCommandLine": "jest",
-  "jest.autoRun": "off" 
 }
