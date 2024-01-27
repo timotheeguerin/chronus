@@ -66,6 +66,12 @@ export interface GitRepository {
    * Returns files changed since the given ref. Does not include any uncomitted file change.
    * @param dir Repository directory
    */
+  listChangedFilesSince(ref: string): Promise<string[]>;
+
+  /**
+   * Returns files changed from the base remote branch.
+   * @param dir Repository directory
+   */
   listChangedFilesFromBase(): Promise<string[]>;
 }
 
@@ -103,6 +109,7 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     listStagedFiles,
     getMergeBase,
     listChangedFilesFromBase,
+    listChangedFilesSince,
   };
 
   async function getRepoRoot(): Promise<string> {
@@ -151,18 +158,20 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
   }
 
   async function listChangedFilesFromBase() {
-    const remoteBase = await findRemoteForBranch("main", { repositoryPath });
-    return await listChangedFilesSince(remoteBase, { repositoryPath });
+    const remoteBase = await findRemoteForBranch("main");
+    return await listChangedFilesSince(remoteBase);
   }
-}
 
-async function findRemoteForBranch(branch: string, { repositoryPath }: { repositoryPath: string }) {
-  const ref = splitStdoutLines(await execGit(["rev-parse", `--symbolic-full-name`, branch], { repositoryPath }))[0];
-  return splitStdoutLines(await execGit(["for-each-ref", "--format", "%(upstream:short)", ref], { repositoryPath }))[0];
-}
+  async function listChangedFilesSince(ref: string) {
+    return splitStdoutLines(await execGit(["diff", "--name-only", `${ref}...`], { repositoryPath }));
+  }
 
-async function listChangedFilesSince(ref: string, { repositoryPath }: { repositoryPath: string }) {
-  return splitStdoutLines(await execGit(["diff", "--name-only", `${ref}...`], { repositoryPath }));
+  async function findRemoteForBranch(branch: string) {
+    const ref = splitStdoutLines(await execGit(["rev-parse", `--symbolic-full-name`, branch], { repositoryPath }))[0];
+    return splitStdoutLines(
+      await execGit(["for-each-ref", "--format", "%(upstream:short)", ref], { repositoryPath }),
+    )[0];
+  }
 }
 
 function splitStdoutLines(result: ExecResult): string[] {
