@@ -3,6 +3,7 @@ import { NodeKronosHost } from "../../utils/node-host.js";
 import { createPnpmWorkspaceManager } from "../../workspace-manager/pnpm.js";
 import type { Package } from "../../workspace-manager/types.js";
 import prompts from "prompts";
+import writeChangeset from "@changesets/write";
 
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
@@ -29,11 +30,16 @@ export async function addChangeset(cwd: string): Promise<void> {
     return;
   }
   const changeType = await promptBumpType();
-  console.log(
-    "Packages to include in changeset ",
-    changeType,
-    packageToInclude.map((x) => x.name),
+  const changesetContent = await promptForContent();
+
+  const result = await writeChangeset(
+    {
+      summary: changesetContent,
+      releases: packageToInclude.map((x) => ({ name: x.name, type: changeType })),
+    },
+    workspace.path,
   );
+  log("Wrote changeset ", result);
 }
 
 function findPackageChanges(packages: Package[], fileChanged: string[]): Package[] {
@@ -70,6 +76,16 @@ async function promptBumpType(): Promise<"major" | "minor" | "patch"> {
       { title: "minor", value: "minor" },
       { title: "major", value: "major" },
     ],
+  });
+  return response.value;
+}
+
+async function promptForContent(): Promise<string> {
+  const response = await prompts({
+    type: "text",
+    name: "value",
+    instructions: false,
+    message: "Enter a summary for the change",
   });
   return response.value;
 }
