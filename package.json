@@ -2,6 +2,7 @@
   "name": "@kronos/monorepo",
   "private": true,
   "version": "0.1.0",
+  "packageManager": "pnpm@8.13.1",
   "description": "Monorepo for kronos",
   "type": "module",
   "workspaces": [
