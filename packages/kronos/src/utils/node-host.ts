@@ -1,6 +1,7 @@
-import { readFile } from "fs/promises";
-import type { File, KronosHost } from "./host.js";
+import { readFile, writeFile, access } from "fs/promises";
+import type { File, GlobOptions, KronosHost } from "./host.js";
 import { normalizePath } from "./path-utils.js";
+import { globby } from "globby";
 
 /**
  * Implementation of kronos host using node apis.
@@ -17,6 +18,15 @@ export const NodeKronosHost: KronosHost = {
 
   async writeFile(path: string, content: string): Promise<void> {
     const normalizedPath = normalizePath(path);
-    await this.writeFile(normalizedPath, content);
+    await writeFile(normalizedPath, content);
+  },
+
+  async access(path: string): Promise<void> {
+    const normalizedPath = normalizePath(path);
+    await access(normalizedPath);
+  },
+
+  async glob(pattern: string, options?: GlobOptions): Promise<string[]> {
+    return globby(pattern, { cwd: options?.baseDir });
   },
 };

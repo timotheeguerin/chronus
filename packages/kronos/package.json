@@ -14,8 +14,8 @@
     "clean": "rimraf dist/ .temp/",
     "lint": "eslint . --ext .ts --max-warnings=0",
     "lint:fix": "eslint . --fix --ext .ts",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "test": "vitest run",
+    "test:watch": "vitest -w"
   },
   "engines": {
     "node": ">=16.0.0"
@@ -32,16 +32,18 @@
   "homepage": "https://github.com/timotheeguerin/kronos#readme",
   "dependencies": {
     "js-yaml": "^4.1.0",
+    "micromatch": "^4.0.5",
     "picocolors": "^1.0.0",
     "prettier": "^2.7.1",
     "source-map-support": "^0.5.21",
+    "vitest": "^1.2.2",
     "yargs": "^17.5.1"
   },
   "devDependencies": {
     "@cadl-lang/eslint-config-cadl": "^0.4.1",
-    "@jest/globals": "^29.3.1",
     "@types/cross-spawn": "^6.0.2",
     "@types/js-yaml": "^4.0.5",
+    "@types/micromatch": "^4.0.6",
     "@types/node": "^18.7.16",
     "@types/node-fetch": "^2.6.2",
     "@types/xml2js": "^0.4.11",
@@ -49,9 +51,7 @@
     "cross-spawn": "^7.0.3",
     "eslint": "^8.23.1",
     "globby": "^13.1.2",
-    "jest": "^29.3.1",
     "rimraf": "^3.0.2",
-    "ts-jest": "^29.0.0",
     "typescript": "^4.9.3"
   }
 }

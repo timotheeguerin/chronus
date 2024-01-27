@@ -11,7 +11,7 @@ import {
   reducePathComponents,
   resolvePath,
 } from "./path-utils.js";
-import { describe, it } from "@jest/globals";
+import { describe, it } from "vitest";
 
 describe("compiler: path utils", () => {
   it("normalizeSlashes", () => {

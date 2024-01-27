@@ -1,9 +1,10 @@
 import { access } from "node:fs/promises";
 import { getDirectoryPath } from "./path-utils.js";
+import type { KronosHost } from "./host.js";
 
-export async function isPathAccessible(path: string): Promise<boolean> {
+export async function isPathAccessible(host: KronosHost, path: string): Promise<boolean> {
   try {
-    await access(path);
+    await host.access(path);
     return true;
   } catch {
     return false;

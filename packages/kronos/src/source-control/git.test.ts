@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it } from "@jest/globals";
+import { beforeEach, describe, expect, it } from "vitest";
 import { join } from "node:path";
-import { createTestDir, TestDir } from "../testing/index.js";
+import { createTestDir, type TestDir } from "../testing/index.js";
 import { execAsync } from "../utils/exec-async.js";
-import { createGitSourceControl, GitRepository } from "./git.js";
+import { createGitSourceControl, type GitRepository } from "./git.js";
 
 describe("git", () => {
   let cwd: string;
