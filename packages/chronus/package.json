@@ -38,17 +38,21 @@
     "picocolors": "^1.0.0",
     "prettier": "^3.2.4",
     "prompts": "^2.4.2",
+    "semver": "^7.5.4",
     "source-map-support": "^0.5.21",
     "vitest": "^1.2.2",
-    "yargs": "^17.5.1"
+    "yargs": "^17.5.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@changesets/types": "^6.0.0",
     "@types/cross-spawn": "^6.0.2",
     "@types/js-yaml": "^4.0.5",
     "@types/micromatch": "^4.0.6",
     "@types/node": "^18.7.16",
     "@types/node-fetch": "^2.6.2",
     "@types/prompts": "^2.4.9",
+    "@types/semver": "^7.5.6",
     "@types/xml2js": "^0.4.11",
     "@types/yargs": "^17.0.12",
     "@typescript-eslint/eslint-plugin": "^6.10.0",

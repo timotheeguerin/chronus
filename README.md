@@ -2,7 +2,7 @@
 
 ** IN DEVELOPMENT **
 
-chronus goal is to provide changelog management. It is currently built depending on changesets which provide a great way to manage changelogs but chronus does things slightly differently:
+chronus goal is to provide changelog management. It is currently built depending on [changesets(and forked many of logic)](https://github.com/changesets/changesets) which provide a great way to manage changelogs but chronus does things slightly differently:
 
 - Checking for changes are done by comparing the remote instead of the local base branch. This solve the issue where you might have merged the base branch into your feature branch but not into the local main branch and changesets would report lots of unrelated change.
 - Design to be able to plug in different monorepo, source control system as a plugin system.
