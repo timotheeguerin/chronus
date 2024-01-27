@@ -43,6 +43,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-unicorn": "^50.0.1",
     "prettier": "^3.2.4",
+    "prettier-plugin-organize-imports": "^3.2.4",
     "rimraf": "^5.0.5",
     "syncpack": "^12.3.0",
     "typescript": "^5.3.3"

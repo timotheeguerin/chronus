@@ -1,12 +1,12 @@
 import { readFile, writeFile, access } from "fs/promises";
-import type { File, GlobOptions, chronusHost } from "./host.js";
+import type { File, GlobOptions, ChronusHost } from "./host.js";
 import { normalizePath } from "./path-utils.js";
 import { globby } from "globby";
 
 /**
  * Implementation of chronus host using node apis.
  */
-export const NodechronusHost: chronusHost = {
+export const NodechronusHost: ChronusHost = {
   async readFile(path): Promise<File> {
     const normalizedPath = normalizePath(path);
     const buffer = await readFile(normalizedPath);
