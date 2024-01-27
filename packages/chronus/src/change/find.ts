@@ -3,6 +3,13 @@ import type { ChronusHost } from "../utils/host.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
 import readChangeset from "@changesets/parse";
 
+export type ChangeArea = "committed" | "untrackedOrModified" | "staged";
+
+export interface PackageStatus {
+  readonly package: Package;
+  readonly changed?: ChangeArea;
+  readonly documented?: ChangeArea;
+}
 export interface AreaStatus {
   readonly filesChanged: string[];
   readonly packageChanged: Package[];
@@ -10,6 +17,7 @@ export interface AreaStatus {
 }
 
 export interface ChangeStatus {
+  readonly packages: ReadonlyMap<string, PackageStatus>;
   readonly committed: AreaStatus;
   readonly untrackedOrModified: AreaStatus;
   readonly staged: AreaStatus;
@@ -25,15 +33,32 @@ export async function findChangeStatus(
   const untrackedOrModifiedFiles = await sourceControl.listUntrackedOrModifiedFiles();
   const stagedFiles = await sourceControl.listUntrackedOrModifiedFiles();
   const publicPackages = workspace.packages.filter((x) => !x.manifest.private);
-  const packageMap = new Map<string, Package>();
-  for (const pkg of publicPackages) {
-    packageMap.set(pkg.name, pkg);
-  }
 
   const committed = await findAreaStatus(host, publicPackages, filesChanged);
   const untrackedOrModified = await findAreaStatus(host, publicPackages, untrackedOrModifiedFiles);
   const staged = await findAreaStatus(host, publicPackages, stagedFiles);
+  const packages = new Map<string, PackageStatus>();
+  function track(tracking: Package[], data: { readonly changed?: ChangeArea; readonly documented?: ChangeArea }) {
+    for (const pkg of tracking) {
+      const existing = packages.get(pkg.name);
+      if (existing) {
+        packages.set(pkg.name, { ...existing, ...data });
+      } else {
+        packages.set(pkg.name, { package: pkg, ...data });
+      }
+    }
+  }
+
+  track(untrackedOrModified.packageChanged, { changed: "untrackedOrModified" });
+  track(untrackedOrModified.packagesDocumented, { documented: "untrackedOrModified" });
+  track(staged.packageChanged, { changed: "staged" });
+  track(staged.packagesDocumented, { documented: "staged" });
+  track(committed.packageChanged, { changed: "committed" });
+  track(committed.packagesDocumented, { documented: "committed" });
+  track(publicPackages, {});
+
   return {
+    packages,
     committed,
     untrackedOrModified,
     staged,
