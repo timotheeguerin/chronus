@@ -1,5 +1,6 @@
-import type { PackageGroup, VersionType } from "@changesets/types";
+import type { VersionType } from "@changesets/types";
 import semverGt from "semver/functions/gt.js";
+import { ChronusError } from "../utils/errors.js";
 import type { Package } from "../workspace-manager/types.js";
 import type { InternalRelease } from "./types.internal.js";
 
@@ -30,15 +31,15 @@ export function getHighestReleaseType(releases: InternalRelease[]): VersionType 
   return highestReleaseType;
 }
 
-export function getCurrentHighestVersion(packageGroup: PackageGroup, packagesByName: Map<string, Package>): string {
+export function getCurrentHighestVersion(packageGroup: string[], packagesByName: Map<string, Package>): string {
   let highestVersion: string | undefined;
 
   for (const pkgName of packageGroup) {
     const pkg = packagesByName.get(pkgName);
 
     if (!pkg) {
-      throw new Error(
-        `FATAL ERROR IN CHANGESETS! We were unable to version for package group: ${pkgName} in package group: ${packageGroup.toString()}`,
+      throw new ChronusError(
+        `FATAL ERROR! Package ${pkgName} defined in package group:\n${packageGroup.map((x) => ` - ${x}`).join("\n")}\n Was not found in the workspace. Available packages are: \n${[...packagesByName.keys()].map((x) => ` - ${x}`).join("\n")}`,
       );
     }
 

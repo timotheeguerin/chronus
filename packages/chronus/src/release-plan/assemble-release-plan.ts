@@ -4,6 +4,7 @@ import type { Package, Workspace } from "../workspace-manager/types.js";
 import applyLinks from "./apply-links.js";
 import determineDependents from "./determine-dependents.js";
 import { incrementVersion } from "./increment-version.js";
+import { matchFixedConstraint } from "./match-fixed-constraints.js";
 import type { InternalRelease } from "./types.internal.js";
 import type { ReleaseAction, ReleasePlan } from "./types.js";
 
@@ -25,10 +26,30 @@ export function assembleReleasePlan(changesets: Changeset[], workspace: Workspac
     });
 
     // `releases` might get mutated here
+    const fixedConstraintUpdated = matchFixedConstraint(releases, packagesByName, [
+      [
+        "@typespec/compiler",
+        "@typespec/http",
+        "@typespec/versioning",
+        "@typespec/rest",
+        "@typespec/openapi",
+        "@typespec/openapi3",
+        "@typespec/protobuf",
+        "@typespec/prettier-plugin-typespec",
+        "@typespec/eslint-config-typespec",
+        "@typespec/eslint-plugin",
+        "@typespec/html-program-viewer",
+        "@typespec/json-schema",
+        "@typespec/internal-build-utils",
+        "typespec-vs",
+        "typespec-vscode",
+        "@typespec/library-linter",
+      ],
+    ]);
     // const fixedConstraintUpdated = matchFixedConstraint(releases, packagesByName, refinedConfig);
     const linksUpdated = applyLinks(releases, packagesByName, []);
 
-    releasesValidated = !linksUpdated && !dependentAdded;
+    releasesValidated = !linksUpdated && !dependentAdded && !fixedConstraintUpdated;
   }
 
   const actions = [...releases.values()].map((incompleteRelease): ReleaseAction => {

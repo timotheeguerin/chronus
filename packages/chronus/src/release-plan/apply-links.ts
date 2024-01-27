@@ -1,4 +1,3 @@
-import type { Linked } from "@changesets/types";
 import type { Package } from "../workspace-manager/types.js";
 import type { InternalRelease } from "./types.internal.js";
 import { getCurrentHighestVersion, getHighestReleaseType } from "./utils.js";
@@ -18,7 +17,7 @@ import { getCurrentHighestVersion, getHighestReleaseType } from "./utils.js";
 export default function applyLinks(
   releases: Map<string, InternalRelease>,
   packagesByName: Map<string, Package>,
-  linked: Linked,
+  linked: readonly string[][],
 ): boolean {
   let updated = false;
 
