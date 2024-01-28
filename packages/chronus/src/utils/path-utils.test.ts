@@ -1,4 +1,5 @@
 import { deepStrictEqual, ok, strictEqual } from "assert";
+import { describe, it } from "vitest";
 import {
   getAnyExtensionFromPath,
   getBaseFileName,
@@ -11,7 +12,6 @@ import {
   reducePathComponents,
   resolvePath,
 } from "./path-utils.js";
-import { describe, it } from "vitest";
 
 describe("compiler: path utils", () => {
   it("normalizeSlashes", () => {

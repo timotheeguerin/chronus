@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it } from "vitest";
 import { dump } from "js-yaml";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createTestHost, type TestHost } from "../testing/test-host.js";
 import { createPnpmWorkspaceManager } from "./pnpm.js";
 import type { WorkspaceManager } from "./types.js";

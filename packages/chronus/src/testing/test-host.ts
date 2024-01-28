@@ -1,5 +1,5 @@
-import type { GlobOptions, ChronusHost } from "../utils/host.js";
 import micromatch from "micromatch";
+import type { ChronusHost, GlobOptions } from "../utils/host.js";
 import { getDirectoryPath } from "../utils/path-utils.js";
 
 export interface TestHost {

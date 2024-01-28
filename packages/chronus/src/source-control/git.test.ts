@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it } from "vitest";
 import { join } from "node:path";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createTestDir, type TestDir } from "../testing/index.js";
 import { execAsync } from "../utils/exec-async.js";
 import { createGitSourceControl, type GitRepository } from "./git.js";

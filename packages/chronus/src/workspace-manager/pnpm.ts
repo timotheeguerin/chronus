@@ -1,14 +1,14 @@
+import { load } from "js-yaml";
 import {
+  ChronusError,
   isDefined,
   isPathAccessible,
   joinPaths,
   lookup,
-  type ChronusHost,
-  chronusError,
   resolvePath,
+  type ChronusHost,
 } from "../utils/index.js";
 import type { Package, Workspace, WorkspaceManager } from "./types.js";
-import { load } from "js-yaml";
 
 const workspaceFileName = "pnpm-workspace.yaml";
 interface PnpmWorkspaceConfig {
@@ -31,10 +31,10 @@ export function createPnpmWorkspaceManager(host: ChronusHost): WorkspaceManager 
       const config: PnpmWorkspaceConfig = load(file.content) as any;
 
       if (config.packages === undefined) {
-        throw new chronusError("packages entry missing in pnpm-workspace.yaml");
+        throw new ChronusError("packages entry missing in pnpm-workspace.yaml");
       }
       if (Array.isArray(config.packages) === false) {
-        throw new chronusError("packages is not an array in pnpm-workspace.yaml");
+        throw new ChronusError("packages is not an array in pnpm-workspace.yaml");
       }
       const packages: Package[] = (
         await Promise.all(config.packages.map((pattern) => findPackagesFromPattern(host, root, pattern)))
