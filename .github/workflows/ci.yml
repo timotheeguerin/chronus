@@ -58,7 +58,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: []
           fetch-depth: 0 ## Needed for changelog
       - name: Use Node.js 20.x
         uses: actions/setup-node@v3
