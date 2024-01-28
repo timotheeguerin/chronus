@@ -23,12 +23,16 @@ export async function verifyChangeset(cwd: string): Promise<void> {
     for (const pkg of undocummentedPackages) {
       log(pc.red(` - ${pkg.package.name}`));
     }
-    log("");
-    log(pc.green("The following packages have already been documented:"));
 
-    for (const pkg of documentedPackages) {
-      log(pc.green(` - ${pkg.package.name}`));
+    if (documentedPackages.length > 0) {
+      log("");
+      log(pc.green("The following packages have already been documented:"));
+
+      for (const pkg of documentedPackages) {
+        log(pc.green(` - ${pkg.package.name}`));
+      }
     }
+    log("");
     process.exit(1);
   }
 

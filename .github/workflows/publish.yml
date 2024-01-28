@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "20.x"
+          registry-url: "https://registry.npmjs.org"
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
@@ -48,14 +49,7 @@ jobs:
           git diff --no-ext-diff --quiet --exit-code
         name: Check not out of date generated files
 
-      - name: Setup npmrc
-        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-
-      - run: |
-          echo "Token: $NODE_AUTH_TOKEN"
-          pnpm -r publish --access public --no-git-checks
+      - run: pnpm -r publish --access public --no-git-checks
         name: Publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
