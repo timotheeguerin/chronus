@@ -73,12 +73,5 @@ jobs:
       - run: pnpm build
         name: Build
 
-      - run: |
-          echo "Show branches"
-          git branch
-          echo "Show ref"
-          git show-ref
-
-          echo "Verify"
-          node ./packages/chronus/cmd/cli.mjs verify
+      - run: node ./packages/chronus/cmd/cli.mjs verify
         name: Verify changes
