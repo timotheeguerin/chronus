@@ -50,3 +50,19 @@ jobs:
           git status --porcelain
           git diff --no-ext-diff --quiet --exit-code
         name: Check not out of date generated files
+  changes: 
+    - uses: actions/checkout@v3
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          
+       - uses: pnpm/action-setup@v2
+        name: Install pnpm
+
+      - run: pnpm install
+        name: Install dependencies
+
+      - run: node ./packages/chronus/cmd/cli.mjs verify
+        name: Verify changes
