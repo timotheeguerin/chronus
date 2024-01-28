@@ -57,7 +57,8 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v3
-
+        with:
+          fetch-depth: 0 ## Needed for changelog
       - name: Use Node.js 20.x
         uses: actions/setup-node@v3
         with:
