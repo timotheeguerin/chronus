@@ -50,28 +50,3 @@ jobs:
           git status --porcelain
           git diff --no-ext-diff --quiet --exit-code
         name: Check not out of date generated files
-  changes:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 ## Needed for changelog
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20.x
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-
-      - run: pnpm install
-        name: Install dependencies
-
-      - run: pnpm build
-        name: Build
-
-      - run: node ./packages/chronus/cmd/cli.mjs verify
-        name: Verify changes

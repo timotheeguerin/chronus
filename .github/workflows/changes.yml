@@ -1,0 +1,34 @@
+name: Check Changes
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 ## Needed for changelog
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+
+      - run: pnpm install
+        name: Install dependencies
+
+      - run: pnpm build
+        name: Build
+
+      - run: node ./packages/github-pr-commenter/cmd/cli.mjs verify
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        name: Create/update comment
+
+      - run: node ./packages/chronus/cmd/cli.mjs verify
+        name: Verify changes
