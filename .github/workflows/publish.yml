@@ -47,9 +47,12 @@ jobs:
           git diff --no-ext-diff --quiet --exit-code
         name: Check not out of date generated files
 
-      - run: |
-          pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
-          pnpm -r publish --access public --no-git-checks
+      - name: Setup npmrc
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+      - run: pnpm -r publish --access public --no-git-checks
         name: Publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
