@@ -53,7 +53,7 @@ function resolveComment(status: ChangeStatus): string {
 
   if (undocummentedPackages.length > 0) {
     content.push(
-      `:x: There is undocummented changes. Run \`chronus add\` to add a changeset or [click here](${addChangeSetUrl}).`,
+      `:x: There is undocummented changes. Run \`chronus add\` to add a changeset or [click here](${addChangeSetUrl(undocummentedPackages)}).`,
     );
     content.push("");
     content.push(`**The following packages have changes but are not documented.**`);
