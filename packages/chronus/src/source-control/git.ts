@@ -158,7 +158,12 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
   }
 
   async function listChangedFilesFromBase() {
-    const remoteBase = await findRemoteForBranch("main");
+    let remoteBase: string;
+    try {
+      remoteBase = await findRemoteForBranch("main");
+    } catch {
+      remoteBase = "refs/remotes/origin/main";
+    }
     return await listChangedFilesSince(remoteBase);
   }
 
