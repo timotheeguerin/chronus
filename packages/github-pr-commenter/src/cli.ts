@@ -58,7 +58,7 @@ function resolveComment(status: ChangeStatus): string {
     content.push("");
     content.push(`**The following packages have changes but are not documented.**`);
     for (const pkg of undocummentedPackages) {
-      content.push(` - \`${pkg.package.name}\``);
+      content.push(` - :x:\`${pkg.package.name}\``);
     }
 
     if (documentedPackages.length > 0) {
