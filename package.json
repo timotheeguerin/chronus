@@ -9,6 +9,7 @@
     "packages/*"
   ],
   "scripts": {
+    "change": "node ./packages/chronus/cmd/cli.mjs",
     "test": "vitest run",
     "test:watch": "vitest -w",
     "preinstall": "npx only-allow pnpm",

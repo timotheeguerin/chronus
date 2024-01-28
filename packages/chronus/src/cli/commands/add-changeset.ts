@@ -18,11 +18,14 @@ export async function addChangeset(cwd: string): Promise<void> {
   const workspace = await pnpm.load(cwd);
   const sourceControl = createGitSourceControl(workspace.path);
   const status = await findChangeStatus(host, sourceControl, workspace);
-
+  if (status.committed.packageChanged.length === 0) {
+    log("No package changed. Exiting.\n");
+    return;
+  }
   const packageToInclude = await promptForPackages(status);
 
   if (packageToInclude.length === 0) {
-    log("No package selected. Exiting.");
+    log("No package selected. Exiting.\n");
     return;
   }
   const changeType = await promptBumpType();
