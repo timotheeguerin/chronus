@@ -77,10 +77,10 @@ function resolveComment(status: ChangeStatus): string {
 }
 
 function addChangeSetUrl(undocummentedPackages: PackageStatus[]): string {
-  context.repo.owner;
+  if (context.payload.pull_request === undefined) throw new Error("Not a pull request");
   const repoUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}`;
 
-  const ref = context.payload.pull_request!.head.ref;
+  const ref = context.payload.pull_request.head.ref;
   const date = new Date();
   const id = [
     ref.replace(/\//g, "-"),
@@ -92,8 +92,11 @@ function addChangeSetUrl(undocummentedPackages: PackageStatus[]): string {
     date.getSeconds(),
   ].join("-");
   const filename = `.changeset/${id}.md`;
-  const content = ["---", ...undocummentedPackages.map((x) => `${x.package.name}: patch`), "---", ""];
-  return `${repoUrl}/new/${ref}?filename=${filename}&value=${encodeURIComponent(content.join("\n"))}`;
+  const content = renderChangesetTemplate(undocummentedPackages, context.payload.pull_request.title);
+  return `${repoUrl}/new/${ref}?filename=${filename}&value=${encodeURIComponent(content)}`;
 }
 
+function renderChangesetTemplate(undocummentedPackages: PackageStatus[], title: string): string {
+  return ["---", ...undocummentedPackages.map((x) => `"${x.package.name}": patch`), "---", "", title].join("\n");
+}
 await main();

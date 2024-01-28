@@ -1,4 +1,4 @@
 ---
-@chronus/chronus: patch
+"@chronus/chronus": patch
 ---
 Export some functionalities
