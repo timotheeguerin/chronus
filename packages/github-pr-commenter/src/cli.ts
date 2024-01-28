@@ -14,8 +14,6 @@ function log(...args: any[]) {
 
 const magicString = "<!--chronus-github-change-commenter-->";
 async function main() {
-  const prNumber = process.env.GITHUB_EVENT_PULL_REQUEST_NUMBER;
-  log("PR number", prNumber);
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
     throw new Error("GITHUB_TOKEN environment variable is not set");

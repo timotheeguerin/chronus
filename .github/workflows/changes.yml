@@ -27,7 +27,7 @@ jobs:
 
       - run: node ./packages/github-pr-commenter/cmd/cli.mjs verify
         env:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         name: Create/update comment
 
       - run: node ./packages/chronus/cmd/cli.mjs verify
