@@ -63,10 +63,10 @@ function resolveComment(status: ChangeStatus): string {
 
     if (documentedPackages.length > 0) {
       content.push("");
-      content.push(`**:heavy_check_mark: The following packages have already been documented:**`);
+      content.push(`The following packages have already been documented:`);
 
       for (const pkg of documentedPackages) {
-        content.push(` - \`${pkg.package.name}\``);
+        content.push(` - :white_check_mark: \`${pkg.package.name}\``);
       }
     }
     content.push("");
