@@ -18,7 +18,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -56,8 +56,9 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
+          ref: []
           fetch-depth: 0 ## Needed for changelog
       - name: Use Node.js 20.x
         uses: actions/setup-node@v3
@@ -73,5 +74,12 @@ jobs:
       - run: pnpm build
         name: Build
 
-      - run: node ./packages/chronus/cmd/cli.mjs verify
+      - run: |
+          echo "Show branches"
+          git branch
+          echo "Show ref"
+          git show-ref
+
+          echo "Verify"
+          node ./packages/chronus/cmd/cli.mjs verify
         name: Verify changes
