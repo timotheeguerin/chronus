@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.8",
+    "source-map-support": "^0.5.21",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "eslint": "^8.56.0",

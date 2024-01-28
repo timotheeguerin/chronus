@@ -1,6 +1,12 @@
+try {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  await import("source-map-support/register.js");
+} catch {
+  // package only present in dev.
+}
 import { createActionAuth } from "@octokit/auth-action";
 import { Octokit } from "octokit";
-import "source-map-support/register.js";
 
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
