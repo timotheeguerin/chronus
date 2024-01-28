@@ -69,5 +69,8 @@ jobs:
       - run: pnpm install
         name: Install dependencies
 
+      - run: pnpm build
+        name: Build
+
       - run: node ./packages/chronus/cmd/cli.mjs verify
         name: Verify changes
