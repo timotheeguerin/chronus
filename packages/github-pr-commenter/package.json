@@ -30,17 +30,18 @@
   },
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "dependencies": {
+    "@actions/github": "^6.0.0",
     "@chronus/chronus": "workspace:*",
     "@octokit/auth-action": "^4.0.1",
     "octokit": "^3.1.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.8",
-    "source-map-support": "^0.5.21",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "eslint": "^8.56.0",
     "rimraf": "^5.0.5",
+    "source-map-support": "^0.5.21",
     "typescript": "^5.3.3"
   }
 }
