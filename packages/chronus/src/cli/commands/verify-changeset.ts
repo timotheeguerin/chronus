@@ -1,19 +1,11 @@
 import pc from "picocolors";
-import { findChangeStatus } from "../../change/index.js";
-import { createGitSourceControl } from "../../source-control/git.js";
-import { NodechronusHost } from "../../utils/node-host.js";
-import { createPnpmWorkspaceManager } from "../../workspace-manager/pnpm.js";
+import { getWorkspaceStatus } from "../../change/get-workspace-status.js";
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
   console.log(...args);
 }
 export async function verifyChangeset(cwd: string): Promise<void> {
-  const host = NodechronusHost;
-  const pnpm = createPnpmWorkspaceManager(host);
-  const workspace = await pnpm.load(cwd);
-  const sourceControl = createGitSourceControl(workspace.path);
-  const status = await findChangeStatus(host, sourceControl, workspace);
-
+  const status = await getWorkspaceStatus(cwd);
   const undocummentedPackages = [...status.packages.values()].filter((x) => x.changed && !x.documented);
   const documentedPackages = [...status.packages.values()].filter((x) => x.changed && x.documented);
   if (undocummentedPackages.length > 0) {
