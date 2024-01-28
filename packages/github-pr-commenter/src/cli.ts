@@ -6,7 +6,7 @@ try {
   // package only present in dev.
 }
 import { context, getOctokit } from "@actions/github";
-import type { ChangeStatus } from "@chronus/chronus";
+import type { ChangeStatus, PackageStatus } from "@chronus/chronus";
 import { getWorkspaceStatus } from "@chronus/chronus";
 
 const magicString = "<!--chronus-github-change-commenter-->";
@@ -52,11 +52,13 @@ function resolveComment(status: ChangeStatus): string {
   const content = [magicString];
 
   if (undocummentedPackages.length > 0) {
-    content.push(`:x: There is undocummented changes. Run \`chronus add\` to add a changeset.`);
+    content.push(
+      `:x: There is undocummented changes. Run \`chronus add\` to add a changeset or [click here](${addChangeSetUrl}).`,
+    );
     content.push("");
     content.push(`**The following packages have changes but are not documented.**`);
     for (const pkg of undocummentedPackages) {
-      content.push(` - ${pkg.package.name}`);
+      content.push(` - \`${pkg.package.name}\``);
     }
 
     if (documentedPackages.length > 0) {
@@ -64,7 +66,7 @@ function resolveComment(status: ChangeStatus): string {
       content.push(`**:heavy_check_mark: The following packages have already been documented:**`);
 
       for (const pkg of documentedPackages) {
-        content.push(` - ${pkg.package.name}`);
+        content.push(` - \`${pkg.package.name}\``);
       }
     }
     content.push("");
@@ -72,6 +74,26 @@ function resolveComment(status: ChangeStatus): string {
     content.push(`**All changed packages have been documented!**`);
   }
   return content.join("\n");
+}
+
+function addChangeSetUrl(undocummentedPackages: PackageStatus[]): string {
+  context.repo.owner;
+  const repoUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}`;
+
+  const ref = context.payload.pull_request!.head.ref;
+  const date = new Date();
+  const id = [
+    ref.replace(/\//g, "-"),
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+  ].join("-");
+  const filename = `.changeset/${id}.md`;
+  const content = ["---", ...undocummentedPackages.map((x) => `${x.package.name}: patch`), "---", ""];
+  return `${repoUrl}/new/${ref}?filename=${filename}&value=${encodeURIComponent(content.join("\n"))}`;
 }
 
 await main();
