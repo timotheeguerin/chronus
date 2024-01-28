@@ -1,7 +1,7 @@
-import { readFile, writeFile, access } from "fs/promises";
-import type { File, GlobOptions, ChronusHost } from "./host.js";
-import { normalizePath } from "./path-utils.js";
+import { access, readFile, writeFile } from "fs/promises";
 import { globby } from "globby";
+import type { ChronusHost, File, GlobOptions } from "./host.js";
+import { normalizePath } from "./path-utils.js";
 
 /**
  * Implementation of chronus host using node apis.
