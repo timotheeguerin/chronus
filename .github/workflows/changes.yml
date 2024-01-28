@@ -26,7 +26,7 @@ jobs:
         name: Build
 
       - run: node ./packages/github-pr-commenter/cmd/cli.mjs verify
-        with:
+        env:
           github-token: ${{secrets.GITHUB_TOKEN}}
         name: Create/update comment
 
