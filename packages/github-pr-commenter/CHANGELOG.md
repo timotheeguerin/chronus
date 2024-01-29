@@ -1,5 +1,11 @@
 # @chronus/github-pr-commenter
 
+## 0.1.3
+
+### Patch Changes
+
+- 24b3d3a: Fix Checking if not in github action
+
 ## 0.1.2
 
 ### Patch Changes
