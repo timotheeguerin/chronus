@@ -1,14 +1,7 @@
 import { load } from "js-yaml";
-import {
-  ChronusError,
-  isDefined,
-  isPathAccessible,
-  joinPaths,
-  lookup,
-  resolvePath,
-  type ChronusHost,
-} from "../utils/index.js";
+import { ChronusError, isPathAccessible, joinPaths, lookup, type ChronusHost } from "../utils/index.js";
 import type { Package, Workspace, WorkspaceManager } from "./types.js";
+import { findPackagesFromPattern } from "./utils.js";
 
 const workspaceFileName = "pnpm-workspace.yaml";
 interface PnpmWorkspaceConfig {
@@ -23,7 +16,7 @@ export function createPnpmWorkspaceManager(host: ChronusHost): WorkspaceManager 
         return isPathAccessible(host, path);
       });
       if (root === undefined) {
-        throw new Error(`Cannot find pnpm-workspace.yaml in a parent folder to ${dir}`);
+        throw new ChronusError(`Cannot find ${workspaceFileName} in a parent folder to ${dir}`);
       }
       const workspaceFilePath = joinPaths(root, workspaceFileName);
 
@@ -45,30 +38,4 @@ export function createPnpmWorkspaceManager(host: ChronusHost): WorkspaceManager 
       };
     },
   };
-}
-
-export async function findPackagesFromPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
-  const packageRoots = await host.glob(pattern, {
-    baseDir: root,
-    onlyDirectories: true,
-  });
-
-  const packages = await Promise.all(packageRoots.map((x) => tryLoadNodePackage(host, root, x)));
-  return packages.filter(isDefined);
-}
-
-async function tryLoadNodePackage(host: ChronusHost, root: string, relativePath: string): Promise<Package | undefined> {
-  const pkgJsonPath = resolvePath(root, relativePath, "package.json");
-  if (await isPathAccessible(host, pkgJsonPath)) {
-    const file = await host.readFile(pkgJsonPath);
-    const pkgJson = JSON.parse(file.content);
-    return {
-      name: pkgJson.name,
-      version: pkgJson.version,
-      relativePath: relativePath,
-      manifest: pkgJson,
-    };
-  } else {
-    return undefined;
-  }
 }
