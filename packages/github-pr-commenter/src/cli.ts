@@ -21,7 +21,7 @@ function getGithubContext(): Context | undefined {
   // eslint-disable-next-line no-console
   console.log("Github context", githubActionContext);
 
-  if (githubActionContext === undefined) {
+  if (githubActionContext === undefined || githubActionContext.eventName !== "pull_request") {
     return undefined;
   }
   if (githubActionContext.payload.pull_request === undefined) {
