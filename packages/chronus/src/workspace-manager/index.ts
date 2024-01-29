@@ -1,2 +1,3 @@
 export * from "./npm.js";
-export * from "./pnpm.js";
+export { createPnpmWorkspaceManager } from "./pnpm.js";
+export { createRushWorkspaceManager } from "./rush.js";
