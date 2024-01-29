@@ -9,9 +9,6 @@ import { getOctokit, context as githubActionContext } from "@actions/github";
 import type { ChangeStatus, PackageStatus } from "@chronus/chronus";
 import { getWorkspaceStatus } from "@chronus/chronus";
 
-// eslint-disable-next-line no-console
-console.log("Github context", githubActionContext);
-
 interface Context {
   repoName: string;
   repoOwner: string;
@@ -21,6 +18,9 @@ interface Context {
 }
 
 function getGithubContext(): Context | undefined {
+  // eslint-disable-next-line no-console
+  console.log("Github context", githubActionContext);
+
   if (githubActionContext === undefined) {
     return undefined;
   }
@@ -71,7 +71,8 @@ async function main() {
     throw new Error("GITHUB_TOKEN environment variable is not set");
   }
   const context = getGithubContext() ?? getAzureDevopsContext() ?? getGenericContext();
-
+  // eslint-disable-next-line no-console
+  console.log("Resolved context", context);
   if (!context?.prNumber) {
     throw new Error("PR number not found. Set $GH_PR_NUMBER");
   }
