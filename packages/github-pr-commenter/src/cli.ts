@@ -100,7 +100,7 @@ async function main() {
     context.prTitle = pr.data.title;
   }
 
-  const content = resolveComment(status, pr.data.head, context as any);
+  const content = resolveComment(status, pr.data, context as any);
 
   const comments = await github.rest.issues.listComments({
     issue_number: context.prNumber,
