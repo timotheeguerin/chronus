@@ -1,5 +1,13 @@
 # @chronus/github-pr-commenter
 
+## 0.1.2
+
+### Patch Changes
+
+- f08a722: Allow to run this not in github actions(Azure pipelines or custom ci system)
+- Updated dependencies [f08a722]
+  - @chronus/chronus@0.2.1
+
 ## 0.1.1
 
 ### Patch Changes
