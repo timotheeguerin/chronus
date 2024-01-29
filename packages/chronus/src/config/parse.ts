@@ -18,7 +18,9 @@ const versionPolicySchema = z.union([
     packages: z.array(z.string()),
   }),
 ]);
+
 const schema = z.object({
+  baseBranch: z.string(),
   versionPolicies: z.array(versionPolicySchema).optional(),
 });
 

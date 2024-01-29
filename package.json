@@ -39,6 +39,7 @@
   },
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "devDependencies": {
+    "@changesets/cli": "^2.27.1",
     "cspell": "^8.3.2",
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",

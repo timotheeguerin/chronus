@@ -1,6 +1,7 @@
 import type { VersionType } from "@changesets/types";
 
 export interface ChronusConfig {
+  baseBranch: string;
   versionPolicies?: VersionPolicy[];
 }
 

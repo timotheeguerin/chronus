@@ -72,7 +72,7 @@ export interface GitRepository {
    * Returns files changed from the base remote branch.
    * @param dir Repository directory
    */
-  listChangedFilesFromBase(): Promise<string[]>;
+  listChangedFilesFromBase(baseBranch: string): Promise<string[]>;
 }
 
 export class GitError extends Error {
@@ -157,12 +157,12 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     return stdout.toString().trim();
   }
 
-  async function listChangedFilesFromBase() {
+  async function listChangedFilesFromBase(baseBranch: string) {
     let remoteBase: string;
     try {
-      remoteBase = await findRemoteForBranch("main");
+      remoteBase = await findRemoteForBranch(baseBranch);
     } catch {
-      remoteBase = "refs/remotes/origin/main";
+      remoteBase = `refs/remotes/origin/${baseBranch}`;
     }
     return await listChangedFilesSince(remoteBase);
   }
