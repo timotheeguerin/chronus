@@ -1,5 +1,11 @@
 # @chronus/chronus
 
+## 0.2.1
+
+### Patch Changes
+
+- f08a722: Fix various issues(Missing depedencies on globby), resolving correct upstream branch
+
 ## 0.2.0
 
 ### Minor Changes
