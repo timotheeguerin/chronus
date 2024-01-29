@@ -30,6 +30,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         name: Create/update comment
+        if: ${{ !startsWith(github.head_ref, 'publish/') }}
 
       - run: node ./packages/chronus/cmd/cli.mjs verify
         name: Verify changes
+        if: ${{ !startsWith(github.head_ref, 'publish/') }}
