@@ -76,8 +76,8 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2(@types/node@20.11.8)
       yargs:
-        specifier: ^17.5.1
-        version: 17.6.2
+        specifier: ^17.7.2
+        version: 17.7.2
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -110,8 +110,8 @@ importers:
         specifier: ^0.4.14
         version: 0.4.14
       '@types/yargs':
-        specifier: ^17.0.12
-        version: 17.0.14
+        specifier: ^17.0.32
+        version: 17.0.32
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.10.0
         version: 6.19.1(@typescript-eslint/parser@6.19.1)(eslint@8.56.0)(typescript@5.3.3)
@@ -1396,8 +1396,8 @@ packages:
     resolution: {integrity: sha512-iO9ZQHkZxHn4mSakYV0vFHAVDyEOIJQrV2uZ06HxEPcx+mt8swXoZHIbaaJ2crJYFfErySgktuTZ3BeLz+XmFA==}
     dev: true
 
-  /@types/yargs@17.0.14:
-    resolution: {integrity: sha512-9Pj7abXoW1RSTcZaL2Hk6G2XyLMlp5ECdVC/Zf2p/KBjC3srijLGgRAXOBjtFrJoIrvxdTKyKDA14bEcbxBaWw==}
+  /@types/yargs@17.0.32:
+    resolution: {integrity: sha512-xQ67Yc/laOG5uMfX/093MRlGGCIBzZMarVa+gfNKJxWAIgykYpVGkBdbqEzGDDfCrVUj6Hiff4mTZ5BA6TmAog==}
     dependencies:
       '@types/yargs-parser': 21.0.0
     dev: true
@@ -4817,8 +4817,8 @@ packages:
     engines: {node: '>=12'}
     dev: false
 
-  /yargs@17.6.2:
-    resolution: {integrity: sha512-1/9UrdHjDZc0eOU0HxOHoS78C69UD3JRMvzlJ7S79S2nTaWRA/whGCTV8o9e/N/1Va9YIV7Q4sOxD8VV4pCWOw==}
+  /yargs@17.7.2:
+    resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
     dependencies:
       cliui: 8.0.1
