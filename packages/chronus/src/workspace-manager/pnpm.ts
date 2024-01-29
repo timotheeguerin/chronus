@@ -24,10 +24,10 @@ export function createPnpmWorkspaceManager(host: ChronusHost): WorkspaceManager 
       const config: PnpmWorkspaceConfig = load(file.content) as any;
 
       if (config.packages === undefined) {
-        throw new ChronusError("packages entry missing in pnpm-workspace.yaml");
+        throw new ChronusError(`packages entry missing in ${workspaceFileName}`);
       }
       if (Array.isArray(config.packages) === false) {
-        throw new ChronusError("packages is not an array in pnpm-workspace.yaml");
+        throw new ChronusError(`packages is not an array in ${workspaceFileName}`);
       }
       const packages: Package[] = (
         await Promise.all(config.packages.map((pattern) => findPackagesFromPattern(host, root, pattern)))
