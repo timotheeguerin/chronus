@@ -23,7 +23,17 @@ async function main() {
     })
     .command("add", "Add a new changeset", () => addChangeset(process.cwd()))
     .command("verify", "Verify all packages changes have been documented", () => verifyChangeset(process.cwd()))
-    .command("version", "Apply change changeset and bump the versions", () => applyChangesets(process.cwd()))
+    .command(
+      "version",
+      "Apply change changeset and bump the versions",
+      (cmd) =>
+        cmd.option("ignore-policies", {
+          type: "boolean",
+          description: "Ignore versioning policies and bump each package independently",
+          default: false,
+        }),
+      (args) => applyChangesets(process.cwd(), { ignorePolicies: args.ignorePolicies }),
+    )
     .command("status", "Display the status of changes. What will happen during the next release", () =>
       showStatus(process.cwd()),
     )

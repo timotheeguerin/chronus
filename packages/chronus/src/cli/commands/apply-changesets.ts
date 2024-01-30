@@ -6,7 +6,10 @@ import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js
 import { NodechronusHost } from "../../utils/node-host.js";
 import { createPnpmWorkspaceManager } from "../../workspace-manager/pnpm.js";
 
-export async function applyChangesets(cwd: string): Promise<void> {
+export interface ApplyChangesetsOptions {
+  ignorePolicies?: boolean;
+}
+export async function applyChangesets(cwd: string, options?: ApplyChangesetsOptions): Promise<void> {
   const host = NodechronusHost;
   const pnpm = createPnpmWorkspaceManager(host);
   const workspace = await pnpm.load(cwd);
@@ -22,7 +25,7 @@ export async function applyChangesets(cwd: string): Promise<void> {
       }),
   );
 
-  const releasePlan = assembleReleasePlan(changesets, workspace, config);
+  const releasePlan = assembleReleasePlan(changesets, workspace, config, options);
 
   const changeSetReleasePlan: ChangesetReleasePlan = {
     changesets: releasePlan.changesets,
