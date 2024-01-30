@@ -1,5 +1,15 @@
 # @chronus/chronus
 
+## 0.3.0
+
+### Minor Changes
+
+- 15e509e: Add support for `none` as changelog type
+
+### Patch Changes
+
+- bc1ebcf: Add `--ignore-policies` flag to `chronus version` command that allows ignoring the versioning policies.
+
 ## 0.2.1
 
 ### Patch Changes
