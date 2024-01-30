@@ -70,13 +70,14 @@ async function promptForPackages(status: ChangeStatus): Promise<Package[]> {
   return response.value;
 }
 
-async function promptBumpType(): Promise<"major" | "minor" | "patch"> {
+async function promptBumpType(): Promise<"major" | "minor" | "patch" | "none"> {
   const response = await prompts({
     type: "select",
     name: "value",
     instructions: false,
     message: "Describe the type of change",
     choices: [
+      { title: "none", value: "none" },
       { title: "patch", value: "patch" },
       { title: "minor", value: "minor" },
       { title: "major", value: "major" },
