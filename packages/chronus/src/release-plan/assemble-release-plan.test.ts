@@ -95,5 +95,17 @@ describe("Assemble Release Plan", () => {
       expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
       expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.1.0" });
     });
+
+    it("ignore policy when options.ignorePolicies: true", () => {
+      const plan = assembleReleasePlan(
+        [makeChangeset("pkg-a", "patch"), makeChangeset("pkg-c", "patch")],
+        workspace,
+        lockStepConfig,
+        { ignorePolicies: true },
+      );
+      expect(plan.actions).toHaveLength(2);
+      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.0.1" });
+      expect(plan.actions[1]).toMatchObject({ packageName: "pkg-c", oldVersion: "1.0.0", newVersion: "1.0.1" });
+    });
   });
 });

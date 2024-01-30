@@ -7,17 +7,22 @@ import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
 import type { ReleaseAction, ReleasePlan } from "./types.js";
 
+export interface ApplyChangesetsOptions {
+  ignorePolicies?: boolean;
+}
+
 export function assembleReleasePlan(
   changesets: NewChangeset[],
   workspace: Workspace,
   config: ChronusConfig,
+  options?: ApplyChangesetsOptions,
 ): ReleasePlan {
   const packagesByName = new Map(workspace.packages.map((pkg) => [pkg.name, pkg]));
   const requested = flattenReleases(changesets, packagesByName, []);
 
   const dependentsGraph = getDependentsGraph(workspace.packages);
   const internalActions = new Map<string, InternalReleaseAction>();
-  if (config.versionPolicies) {
+  if (config.versionPolicies && !options?.ignorePolicies) {
     for (const policy of config.versionPolicies) {
       if (policy.type === "lockstep") {
         for (const pkgName of policy.packages) {
