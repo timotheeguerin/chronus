@@ -101,6 +101,7 @@ describe("Assemble Release Plan", () => {
         [makeChangeset("pkg-a", "patch"), makeChangeset("pkg-c", "patch")],
         workspace,
         lockStepConfig,
+        { ignorePolicies: true },
       );
       expect(plan.actions).toHaveLength(2);
       expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.0.1" });
