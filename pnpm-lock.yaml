@@ -15,6 +15,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.27.1
         version: 2.27.1
+      '@types/node':
+        specifier: ^20.11.10
+        version: 20.11.10
       cspell:
         specifier: ^8.3.2
         version: 8.3.2
