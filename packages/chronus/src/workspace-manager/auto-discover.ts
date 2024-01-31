@@ -6,8 +6,8 @@ import type { Workspace, WorkspaceManager, WorkspaceType } from "./types.js";
 
 async function findWorkspaceManager(host: ChronusHost, root: string): Promise<WorkspaceManager> {
   const npm = createNpmWorkspaceManager(host);
-  const pnpm = createNpmWorkspaceManager(host);
-  const rush = createNpmWorkspaceManager(host);
+  const pnpm = createPnpmWorkspaceManager(host);
+  const rush = createRushWorkspaceManager(host);
 
   if (await pnpm.is(root)) {
     return pnpm;

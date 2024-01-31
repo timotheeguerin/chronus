@@ -30,6 +30,7 @@ export interface PackageJson {
 }
 
 export interface WorkspaceManager {
+  type: WorkspaceType;
   is(dir: string): Promise<boolean>;
   load(dir: string): Promise<Workspace>;
 }

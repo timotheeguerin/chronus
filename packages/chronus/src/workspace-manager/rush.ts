@@ -17,6 +17,7 @@ interface RushProject {
 
 export function createRushWorkspaceManager(host: ChronusHost): WorkspaceManager {
   return {
+    type: "rush",
     async is(dir: string): Promise<boolean> {
       return isPathAccessible(host, joinPaths(dir, workspaceFileName));
     },

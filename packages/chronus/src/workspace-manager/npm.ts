@@ -7,6 +7,7 @@ const workspaceFileName = "package.json";
 
 export function createNpmWorkspaceManager(host: ChronusHost): WorkspaceManager {
   return {
+    type: "npm",
     async is(dir: string): Promise<boolean> {
       try {
         const workspaceFilePath = joinPaths(dir, workspaceFileName);
