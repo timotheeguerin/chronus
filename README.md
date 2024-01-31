@@ -16,6 +16,8 @@ chronus goal is to provide changelog management. It is currently built depending
 
 ## Develop
 
+[Click here to release current changes](https://github.com/timotheeguerin/chronus/pull/new/publish/auto-release)
+
 This project uses [pnpm workspaces](https://pnpm.io/workspaces) to manage multiple packages.
 
 1. Install dependencies
