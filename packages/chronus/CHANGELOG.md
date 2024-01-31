@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.4.0
+
+### Minor Changes
+
+- 7d0680d: Add support for npm workspaces
+- cccd505: Resolve workspace automatically and option to configure which workspace manager to use in the config file.
+
 ## 0.3.0
 
 ### Minor Changes
