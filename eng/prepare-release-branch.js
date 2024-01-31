@@ -1,8 +1,9 @@
-import { execSync } from "child_process";
+import { execFileSync, execSync } from "child_process";
 
 const branchName = "publish/auto-release";
 
-execSync(`pnpm changeset version`);
+const changeStatus = execSync(`pnpm change status`).toString();
+execSync(`pnpm change version`);
 const stdout = execSync(`git status --porcelain`).toString();
 
 if (stdout.trim() !== "") {
@@ -16,6 +17,10 @@ if (stdout.trim() !== "") {
   console.log("|  Link to create the PR");
   console.log(`|  https://github.com/timotheeguerin/chronus/pull/new/${branchName}  `);
   console.log("-".repeat(160));
+  const changeStatus = execFileSync(
+    "gh",
+    `pr create -B publish/auto-release -H  --title 'Release PR' --body '${changeStatus}'`,
+  ).toString();
 } else {
   console.log("No changes to publish");
 }
