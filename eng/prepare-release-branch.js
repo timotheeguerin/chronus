@@ -24,8 +24,7 @@ if (stdout.trim() !== "") {
     "-B",
     "publish/auto-release",
     "-H",
-    "--title",
-    "Release PR",
+    "--title='Release PR'",
     "--body",
     changeStatus,
   ]).toString();
