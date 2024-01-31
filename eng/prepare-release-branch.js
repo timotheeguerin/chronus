@@ -21,14 +21,15 @@ if (stdout.trim() !== "") {
   console.log("-".repeat(160));
 
   const github = getOctokit(process.env.GITHUB_TOKEN ?? "");
-  const prs = github.rest.pulls.list({
+  const prs = await github.rest.pulls.list({
     ...context.repo,
     head: branchName,
     base: "main",
     state: "open",
   });
-  const existing = prs[0];
+  const existing = prs.data[0];
   if (existing) {
+    console.log("Existing, updating pr", existing.number);
     await github.rest.pulls.update({
       ...context.repo,
       pull_number: existing.number,
