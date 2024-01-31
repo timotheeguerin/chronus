@@ -25,6 +25,7 @@ if (stdout.trim() !== "") {
     // cspell:ignore timotheeguerin
     owner: "timotheeguerin",
     repo: "chronus",
+    title: "Release changes",
     head: branchName,
     base: "main",
     body: changeStatus,
