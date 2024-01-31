@@ -25,8 +25,8 @@ if (stdout.trim() !== "") {
     // cspell:ignore timotheeguerin
     owner: "timotheeguerin",
     repo: "chronus",
-    head: "main",
-    base: branchName,
+    head: branchName,
+    base: "main",
     body: changeStatus,
   });
 } else {
