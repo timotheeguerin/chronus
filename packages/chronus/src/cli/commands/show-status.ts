@@ -5,7 +5,7 @@ import { resolveConfig } from "../../config/parse.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { ReleaseAction } from "../../release-plan/types.js";
 import { NodechronusHost } from "../../utils/node-host.js";
-import { createPnpmWorkspaceManager } from "../../workspace-manager/pnpm.js";
+import { loadWorkspace } from "../../workspace-manager/auto-discover.js";
 
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
@@ -13,9 +13,8 @@ function log(...args: any[]) {
 }
 export async function showStatus(cwd: string): Promise<void> {
   const host = NodechronusHost;
-  const pnpm = createPnpmWorkspaceManager(host);
   const config = await resolveConfig(host, cwd);
-  const workspace = await pnpm.load(cwd);
+  const workspace = await loadWorkspace(host, config.workspaceRoot, config.workspaceType);
 
   const changelogs = await host.glob(".changeset/*.md", { baseDir: workspace.path });
   const changesets = await Promise.all(

@@ -17,6 +17,10 @@ interface RushProject {
 
 export function createRushWorkspaceManager(host: ChronusHost): WorkspaceManager {
   return {
+    type: "rush",
+    async is(dir: string): Promise<boolean> {
+      return isPathAccessible(host, joinPaths(dir, workspaceFileName));
+    },
     async load(dir: string): Promise<Workspace> {
       const root = await lookup(dir, (current) => {
         const path = joinPaths(current, workspaceFileName);
@@ -40,6 +44,7 @@ export function createRushWorkspaceManager(host: ChronusHost): WorkspaceManager 
         await Promise.all(config.projects.map((pattern) => tryLoadNodePackage(host, root, pattern.projectFolder)))
       ).filter(isDefined);
       return {
+        type: "rush",
         path: root,
         packages,
       };

@@ -6,7 +6,7 @@ import { findChangeStatus } from "../../change/index.js";
 import { resolveConfig } from "../../config/parse.js";
 import { createGitSourceControl } from "../../source-control/git.js";
 import { NodechronusHost } from "../../utils/node-host.js";
-import { createPnpmWorkspaceManager } from "../../workspace-manager/pnpm.js";
+import { loadWorkspace } from "../../workspace-manager/index.js";
 import type { Package } from "../../workspace-manager/types.js";
 
 function log(...args: any[]) {
@@ -16,8 +16,7 @@ function log(...args: any[]) {
 export async function addChangeset(cwd: string): Promise<void> {
   const host = NodechronusHost;
   const config = await resolveConfig(host, cwd);
-  const pnpm = createPnpmWorkspaceManager(host);
-  const workspace = await pnpm.load(cwd);
+  const workspace = await loadWorkspace(host, config.workspaceRoot, config.workspaceType);
   const sourceControl = createGitSourceControl(workspace.path);
   const status = await findChangeStatus(host, sourceControl, workspace, config);
   if (status.committed.packageChanged.length === 0) {

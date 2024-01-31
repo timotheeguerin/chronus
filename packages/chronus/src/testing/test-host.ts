@@ -4,6 +4,7 @@ import { getDirectoryPath } from "../utils/path-utils.js";
 
 export interface TestHost {
   host: ChronusHost;
+  readonly fs: Record<string, string>;
   addFile(path: string, content: string): void;
 }
 
@@ -41,6 +42,7 @@ export function createTestHost(files: Record<string, string> = {}): TestHost {
   };
   return {
     host,
+    fs,
     addFile: (path: string, content: string) => {
       fs[path] = content;
     },

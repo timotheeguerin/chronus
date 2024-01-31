@@ -4,16 +4,15 @@ import type { ReleasePlan as ChangesetReleasePlan } from "@changesets/types";
 import { resolveConfig } from "../../config/parse.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import { NodechronusHost } from "../../utils/node-host.js";
-import { createPnpmWorkspaceManager } from "../../workspace-manager/pnpm.js";
+import { loadWorkspace } from "../../workspace-manager/auto-discover.js";
 
 export interface ApplyChangesetsOptions {
   ignorePolicies?: boolean;
 }
 export async function applyChangesets(cwd: string, options?: ApplyChangesetsOptions): Promise<void> {
   const host = NodechronusHost;
-  const pnpm = createPnpmWorkspaceManager(host);
-  const workspace = await pnpm.load(cwd);
   const config = await resolveConfig(host, cwd);
+  const workspace = await loadWorkspace(host, config.workspaceRoot, config.workspaceType);
 
   const changelogs = await host.glob(".changeset/*.md", { baseDir: workspace.path });
   const changesets = await Promise.all(

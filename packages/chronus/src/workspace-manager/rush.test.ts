@@ -1,4 +1,3 @@
-import { dump } from "js-yaml";
 import { beforeEach, describe, expect, it } from "vitest";
 import { createTestHost, type TestHost } from "../testing/test-host.js";
 import { createRushWorkspaceManager } from "./rush.js";
@@ -16,7 +15,7 @@ describe("rush", () => {
   it("finds 0 packages when workspace has none", async () => {
     host.addFile(
       "proj/rush.json",
-      dump({
+      JSON.stringify({
         projects: [],
       }),
     );
@@ -27,7 +26,7 @@ describe("rush", () => {
   it("finds all packages", async () => {
     host.addFile(
       "proj/rush.json",
-      dump({
+      JSON.stringify({
         projects: [
           {
             packageName: "pkg-a",

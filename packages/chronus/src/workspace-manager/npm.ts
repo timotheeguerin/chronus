@@ -7,6 +7,17 @@ const workspaceFileName = "package.json";
 
 export function createNpmWorkspaceManager(host: ChronusHost): WorkspaceManager {
   return {
+    type: "npm",
+    async is(dir: string): Promise<boolean> {
+      try {
+        const workspaceFilePath = joinPaths(dir, workspaceFileName);
+        const file = await host.readFile(workspaceFilePath);
+        const pkgJson: PackageJson = load(file.content) as any;
+        return pkgJson.workspaces !== undefined && Array.isArray(pkgJson.workspaces);
+      } catch {
+        return false;
+      }
+    },
     async load(root: string): Promise<Workspace> {
       const workspaceFilePath = joinPaths(root, workspaceFileName);
 
@@ -23,6 +34,7 @@ export function createNpmWorkspaceManager(host: ChronusHost): WorkspaceManager {
         await Promise.all(pkgJson.workspaces.map((pattern) => findPackagesFromPattern(host, root, pattern)))
       ).flat();
       return {
+        type: "npm",
         path: root,
         packages,
       };

@@ -1,4 +1,6 @@
+export type WorkspaceType = "npm" | "pnpm" | "rush";
 export interface Workspace {
+  readonly type: WorkspaceType;
   readonly path: string;
   readonly packages: Package[];
 }
@@ -28,5 +30,7 @@ export interface PackageJson {
 }
 
 export interface WorkspaceManager {
+  type: WorkspaceType;
+  is(dir: string): Promise<boolean>;
   load(dir: string): Promise<Workspace>;
 }

@@ -1,5 +1,5 @@
 import { load } from "js-yaml";
-import { ChronusError, joinPaths, type ChronusHost } from "../utils/index.js";
+import { ChronusError, isPathAccessible, joinPaths, type ChronusHost } from "../utils/index.js";
 import type { Package, Workspace, WorkspaceManager } from "./types.js";
 import { findPackagesFromPattern } from "./utils.js";
 
@@ -10,6 +10,10 @@ interface PnpmWorkspaceConfig {
 
 export function createPnpmWorkspaceManager(host: ChronusHost): WorkspaceManager {
   return {
+    type: "pnpm",
+    async is(dir: string): Promise<boolean> {
+      return isPathAccessible(host, joinPaths(dir, workspaceFileName));
+    },
     async load(root: string): Promise<Workspace> {
       const workspaceFilePath = joinPaths(root, workspaceFileName);
 
@@ -26,6 +30,7 @@ export function createPnpmWorkspaceManager(host: ChronusHost): WorkspaceManager 
         await Promise.all(config.packages.map((pattern) => findPackagesFromPattern(host, root, pattern)))
       ).flat();
       return {
+        type: "pnpm",
         path: root,
         packages,
       };
