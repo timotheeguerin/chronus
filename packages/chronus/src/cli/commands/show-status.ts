@@ -82,7 +82,7 @@ function typeAsMarkdown(actions: ReleaseAction[], type: VersionType): string[] {
   } else {
     return [
       `### ${filteredActions.length} packages to be bumped at ${bold(type)}:`,
-      ...filteredActions.map((action) => `- ${action.packageName} ${action.oldVersion} → ${action.newVersion}`),
+      ...filteredActions.map((action) => `- ${action.packageName} \`${action.oldVersion}\` → \`${action.newVersion}\``),
     ];
   }
 }
