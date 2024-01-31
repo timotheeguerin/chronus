@@ -24,6 +24,7 @@ export interface PackageJson {
   readonly peerDependencies?: { [key: string]: string };
   readonly devDependencies?: { [key: string]: string };
   readonly optionalDependencies?: { [key: string]: string };
+  readonly workspaces?: string[];
 }
 
 export interface WorkspaceManager {
