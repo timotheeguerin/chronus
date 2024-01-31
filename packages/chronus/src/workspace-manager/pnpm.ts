@@ -12,11 +12,6 @@ export function createPnpmWorkspaceManager(host: ChronusHost): WorkspaceManager 
   return {
     type: "pnpm",
     async is(dir: string): Promise<boolean> {
-      console.log(
-        "IOS",
-        await isPathAccessible(host, joinPaths(dir, workspaceFileName)),
-        joinPaths(dir, workspaceFileName),
-      );
       return isPathAccessible(host, joinPaths(dir, workspaceFileName));
     },
     async load(root: string): Promise<Workspace> {
