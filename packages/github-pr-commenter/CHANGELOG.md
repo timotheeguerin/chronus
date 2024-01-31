@@ -1,5 +1,14 @@
 # @chronus/github-pr-commenter
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [7d0680d]
+- Updated dependencies [cccd505]
+- Updated dependencies [d0b8f43]
+  - @chronus/chronus@0.4.0
+
 ## 0.1.4
 
 ### Patch Changes
