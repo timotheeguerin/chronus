@@ -1,6 +1,6 @@
 import type { NewChangeset, VersionType } from "@changesets/types";
 import { describe, expect, it } from "vitest";
-import type { ChronusConfig } from "../config/types.js";
+import type { ChronusUserConfig } from "../config/types.js";
 import type { Workspace } from "../workspace-manager/types.js";
 import { assembleReleasePlan } from "./assemble-release-plan.js";
 
@@ -19,7 +19,7 @@ describe("Assemble Release Plan", () => {
     ],
   };
 
-  const baseConfig: ChronusConfig = { baseBranch: "main" };
+  const baseConfig: ChronusUserConfig = { baseBranch: "main" };
 
   describe("bumps package independently", () => {
     it("only packages with changeset ", () => {
@@ -62,7 +62,7 @@ describe("Assemble Release Plan", () => {
   });
 
   describe("lockStepVersioning", () => {
-    const lockStepConfig: ChronusConfig = {
+    const lockStepConfig: ChronusUserConfig = {
       ...baseConfig,
       versionPolicies: [{ name: "lockStep", type: "lockstep", step: "minor", packages: ["pkg-a", "pkg-b"] }],
     };

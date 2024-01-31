@@ -1,5 +1,5 @@
 import readChangeset from "@changesets/parse";
-import type { ChronusConfig } from "../config/types.js";
+import type { ChronusUserConfig } from "../config/types.js";
 import type { GitRepository } from "../source-control/git.js";
 import type { ChronusHost } from "../utils/host.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
@@ -29,7 +29,7 @@ export async function findChangeStatus(
   host: ChronusHost,
   sourceControl: GitRepository,
   workspace: Workspace,
-  config: ChronusConfig,
+  config: ChronusUserConfig,
 ): Promise<ChangeStatus> {
   const filesChanged = await sourceControl.listChangedFilesFromBase(config.baseBranch);
   const untrackedOrModifiedFiles = await sourceControl.listUntrackedOrModifiedFiles();

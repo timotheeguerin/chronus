@@ -1,5 +1,5 @@
 import type { Changeset, NewChangeset } from "@changesets/types";
-import type { ChronusConfig } from "../config/types.js";
+import type { ChronusUserConfig } from "../config/types.js";
 import { getDependentsGraph } from "../dependency-graph/index.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
 import { applyDependents } from "./determine-dependents.js";
@@ -14,7 +14,7 @@ export interface ApplyChangesetsOptions {
 export function assembleReleasePlan(
   changesets: NewChangeset[],
   workspace: Workspace,
-  config: ChronusConfig,
+  config: ChronusUserConfig,
   options?: ApplyChangesetsOptions,
 ): ReleasePlan {
   const packagesByName = new Map(workspace.packages.map((pkg) => [pkg.name, pkg]));
