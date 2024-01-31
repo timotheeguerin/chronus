@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - test/auto-release
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -34,7 +35,7 @@ jobs:
         name: Build
 
       - name: Create release branch
-        run: node ./eng/prepare-release-branch.mjs
+        run: node ./eng/prepare-release-branch.js
 
       - name: Create PR
         run: |
