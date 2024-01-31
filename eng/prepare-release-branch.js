@@ -1,5 +1,6 @@
 // @ts-check
-import { execFileSync, execSync } from "child_process";
+import { getOctokit } from "@actions/github";
+import { execSync } from "child_process";
 
 const branchName = "publish/auto-release";
 
@@ -18,16 +19,16 @@ if (stdout.trim() !== "") {
   console.log("|  Link to create the PR");
   console.log(`|  https://github.com/timotheeguerin/chronus/pull/new/${branchName}  `);
   console.log("-".repeat(160));
-  execFileSync("gh", [
-    "pr",
-    "create",
-    "-B",
-    "publish/auto-release",
-    "-H",
-    "--title='Release PR'",
-    "--body",
-    changeStatus,
-  ]).toString();
+
+  const github = getOctokit(process.env.GITHUB_TOKEN ?? "");
+  await github.rest.pulls.create({
+    // cspell:ignore timotheeguerin
+    owner: "timotheeguerin",
+    repo: "chronus",
+    head: "main",
+    base: branchName,
+    body: changeStatus,
+  });
 } else {
   console.log("No changes to publish");
 }
