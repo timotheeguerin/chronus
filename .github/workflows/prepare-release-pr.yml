@@ -30,6 +30,15 @@ jobs:
 
       - run: pnpm install
         name: Install dependencies
+      - run: pnpm build
+        name: Build
 
       - name: Create release branch
-        run: node ./eng/publish.mjs
+        run: node ./eng/prepare-release-branch.mjs
+
+      - name: Create PR
+        run: |
+          changes=$(node ./packages/github-pr-commenter/cmd/cli.mjs status)
+          gh pr create -B publish/auto-release -H  --title 'Release PR' --body '$changes'
+        env:
+          GITHUB_TOKEN: ${{secrets.CUSTOM_GITHUB_TOKEN}}
