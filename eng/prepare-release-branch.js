@@ -1,5 +1,5 @@
 // @ts-check
-import { getOctokit } from "@actions/github";
+import { context, getOctokit } from "@actions/github";
 import { execSync } from "child_process";
 import { showStatusAsMarkdown } from "../packages/chronus/dist/cli/commands/show-status.js";
 const branchName = "publish/auto-release";
@@ -22,8 +22,7 @@ if (stdout.trim() !== "") {
 
   const github = getOctokit(process.env.GITHUB_TOKEN ?? "");
   const prs = github.rest.pulls.list({
-    owner: "timotheeguerin",
-    repo: "chronus",
+    ...context.repo,
     head: branchName,
     base: "main",
     state: "open",
@@ -31,17 +30,13 @@ if (stdout.trim() !== "") {
   const existing = prs[0];
   if (existing) {
     await github.rest.pulls.update({
-      // cspell:ignore timotheeguerin
-      owner: "timotheeguerin",
-      repo: "chronus",
+      ...context.repo,
       pull_number: existing.number,
       body: changeStatus,
     });
   } else {
     await github.rest.pulls.create({
-      // cspell:ignore timotheeguerin
-      owner: "timotheeguerin",
-      repo: "chronus",
+      ...context.repo,
       title: "Release changes",
       head: branchName,
       base: "main",
