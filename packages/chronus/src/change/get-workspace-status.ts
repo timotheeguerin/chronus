@@ -8,6 +8,7 @@ export async function getWorkspaceStatus(dir: string) {
   const host = NodechronusHost;
   const config = await resolveConfig(host, dir);
   const workspace = await loadWorkspace(host, config.workspaceRoot, config.workspaceType);
+
   const sourceControl = createGitSourceControl(workspace.path);
   const status = await findChangeStatus(host, sourceControl, workspace, config);
   return status;

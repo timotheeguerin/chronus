@@ -7,6 +7,7 @@ export async function findPackagesFromPattern(host: ChronusHost, root: string, p
   const packageRoots = await host.glob(pattern, {
     baseDir: root,
     onlyDirectories: true,
+    ignore: ["**/node_modules"],
   });
 
   const packages = await Promise.all(packageRoots.map((x) => tryLoadNodePackage(host, root, x)));

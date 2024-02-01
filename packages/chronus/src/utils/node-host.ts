@@ -27,6 +27,11 @@ export const NodechronusHost: ChronusHost = {
   },
 
   async glob(pattern: string, options?: GlobOptions): Promise<string[]> {
-    return globby(pattern, { cwd: options?.baseDir, onlyDirectories: options?.onlyDirectories });
+    return globby(pattern, {
+      cwd: options?.baseDir,
+      onlyDirectories: options?.onlyDirectories,
+      expandDirectories: false,
+      ignore: options?.ignore,
+    });
   },
 };

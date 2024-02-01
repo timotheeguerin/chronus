@@ -26,6 +26,7 @@ export interface ChronusHost {
 export interface GlobOptions {
   baseDir: string;
   onlyDirectories?: boolean;
+  ignore?: string[];
 }
 
 export interface File {
