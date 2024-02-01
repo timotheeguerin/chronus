@@ -1,8 +1,8 @@
 import readChangeset from "@changesets/parse";
-import type { ChronusUserConfig } from "../config/types.js";
 import type { GitRepository } from "../source-control/git.js";
 import type { ChronusHost } from "../utils/host.js";
-import type { Package, Workspace } from "../workspace-manager/types.js";
+import type { Package } from "../workspace-manager/types.js";
+import type { ChronusWorkspace } from "../workspace/types.js";
 
 export type ChangeArea = "committed" | "untrackedOrModified" | "staged";
 
@@ -28,13 +28,12 @@ export interface ChangeStatus {
 export async function findChangeStatus(
   host: ChronusHost,
   sourceControl: GitRepository,
-  workspace: Workspace,
-  config: ChronusUserConfig,
+  workspace: ChronusWorkspace,
 ): Promise<ChangeStatus> {
-  const filesChanged = await sourceControl.listChangedFilesFromBase(config.baseBranch);
+  const filesChanged = await sourceControl.listChangedFilesFromBase(workspace.config.baseBranch);
   const untrackedOrModifiedFiles = await sourceControl.listUntrackedOrModifiedFiles();
   const stagedFiles = await sourceControl.listUntrackedOrModifiedFiles();
-  const publicPackages = workspace.packages.filter((x) => !x.manifest.private);
+  const publicPackages = workspace.packages;
 
   const committed = await findAreaStatus(host, publicPackages, filesChanged);
   const untrackedOrModified = await findAreaStatus(host, publicPackages, untrackedOrModifiedFiles);

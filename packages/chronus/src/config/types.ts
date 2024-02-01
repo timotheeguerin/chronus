@@ -5,6 +5,8 @@ export interface ChronusUserConfig {
   readonly baseBranch: string;
   readonly workspaceType?: WorkspaceType | "auto";
   readonly versionPolicies?: VersionPolicy[];
+  /** Projects or pattern of package name to ignore. By default all private: true packages are ignored. */
+  readonly ignore?: string[];
 }
 export interface ChronusResolvedConfig extends ChronusUserConfig {
   readonly workspaceRoot: string;

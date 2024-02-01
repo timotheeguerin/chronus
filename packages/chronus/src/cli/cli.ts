@@ -34,8 +34,16 @@ async function main() {
         }),
       (args) => applyChangesets(process.cwd(), { ignorePolicies: args.ignorePolicies }),
     )
-    .command("status", "Display the status of changes. What will happen during the next release", () =>
-      showStatus(process.cwd()),
+    .command(
+      "status",
+      "Display the status of changes. What will happen during the next release",
+      (cmd) =>
+        cmd.option("ignore-policies", {
+          type: "boolean",
+          description: "Ignore versioning policies and bump each package independently",
+          default: false,
+        }),
+      (args) => showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies }),
     )
     .parse();
 }

@@ -3,11 +3,10 @@ import pc from "picocolors";
 import prompts from "prompts";
 import type { ChangeStatus } from "../../change/find.js";
 import { findChangeStatus } from "../../change/index.js";
-import { resolveConfig } from "../../config/parse.js";
 import { createGitSourceControl } from "../../source-control/git.js";
 import { NodechronusHost } from "../../utils/node-host.js";
-import { loadWorkspace } from "../../workspace-manager/index.js";
 import type { Package } from "../../workspace-manager/types.js";
+import { loadChronusWorkspace } from "../../workspace/load.js";
 
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
@@ -15,10 +14,9 @@ function log(...args: any[]) {
 }
 export async function addChangeset(cwd: string): Promise<void> {
   const host = NodechronusHost;
-  const config = await resolveConfig(host, cwd);
-  const workspace = await loadWorkspace(host, config.workspaceRoot, config.workspaceType);
+  const workspace = await loadChronusWorkspace(host, cwd);
   const sourceControl = createGitSourceControl(workspace.path);
-  const status = await findChangeStatus(host, sourceControl, workspace, config);
+  const status = await findChangeStatus(host, sourceControl, workspace);
   if (status.committed.packageChanged.length === 0) {
     log("No package changed. Exiting.\n");
     return;
