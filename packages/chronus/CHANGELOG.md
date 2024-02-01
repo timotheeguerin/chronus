@@ -1,5 +1,15 @@
 # @chronus/chronus
 
+## 0.5.0
+
+### Minor Changes
+
+- b140705: Add ability to ignore packages
+
+### Patch Changes
+
+- 0a8ebe6: Fix issue with globbing pointing to a dir causing into a globbing of everything underneath
+
 ## 0.4.0
 
 ### Minor Changes
