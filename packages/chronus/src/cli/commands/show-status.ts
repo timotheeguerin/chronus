@@ -1,17 +1,20 @@
-import parseChangeset from "@changesets/parse";
 import type { VersionType } from "@changesets/types";
 import pc from "picocolors";
-import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { ReleaseAction, ReleasePlan } from "../../release-plan/types.js";
 import { NodechronusHost } from "../../utils/node-host.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
+import { resolveReleasePlan, type ApplyChangesetsOptions } from "./apply-changesets.js";
+
+export interface ShowStatusOptions {
+  readonly ignorePolicies?: boolean;
+}
 
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
   console.log(...args);
 }
-export async function showStatus(cwd: string): Promise<void> {
-  const releasePlan = await resolveCurrentReleasePlan(cwd);
+export async function showStatus(cwd: string, options: ShowStatusOptions): Promise<void> {
+  const releasePlan = await resolveCurrentReleasePlan(cwd, options);
 
   let max = 50;
   for (const action of releasePlan.actions) {
@@ -46,22 +49,10 @@ function logType(actions: ReleaseAction[], type: VersionType, pad: number, color
   }
 }
 
-async function resolveCurrentReleasePlan(cwd: string): Promise<ReleasePlan> {
+async function resolveCurrentReleasePlan(cwd: string, options?: ApplyChangesetsOptions): Promise<ReleasePlan> {
   const host = NodechronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
-
-  const changelogs = await host.glob(".changeset/*.md", { baseDir: workspace.path });
-  const changesets = await Promise.all(
-    changelogs
-      .filter((x) => x.toLowerCase() !== ".changeset/readme.md")
-      .map(async (x) => {
-        const file = await host.readFile(x);
-        return { ...parseChangeset(file.content), id: x.slice(".changeset/".length, -3) };
-      }),
-  );
-
-  const releasePlan = assembleReleasePlan(changesets, workspace);
-  return releasePlan;
+  return await resolveReleasePlan(host, workspace, options);
 }
 
 export async function showStatusAsMarkdown(cwd: string): Promise<string> {
