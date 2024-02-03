@@ -1,6 +1,6 @@
 import applyReleasePlan from "@changesets/apply-release-plan";
 import parseChangeset from "@changesets/parse";
-import type { ReleasePlan as ChangesetReleasePlan } from "@changesets/types";
+import type { ReleasePlan as ChangesetReleasePlan, ComprehensiveRelease } from "@changesets/types";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { ReleasePlan } from "../../release-plan/types.js";
 import type { ChronusHost } from "../../utils/host.js";
@@ -16,19 +16,31 @@ export async function applyChangesets(cwd: string, options?: ApplyChangesetsOpti
   const workspace = await loadChronusWorkspace(host, cwd);
   const releasePlan = await resolveReleasePlan(host, workspace, options);
 
+  const changeSetReleases = releasePlan.actions.map((x) => ({
+    ...x,
+    name: x.packageName,
+    changesets: x.changesets.map((y) => y.id),
+  }));
+
+  // Changeset will not bump the dependencies of ignored packages if there is not a release for it. Even though we are not changing the versions.
+  const noopRelease: ComprehensiveRelease[] = workspace.allPackages
+    .filter((x) => !releasePlan.actions.some((y) => y.packageName === x.name))
+    .map((x) => ({
+      name: x.name,
+      oldVersion: x.version,
+      newVersion: x.version,
+      changesets: [],
+      type: "none",
+    }));
   const changeSetReleasePlan: ChangesetReleasePlan = {
     changesets: releasePlan.changesets,
-    releases: releasePlan.actions.map((x) => ({
-      ...x,
-      name: x.packageName,
-      changesets: x.changesets.map((y) => y.id),
-    })),
+    releases: [...changeSetReleases, ...noopRelease],
     preState: undefined,
   };
   const manyPkgs = {
     root: { dir: workspace.path } as any,
     tool: "pnpm",
-    packages: workspace.packages.map((x) => ({ packageJson: x.manifest as any, name: x.name, dir: x.relativePath })),
+    packages: workspace.allPackages.map((x) => ({ packageJson: x.manifest as any, name: x.name, dir: x.relativePath })),
   } as const;
   applyReleasePlan(changeSetReleasePlan, manyPkgs, undefined);
 }

@@ -1,6 +1,7 @@
 import type { DependencyType, VersionType } from "@changesets/types";
 import semverSatisfies from "semver/functions/satisfies.js";
-import type { Package, PackageJson } from "../workspace-manager/types.js";
+import type { PackageJson } from "../workspace-manager/types.js";
+import type { ChronusWorkspace } from "../workspace/types.js";
 import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
 
@@ -18,11 +19,11 @@ import type { InternalReleaseAction } from "./types.internal.js";
 */
 export function applyDependents({
   actions,
-  packagesByName,
+  workspace,
   dependentsGraph,
 }: {
   actions: Map<string, InternalReleaseAction>;
-  packagesByName: Map<string, Package>;
+  workspace: ChronusWorkspace;
   dependentsGraph: Map<string, string[]>;
 }): boolean {
   let updated = false;
@@ -36,16 +37,14 @@ export function applyDependents({
     // pkgDependents will be a list of packages that depend on nextRelease ie. ['avatar-group', 'comment']
     const pkgDependents = dependentsGraph.get(nextRelease.packageName);
     if (!pkgDependents) {
-      throw new Error(
-        `Error in determining dependents - could not find package in repository: ${nextRelease.packageName}`,
-      );
+      continue;
     }
     pkgDependents
-      .map((dependent) => {
+      .map((x) => workspace.getPackage(x))
+      .map((dependentPackage) => {
         let type: VersionType | undefined;
 
-        const dependentPackage = packagesByName.get(dependent);
-        if (!dependentPackage) throw new Error("Dependency map is incorrect");
+        const dependent = dependentPackage.name;
 
         const dependencyVersionRanges = getDependencyVersionRanges(dependentPackage.manifest, nextRelease);
 
@@ -57,7 +56,7 @@ export function applyDependents({
               dependent,
               depType,
               versionRange,
-              releases: actions,
+              actions: actions,
               nextRelease,
             })
           ) {
@@ -94,11 +93,11 @@ export function applyDependents({
         return {
           name: dependent,
           type,
-          manifest: dependentPackage.manifest,
+          pkg: dependentPackage,
         };
       })
       .filter((dependentItem): dependentItem is typeof dependentItem & { type: VersionType } => !!dependentItem.type)
-      .forEach(({ name, type, manifest }) => {
+      .forEach(({ name, type, pkg }) => {
         // At this point, we know if we are making a change
         updated = true;
 
@@ -108,7 +107,7 @@ export function applyDependents({
         }
 
         // We don't bump private packages
-        if (manifest.private) {
+        if (pkg.ignored) {
           return;
         }
         // For things that are being given a major bump, we check if we have already
@@ -124,7 +123,7 @@ export function applyDependents({
           const newDependent: InternalReleaseAction = {
             packageName: name,
             type,
-            oldVersion: manifest.version!,
+            oldVersion: pkg.version,
             policy: { name: "<auto>", type: "independent", packages: [name] },
           };
 
@@ -140,7 +139,7 @@ export function applyDependents({
 /*
   Returns an array of objects in the shape { depType: DependencyType, versionRange: string }
   The array can contain more than one elements in case a dependency appears in multiple
-  dependency lists. For example, a package that is both a peerDepenency and a devDependency.
+  dependency lists. For example, a package that is both a peerDependencies and a devDependency.
 */
 function getDependencyVersionRanges(
   dependentPkgJSON: PackageJson,
@@ -183,13 +182,13 @@ function shouldBumpMajor({
   dependent,
   depType,
   versionRange,
-  releases,
+  actions,
   nextRelease,
 }: {
   dependent: string;
   depType: DependencyType;
   versionRange: string;
-  releases: Map<string, InternalReleaseAction>;
+  actions: Map<string, InternalReleaseAction>;
   nextRelease: InternalReleaseAction;
 }) {
   // we check if it is a peerDependency because if it is, our dependent bump type might need to be major.
@@ -199,6 +198,6 @@ function shouldBumpMajor({
     nextRelease.type !== "patch" &&
     !semverSatisfies(incrementVersion(nextRelease), versionRange) &&
     // bump major only if the dependent doesn't already has a major release.
-    (!releases.has(dependent) || (releases.has(dependent) && releases.get(dependent)!.type !== "major"))
+    (!actions.has(dependent) || (actions.has(dependent) && actions.get(dependent)!.type !== "major"))
   );
 }
