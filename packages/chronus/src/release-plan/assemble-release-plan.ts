@@ -18,7 +18,7 @@ export function assembleReleasePlan(
   const packagesByName = new Map(workspace.allPackages.map((pkg) => [pkg.name, pkg]));
   const requested = flattenReleases(changesets, workspace);
 
-  const dependentsGraph = getDependentsGraph(workspace.packages);
+  const dependentsGraph = getDependentsGraph(workspace.allPackages);
   const internalActions = new Map<string, InternalReleaseAction>();
   if (workspace.config.versionPolicies && !options?.ignorePolicies) {
     for (const policy of workspace.config.versionPolicies) {

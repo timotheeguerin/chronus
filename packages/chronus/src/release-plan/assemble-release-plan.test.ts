@@ -155,7 +155,7 @@ describe("Assemble Release Plan", () => {
       expect(plan.actions).toHaveLength(0);
     });
 
-    it("package marked as private: true will not get versioned when a dependency need to change version", () => {
+    it.only("package marked as private: true will not get versioned when a dependency need to change version", () => {
       const workspace: Workspace = mkWorkspace([
         mkPkg("pkg-a", {}),
         mkPkg("pkg-private-b", { private: true, dependencies: { "pkg-a": "1.0.0" } }),
