@@ -47,7 +47,7 @@ export function assembleReleasePlan(
   // The map passed in to determineDependents will be mutated
   applyDependents({
     actions: internalActions,
-    packagesByName,
+    workspace,
     dependentsGraph,
   });
 
@@ -74,7 +74,7 @@ function flattenReleases(changesets: Changeset[], workspace: ChronusWorkspace): 
     changeset.releases
       // Filter out ignored packages because they should not trigger a release
       // If their dependencies need updates, they will be added to releases by `determineDependents()` with release type `none`
-      .filter(({ name }) => workspace.packages.some((pkg) => pkg.name === name))
+      .filter(({ name }) => !workspace.getPackage(name).ignored)
       .forEach(({ name, type }) => {
         let release: InternalReleaseAction | undefined = releases.get(name);
         const pkg = workspace.allPackages.find((x) => x.name === name);

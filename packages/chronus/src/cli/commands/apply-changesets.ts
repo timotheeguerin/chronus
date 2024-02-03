@@ -28,7 +28,7 @@ export async function applyChangesets(cwd: string, options?: ApplyChangesetsOpti
   const manyPkgs = {
     root: { dir: workspace.path } as any,
     tool: "pnpm",
-    packages: workspace.packages.map((x) => ({ packageJson: x.manifest as any, name: x.name, dir: x.relativePath })),
+    packages: workspace.allPackages.map((x) => ({ packageJson: x.manifest as any, name: x.name, dir: x.relativePath })),
   } as const;
   applyReleasePlan(changeSetReleasePlan, manyPkgs, undefined);
 }

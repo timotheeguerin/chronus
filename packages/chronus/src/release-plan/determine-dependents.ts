@@ -1,6 +1,7 @@
 import type { DependencyType, VersionType } from "@changesets/types";
 import semverSatisfies from "semver/functions/satisfies.js";
-import type { Package, PackageJson } from "../workspace-manager/types.js";
+import type { PackageJson } from "../workspace-manager/types.js";
+import type { ChronusWorkspace } from "../workspace/types.js";
 import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
 
@@ -18,11 +19,11 @@ import type { InternalReleaseAction } from "./types.internal.js";
 */
 export function applyDependents({
   actions,
-  packagesByName,
+  workspace,
   dependentsGraph,
 }: {
   actions: Map<string, InternalReleaseAction>;
-  packagesByName: Map<string, Package>;
+  workspace: ChronusWorkspace;
   dependentsGraph: Map<string, string[]>;
 }): boolean {
   let updated = false;
@@ -36,16 +37,15 @@ export function applyDependents({
     // pkgDependents will be a list of packages that depend on nextRelease ie. ['avatar-group', 'comment']
     const pkgDependents = dependentsGraph.get(nextRelease.packageName);
     if (!pkgDependents) {
-      throw new Error(
-        `Error in determining dependents - could not find package in repository: ${nextRelease.packageName}`,
-      );
+      continue;
     }
     pkgDependents
-      .map((dependent) => {
+      .map((x) => workspace.getPackage(x))
+      .filter((x) => !x?.ignored)
+      .map((dependentPackage) => {
         let type: VersionType | undefined;
 
-        const dependentPackage = packagesByName.get(dependent);
-        if (!dependentPackage) throw new Error("Dependency map is incorrect");
+        const dependent = dependentPackage.name;
 
         const dependencyVersionRanges = getDependencyVersionRanges(dependentPackage.manifest, nextRelease);
 
