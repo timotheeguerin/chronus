@@ -41,7 +41,7 @@
   "devDependencies": {
     "@actions/github": "^6.0.0",
     "@changesets/cli": "^2.27.1",
-    "@types/node": "^20.11.10",
+    "@types/node": "^20.11.16",
     "cspell": "^8.3.2",
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",
