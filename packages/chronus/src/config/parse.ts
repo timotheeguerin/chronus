@@ -32,7 +32,7 @@ const schema = z.object({
   workspaceType: z.enum(["auto", "npm", "pnpm", "rush"]).optional(),
   versionPolicies: z.array(versionPolicySchema).optional(),
   ignore: z.array(z.string()).optional(),
-  changeKinds: z.record(changeKindsSchema),
+  changeKinds: z.record(changeKindsSchema).optional(),
 });
 
 export function parseConfig(content: string): ChronusUserConfig {

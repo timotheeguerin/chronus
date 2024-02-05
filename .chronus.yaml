@@ -1,6 +1,6 @@
 baseBranch: main
 
-versionKinds:
+changeKinds:
   breaking:
     versionType: major
     title: Breaking Change

@@ -2,12 +2,12 @@
 
 Semver is great and understood a major for breaking changes, minor for new features and patch for bug fixes. However sometimes you might just want to be a little more descriptive or add extra chnage types to categorize in the changelog.
 
-This can be done in the config by setting `versionKinds`.s
+This can be done in the config by setting `changeKinds`.s
 
 ## Example 1: Provide alternate names to the existing types
 
 ```yaml
-versionKinds:
+changeKinds:
   breaking:
     versionType: major
   feature:
@@ -21,7 +21,7 @@ versionKinds:
 ## Example 2: Provide alternate names, title and descriptions to the existing types
 
 ```yaml
-versionKinds:
+changeKinds:
   breaking:
     versionType: major
     title: Breaking Change
@@ -46,7 +46,7 @@ versionKinds:
 ## Example 3: Provide a different set of versioning
 
 ```yaml
-versionKinds:
+changeKinds:
   breaking:
     versionType: major
     title: Breaking Change
