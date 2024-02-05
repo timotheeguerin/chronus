@@ -4,7 +4,7 @@ import { ChronusError } from "../utils/errors.js";
 import type { ChronusHost } from "../utils/host.js";
 import { isPathAccessible, lookup } from "../utils/index.js";
 import { joinPaths, resolvePath } from "../utils/path-utils.js";
-import type { ChronusResolvedConfig, ChronusUserConfig } from "./types.js";
+import type { ChangeKindUserConfig, ChronusResolvedConfig, ChronusUserConfig } from "./types.js";
 
 const configFileName = ".chronus.yaml";
 const versionPolicySchema = z.union([
@@ -21,11 +21,18 @@ const versionPolicySchema = z.union([
   }),
 ]);
 
+const changeKindsSchema = z.object({
+  versionType: z.enum(["none", "patch", "minor", "major"]),
+  title: z.string().optional(),
+  description: z.string().optional(),
+});
+
 const schema = z.object({
   baseBranch: z.string(),
   workspaceType: z.enum(["auto", "npm", "pnpm", "rush"]).optional(),
   versionPolicies: z.array(versionPolicySchema).optional(),
   ignore: z.array(z.string()).optional(),
+  changeKinds: z.record(changeKindsSchema),
 });
 
 export function parseConfig(content: string): ChronusUserConfig {
@@ -49,8 +56,17 @@ export async function resolveConfig(host: ChronusHost, dir: string): Promise<Chr
   } catch (e) {
     throw new ChronusError("Could not find .chronus.yaml");
   }
+  const useConfig = parseConfig(file.content);
   return {
     workspaceRoot: root,
-    ...parseConfig(file.content),
+    ...useConfig,
+    changeKinds: useConfig.changeKinds ?? defaultChangeKinds,
   };
 }
+
+export const defaultChangeKinds: Record<string, ChangeKindUserConfig> = Object.freeze({
+  none: { versionType: "none" },
+  minor: { versionType: "minor" },
+  patch: { versionType: "patch" },
+  major: { versionType: "major" },
+});

@@ -3,6 +3,7 @@ import pc from "picocolors";
 import prompts from "prompts";
 import type { ChangeStatus } from "../../change/find.js";
 import { findChangeStatus } from "../../change/index.js";
+import type { ChronusResolvedConfig } from "../../config/types.js";
 import { createGitSourceControl } from "../../source-control/git.js";
 import { NodechronusHost } from "../../utils/node-host.js";
 import type { Package } from "../../workspace-manager/types.js";
@@ -27,7 +28,7 @@ export async function addChangeset(cwd: string): Promise<void> {
     log("No package selected. Exiting.\n");
     return;
   }
-  const changeType = await promptBumpType();
+  const changeType = await promptBumpType(workspace.config);
   const changesetContent = await promptForContent();
 
   const result = await writeChangeset(
@@ -67,18 +68,16 @@ async function promptForPackages(status: ChangeStatus): Promise<Package[]> {
   return response.value;
 }
 
-async function promptBumpType(): Promise<"major" | "minor" | "patch" | "none"> {
+async function promptBumpType(config: ChronusResolvedConfig): Promise<"major" | "minor" | "patch" | "none"> {
+  const choices: prompts.Choice[] = Object.entries(config.changeKinds).map(([key, value]) => {
+    return { title: value.title ?? key, value: key };
+  });
   const response = await prompts({
     type: "select",
     name: "value",
     instructions: false,
     message: "Describe the type of change",
-    choices: [
-      { title: "none", value: "none" },
-      { title: "patch", value: "patch" },
-      { title: "minor", value: "minor" },
-      { title: "major", value: "major" },
-    ],
+    choices,
   });
   return response.value;
 }
