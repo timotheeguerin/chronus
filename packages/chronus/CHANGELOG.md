@@ -1,5 +1,11 @@
 # @chronus/chronus
 
+## 0.5.1
+
+### Patch Changes
+
+- e32943e: Fix: ignoring packages having dependencies on package being bumped
+
 ## 0.5.0
 
 ### Minor Changes
