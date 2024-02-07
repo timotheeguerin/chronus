@@ -24,9 +24,13 @@ export interface ChangeKindUserConfig {
   readonly description?: string;
 }
 
+export interface ChangeKindResolvedConfig extends ChangeKindUserConfig {
+  readonly name: string;
+}
+
 export interface ChronusResolvedConfig extends ChronusUserConfig {
   readonly workspaceRoot: string;
-  readonly changeKinds: Record<string, ChangeKindUserConfig>;
+  readonly changeKinds: Record<string, ChangeKindResolvedConfig>;
 }
 
 export type VersionPolicyType = "lockstep" | "independent";

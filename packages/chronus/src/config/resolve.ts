@@ -3,7 +3,7 @@ import type { ChronusHost } from "../utils/host.js";
 import { isPathAccessible, lookup } from "../utils/index.js";
 import { joinPaths, resolvePath } from "../utils/path-utils.js";
 import { parseConfig } from "./parse.js";
-import type { ChangeKindUserConfig, ChronusResolvedConfig } from "./types.js";
+import type { ChangeKindResolvedConfig, ChangeKindUserConfig, ChronusResolvedConfig } from "./types.js";
 
 const configFileName = ".chronus.yaml";
 
@@ -34,6 +34,13 @@ export async function resolveConfig(host: ChronusHost, dir: string): Promise<Chr
   return {
     workspaceRoot: root,
     ...useConfig,
-    changeKinds: useConfig.changeKinds ?? defaultChangeKinds,
+    changeKinds: addNameToChangeKinds(useConfig.changeKinds ?? defaultChangeKinds),
   };
+}
+
+function addNameToChangeKinds(
+  changeKinds: Record<string, ChangeKindUserConfig>,
+): Record<string, ChangeKindResolvedConfig> {
+  const items = Object.entries(changeKinds).map(([name, value]) => [name, { ...value, name }]);
+  return Object.fromEntries(items);
 }
