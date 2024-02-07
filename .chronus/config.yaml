@@ -1,22 +1,22 @@
 baseBranch: main
 
 changeKinds:
-  breaking:
-    versionType: major
-    title: Breaking Change
-    description: Changes that break existing features
-
-  feature:
-    versionType: minor
-    title: Feature
-    description: Adds new features
+  internal:
+    versionType: none
+    title: Internal
+    description: Internal changes that are not user facing
 
   fix:
     versionType: patch
     title: Bug Fix
     description: Fixes to existing features
 
-  internal:
-    versionType: none
-    title: Internal
-    description: Internal changes that are not user facing
+  feature:
+    versionType: minor
+    title: Feature
+    description: Adds new features
+
+  breaking:
+    versionType: major
+    title: Breaking Change
+    description: Changes that break existing features

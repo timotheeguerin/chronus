@@ -184,11 +184,14 @@ function addChangeSetUrl(
     date.getSeconds(),
   ].join("-");
   const filename = resolveChangeRelativePath(id);
-  const content = printChangeDescription({
-    changeKind: workspace.config.changeKinds[0],
-    packages: undocummentedPackages.map((x) => x.package.name),
-    content: context.prTitle,
-  });
+  const content = printChangeDescription(
+    {
+      changeKind: Object.values(workspace.config.changeKinds)[0],
+      packages: undocummentedPackages.map((x) => x.package.name),
+      content: context.prTitle,
+    },
+    { frontMatterComment: `Change versionKind to one of: ${Object.keys(workspace.config.changeKinds)}` },
+  );
   return `${repoUrl}/new/${context.headRef}?filename=${filename}&value=${encodeURIComponent(content)}`;
 }
 

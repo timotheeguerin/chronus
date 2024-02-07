@@ -1,16 +1,24 @@
 import { dump } from "js-yaml";
 import type { ChronusHost } from "../utils/host.js";
+import { isDefined } from "../utils/misc-utils.js";
 import { getDirectoryPath } from "../utils/path-utils.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { resolveChangePath } from "./common.js";
 import type { ChangeDescription, ChangeDescriptionFrontMatter } from "./types.js";
 
-export function printChangeDescription(change: Omit<ChangeDescription, "id">) {
+export interface PrintChangeDescriptionOptions {
+  readonly frontMatterComment?: string;
+}
+
+export function printChangeDescription(change: Omit<ChangeDescription, "id">, options?: PrintChangeDescriptionOptions) {
   const frontMatter: ChangeDescriptionFrontMatter = {
     changeKind: change.changeKind.name,
     packages: change.packages,
   };
-  return ["---", dump(frontMatter, { quotingType: '"' }), "---", change.content].join("\n");
+  const frontMatterComment = options?.frontMatterComment && `# ${options?.frontMatterComment}`;
+  return ["---", frontMatterComment, dump(frontMatter, { quotingType: '"' }), "---", change.content]
+    .filter(isDefined)
+    .join("\n");
 }
 
 export async function writeChangeDescription(
