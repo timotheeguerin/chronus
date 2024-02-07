@@ -54,9 +54,6 @@ importers:
       '@changesets/apply-release-plan':
         specifier: ^7.0.0
         version: 7.0.0
-      '@changesets/write':
-        specifier: ^0.3.0
-        version: 0.3.0
       globby:
         specifier: ^14.0.0
         version: 14.0.0
@@ -400,6 +397,7 @@ packages:
       fs-extra: 7.0.1
       human-id: 1.0.2
       prettier: 2.8.8
+    dev: true
 
   /@cspell/cspell-bundled-dicts@8.3.2:
     resolution: {integrity: sha512-3ubOgz1/MDixJbq//0rQ2omB3cSdhVJDviERZeiREGz4HOq84aaK1Fqbw5SjNZHvhpoq+AYXm6kJbIAH8YhKgg==}
@@ -3186,6 +3184,7 @@ packages:
 
   /human-id@1.0.2:
     resolution: {integrity: sha512-UNopramDEhHJD+VR+ehk8rOslwSfByxPIZyJRfV739NDhN5LF1fa1MqnzKm2lGTQRjNrjK19Q5fhkgIfjlVUKw==}
+    dev: true
 
   /human-id@4.1.0:
     resolution: {integrity: sha512-WYeWmHXGo1ZPGZuy7I2c+sgM83GvlQR1jrF1zLX6fID9JEVGkZgZe8PHj5HacWC7d9V0rNc4iRVhb9QmO55CUQ==}

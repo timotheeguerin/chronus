@@ -1,4 +1,4 @@
-import type { ChangeKindUserConfig } from "../config/types.js";
+import type { ChangeKindResolvedConfig } from "../config/types.js";
 
 export interface ChangeDescriptionFrontMatter {
   readonly changeKind: string;
@@ -7,7 +7,7 @@ export interface ChangeDescriptionFrontMatter {
 
 export interface ChangeDescription {
   readonly id: string;
-  readonly changeKind: ChangeKindUserConfig;
+  readonly changeKind: ChangeKindResolvedConfig;
   readonly packages: string[];
   readonly content: string;
 }

@@ -1,9 +1,9 @@
-import writeChangeset from "@changesets/write";
 import pc from "picocolors";
 import prompts from "prompts";
 import type { ChangeStatus } from "../../change/find.js";
 import { findChangeStatus } from "../../change/index.js";
-import type { ChronusResolvedConfig } from "../../config/types.js";
+import { writeChangeDescription } from "../../change/write.js";
+import type { ChangeKindResolvedConfig, ChronusResolvedConfig } from "../../config/types.js";
 import { createGitSourceControl } from "../../source-control/git.js";
 import { NodechronusHost } from "../../utils/node-host.js";
 import type { Package } from "../../workspace-manager/types.js";
@@ -28,8 +28,8 @@ export async function addChangeset(cwd: string): Promise<void> {
     log("No package selected. Exiting.\n");
     return;
   }
-  const changeType = await promptBumpType(workspace.config);
-  if (changeType === undefined) {
+  const changeKind = await promptChangeKind(workspace.config);
+  if (changeKind === undefined) {
     log("No change kind selected, cancelling.");
     return;
   }
@@ -38,13 +38,12 @@ export async function addChangeset(cwd: string): Promise<void> {
     log("No change content, cancelling.");
     return;
   }
-  const result = await writeChangeset(
-    {
-      summary: changesetContent,
-      releases: packageToInclude.map((x) => ({ name: x.name, type: changeType })),
-    },
-    workspace.path,
-  );
+  const result = await writeChangeDescription(host, workspace, {
+    id: "",
+    content: changesetContent,
+    packages: packageToInclude.map((x) => x.name),
+    changeKind,
+  });
   log("Wrote changeset ", result);
 }
 
@@ -75,11 +74,9 @@ async function promptForPackages(status: ChangeStatus): Promise<Package[] | unde
   return response.value;
 }
 
-async function promptBumpType(
-  config: ChronusResolvedConfig,
-): Promise<"major" | "minor" | "patch" | "none" | undefined> {
+async function promptChangeKind(config: ChronusResolvedConfig): Promise<ChangeKindResolvedConfig | undefined> {
   const choices: prompts.Choice[] = Object.entries(config.changeKinds).map(([key, value]) => {
-    return { title: value.title ?? key, value: key };
+    return { title: value.title ?? key, value };
   });
   const response = await prompts({
     type: "select",

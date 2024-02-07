@@ -8,6 +8,7 @@ try {
 import { getOctokit, context as githubActionContext } from "@actions/github";
 import type { ChangeStatus, PackageStatus } from "@chronus/chronus";
 import { getWorkspaceStatus } from "@chronus/chronus";
+import { resolveChangeRelativePath } from "@chronus/chronus/change";
 
 interface Context {
   repoName: string;
@@ -170,7 +171,7 @@ function addChangeSetUrl(undocummentedPackages: PackageStatus[], pr: any, contex
     date.getMinutes(),
     date.getSeconds(),
   ].join("-");
-  const filename = `.changeset/${id}.md`;
+  const filename = resolveChangeRelativePath(id);
   const content = renderChangesetTemplate(undocummentedPackages, context.prTitle);
   return `${repoUrl}/new/${context.headRef}?filename=${filename}&value=${encodeURIComponent(content)}`;
 }

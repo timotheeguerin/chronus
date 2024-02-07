@@ -2,6 +2,7 @@ import type { GitRepository } from "../source-control/git.js";
 import type { ChronusHost } from "../utils/host.js";
 import type { Package } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
+import { changesRelativeDir } from "./common.js";
 import { parseChangeDescription } from "./parse.js";
 
 export type ChangeArea = "committed" | "untrackedOrModified" | "staged";
@@ -114,7 +115,7 @@ async function findAlreadyDocumentedChanges(
 ): Promise<Package[]> {
   const packagesWithChangelog = new Set<Package>();
 
-  for (const filename of fileChanged.filter((x) => x.startsWith(".changeset/") && x.endsWith(".md"))) {
+  for (const filename of fileChanged.filter((x) => x.startsWith(changesRelativeDir) && x.endsWith(".md"))) {
     const file = await host.readFile(filename);
     const changeset = parseChangeDescription(workspace.config, file);
     for (const pkgName of changeset.packages) {

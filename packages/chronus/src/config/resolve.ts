@@ -5,7 +5,7 @@ import { joinPaths, resolvePath } from "../utils/path-utils.js";
 import { parseConfig } from "./parse.js";
 import type { ChangeKindResolvedConfig, ChangeKindUserConfig, ChronusResolvedConfig } from "./types.js";
 
-const configFileName = ".chronus.yaml";
+const configFileName = ".chronus/config.yaml";
 
 export const defaultChangeKinds: Record<string, ChangeKindUserConfig> = Object.freeze({
   none: { versionType: "none" },
@@ -28,7 +28,7 @@ export async function resolveConfig(host: ChronusHost, dir: string): Promise<Chr
   try {
     file = await host.readFile(configPath);
   } catch (e) {
-    throw new ChronusError("Could not find .chronus.yaml");
+    throw new ChronusError(`Could not find ${configFileName}`);
   }
   const useConfig = parseConfig(file.content);
   return {
