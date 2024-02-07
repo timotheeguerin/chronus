@@ -1,6 +1,7 @@
 import applyReleasePlan from "@changesets/apply-release-plan";
-import parseChangeset from "@changesets/parse";
-import type { ReleasePlan as ChangesetReleasePlan, ComprehensiveRelease } from "@changesets/types";
+import type { ReleasePlan as ChangesetReleasePlan, ComprehensiveRelease, NewChangeset } from "@changesets/types";
+import { parseChangeDescription } from "../../change/parse.js";
+import type { ChangeDescription } from "../../change/types.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { ReleasePlan } from "../../release-plan/types.js";
 import type { ChronusHost } from "../../utils/host.js";
@@ -19,7 +20,7 @@ export async function applyChangesets(cwd: string, options?: ApplyChangesetsOpti
   const changeSetReleases = releasePlan.actions.map((x) => ({
     ...x,
     name: x.packageName,
-    changesets: x.changesets.map((y) => y.id),
+    changesets: x.changes.map((y) => y.id),
   }));
 
   // Changeset will not bump the dependencies of ignored packages if there is not a release for it. Even though we are not changing the versions.
@@ -33,7 +34,7 @@ export async function applyChangesets(cwd: string, options?: ApplyChangesetsOpti
       type: "none",
     }));
   const changeSetReleasePlan: ChangesetReleasePlan = {
-    changesets: releasePlan.changesets,
+    changesets: releasePlan.changes.map(mapChangeToChangeset),
     releases: [...changeSetReleases, ...noopRelease],
     preState: undefined,
   };
@@ -56,10 +57,20 @@ export async function resolveReleasePlan(
       .filter((x) => x.toLowerCase() !== ".changeset/readme.md")
       .map(async (x) => {
         const file = await host.readFile(x);
-        return { ...parseChangeset(file.content), id: x.slice(".changeset/".length, -3) };
+        return { ...parseChangeDescription(workspace.config, file), id: x.slice(".changeset/".length, -3) };
       }),
   );
 
   const releasePlan = assembleReleasePlan(changesets, workspace, options);
   return releasePlan;
+}
+
+function mapChangeToChangeset(change: ChangeDescription): NewChangeset {
+  return {
+    id: change.id,
+    summary: change.content,
+    releases: change.packages.map((x) => {
+      return { name: x, type: change.changeKind.versionType };
+    }),
+  };
 }

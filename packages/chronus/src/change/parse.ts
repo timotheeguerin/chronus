@@ -3,6 +3,7 @@ import z from "zod";
 import type { ChronusResolvedConfig } from "../config/types.js";
 import { ChronusError } from "../utils/errors.js";
 import type { File } from "../utils/host.js";
+import { getBaseFileName } from "../utils/path-utils.js";
 import type { ChangeDescription, ChangeDescriptionFrontMatter } from "./types.js";
 
 const mdRegex = /\s*---([^]*?)\n\s*---(\s*(?:\n|$)[^]*)/;
@@ -35,8 +36,11 @@ export function parseChangeDescription(config: ChronusResolvedConfig, file: File
       `Change ${file.path} is using a changeKind ${frontMatter.changeKind} which is defined in the config. Available ones are:\n${Object.keys(config.changeKinds).join(", ")}`,
     );
   }
+
+  const id = getBaseFileName(file.path).replace(/.md$/, "");
   return {
     ...frontMatter,
+    id,
     changeKind,
     content: contentRaw.trim(),
   };

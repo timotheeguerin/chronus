@@ -1,4 +1,4 @@
-import type { Changeset, NewChangeset } from "@changesets/types";
+import type { ChangeDescription } from "../change/types.js";
 import { getDependentsGraph } from "../dependency-graph/index.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { applyDependents } from "./determine-dependents.js";
@@ -11,12 +11,12 @@ export interface ApplyChangesetsOptions {
 }
 
 export function assembleReleasePlan(
-  changesets: NewChangeset[],
+  changes: ChangeDescription[],
   workspace: ChronusWorkspace,
   options?: ApplyChangesetsOptions,
 ): ReleasePlan {
   const packagesByName = new Map(workspace.allPackages.map((pkg) => [pkg.name, pkg]));
-  const requested = flattenReleases(changesets, workspace);
+  const requested = reduceChanges(changes, workspace);
 
   const dependentsGraph = getDependentsGraph(workspace.allPackages);
   const internalActions = new Map<string, InternalReleaseAction>();
@@ -55,32 +55,31 @@ export function assembleReleasePlan(
     return {
       ...incompleteRelease,
       newVersion: getNewVersion(incompleteRelease),
-      changesets: changesets.filter((changeset) =>
-        changeset.releases.some((release) => release.name === incompleteRelease.packageName),
-      ),
+      changes: changes.filter((change) => change.packages.some((pkgName) => pkgName === incompleteRelease.packageName)),
     };
   });
 
   return {
-    changesets,
+    changes,
     actions,
   };
 }
 
-function flattenReleases(changesets: Changeset[], workspace: ChronusWorkspace): Map<string, InternalReleaseAction> {
+function reduceChanges(changes: ChangeDescription[], workspace: ChronusWorkspace): Map<string, InternalReleaseAction> {
   const releases: Map<string, InternalReleaseAction> = new Map();
 
-  changesets.forEach((changeset) => {
-    changeset.releases
+  changes.forEach((change) => {
+    const type = change.changeKind.versionType;
+    change.packages
       // Filter out ignored packages because they should not trigger a release
       // If their dependencies need updates, they will be added to releases by `determineDependents()` with release type `none`
-      .filter(({ name }) => !workspace.getPackage(name).ignored)
-      .forEach(({ name, type }) => {
+      .filter((name) => !workspace.getPackage(name).ignored)
+      .forEach((name) => {
         let release: InternalReleaseAction | undefined = releases.get(name);
         const pkg = workspace.allPackages.find((x) => x.name === name);
         if (!pkg) {
           throw new Error(
-            `"${changeset}" changeset mentions a release for a package "${name}" but such a package could not be found.`,
+            `"${change}" changeset mentions a release for a package "${name}" but such a package could not be found.`,
           );
         }
         if (!release) {

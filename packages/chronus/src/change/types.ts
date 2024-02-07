@@ -6,6 +6,7 @@ export interface ChangeDescriptionFrontMatter {
 }
 
 export interface ChangeDescription {
+  readonly id: string;
   readonly changeKind: ChangeKindUserConfig;
   readonly packages: string[];
   readonly content: string;
