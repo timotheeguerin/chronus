@@ -5,7 +5,7 @@ import type { ChangeDescription } from "../../change/types.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { ReleasePlan } from "../../release-plan/types.js";
 import type { ChronusHost } from "../../utils/host.js";
-import { NodechronusHost } from "../../utils/node-host.js";
+import { NodeChronusHost } from "../../utils/node-host.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
 import type { ChronusWorkspace } from "../../workspace/types.js";
 
@@ -13,7 +13,7 @@ export interface ApplyChangesetsOptions {
   ignorePolicies?: boolean;
 }
 export async function applyChangesets(cwd: string, options?: ApplyChangesetsOptions): Promise<void> {
-  const host = NodechronusHost;
+  const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
   const releasePlan = await resolveReleasePlan(host, workspace, options);
 

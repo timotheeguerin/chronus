@@ -1,7 +1,7 @@
 import type { VersionType } from "@changesets/types";
 import pc from "picocolors";
 import type { ReleaseAction, ReleasePlan } from "../../release-plan/types.js";
-import { NodechronusHost } from "../../utils/node-host.js";
+import { NodeChronusHost } from "../../utils/node-host.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
 import { resolveReleasePlan, type ApplyChangesetsOptions } from "./apply-changesets.js";
 
@@ -50,7 +50,7 @@ function logType(actions: ReleaseAction[], type: VersionType, pad: number, color
 }
 
 async function resolveCurrentReleasePlan(cwd: string, options?: ApplyChangesetsOptions): Promise<ReleasePlan> {
-  const host = NodechronusHost;
+  const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
   return await resolveReleasePlan(host, workspace, options);
 }

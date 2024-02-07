@@ -6,7 +6,7 @@ import { normalizePath } from "./path-utils.js";
 /**
  * Implementation of chronus host using node apis.
  */
-export const NodechronusHost: ChronusHost = {
+export const NodeChronusHost: ChronusHost = {
   async readFile(path): Promise<File> {
     const normalizedPath = normalizePath(path);
     const buffer = await readFile(normalizedPath);

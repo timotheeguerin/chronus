@@ -5,7 +5,7 @@ import { findChangeStatus } from "../../change/index.js";
 import { writeChangeDescription } from "../../change/write.js";
 import type { ChangeKindResolvedConfig, ChronusResolvedConfig } from "../../config/types.js";
 import { createGitSourceControl } from "../../source-control/git.js";
-import { NodechronusHost } from "../../utils/node-host.js";
+import { NodeChronusHost } from "../../utils/node-host.js";
 import type { Package } from "../../workspace-manager/types.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
 
@@ -14,7 +14,7 @@ function log(...args: any[]) {
   console.log(...args);
 }
 export async function addChangeset(cwd: string): Promise<void> {
-  const host = NodechronusHost;
+  const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
   const sourceControl = createGitSourceControl(workspace.path);
   const status = await findChangeStatus(host, sourceControl, workspace);
