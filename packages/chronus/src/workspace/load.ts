@@ -1,5 +1,5 @@
 import micromatch from "micromatch";
-import { resolveConfig } from "../config/parse.js";
+import { resolveConfig } from "../config/index.js";
 import type { ChronusResolvedConfig } from "../config/types.js";
 import { ChronusError } from "../utils/errors.js";
 import type { ChronusHost } from "../utils/host.js";
