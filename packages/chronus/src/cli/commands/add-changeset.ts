@@ -24,13 +24,20 @@ export async function addChangeset(cwd: string): Promise<void> {
   }
   const packageToInclude = await promptForPackages(status);
 
-  if (packageToInclude.length === 0) {
+  if (packageToInclude === undefined || packageToInclude.length === 0) {
     log("No package selected. Exiting.\n");
     return;
   }
   const changeType = await promptBumpType(workspace.config);
+  if (changeType === undefined) {
+    log("No change kind selected, cancelling.");
+    return;
+  }
   const changesetContent = await promptForContent();
-
+  if (changesetContent === undefined) {
+    log("No change content, cancelling.");
+    return;
+  }
   const result = await writeChangeset(
     {
       summary: changesetContent,
@@ -41,7 +48,7 @@ export async function addChangeset(cwd: string): Promise<void> {
   log("Wrote changeset ", result);
 }
 
-async function promptForPackages(status: ChangeStatus): Promise<Package[]> {
+async function promptForPackages(status: ChangeStatus): Promise<Package[] | undefined> {
   const undocummentedPackages = status.committed.packageChanged.filter(
     (x) => !status.all.packagesDocumented.find((y) => x.name === y.name),
   );
@@ -68,7 +75,9 @@ async function promptForPackages(status: ChangeStatus): Promise<Package[]> {
   return response.value;
 }
 
-async function promptBumpType(config: ChronusResolvedConfig): Promise<"major" | "minor" | "patch" | "none"> {
+async function promptBumpType(
+  config: ChronusResolvedConfig,
+): Promise<"major" | "minor" | "patch" | "none" | undefined> {
   const choices: prompts.Choice[] = Object.entries(config.changeKinds).map(([key, value]) => {
     return { title: value.title ?? key, value: key };
   });
@@ -82,7 +91,7 @@ async function promptBumpType(config: ChronusResolvedConfig): Promise<"major" | 
   return response.value;
 }
 
-async function promptForContent(): Promise<string> {
+async function promptForContent(): Promise<string | undefined> {
   const response = await prompts({
     type: "text",
     name: "value",

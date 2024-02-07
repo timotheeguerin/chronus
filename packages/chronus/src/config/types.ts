@@ -12,7 +12,7 @@ export interface ChronusUserConfig {
    * Provide a different set of options for describing changes.
    * For example breaking, deprecation, feature, fix, etc.
    */
-  readonly changeKinds: Record<string, ChangeKindUserConfig>;
+  readonly changeKinds?: Record<string, ChangeKindUserConfig>;
 }
 
 export interface ChangeKindUserConfig {
@@ -26,6 +26,7 @@ export interface ChangeKindUserConfig {
 
 export interface ChronusResolvedConfig extends ChronusUserConfig {
   readonly workspaceRoot: string;
+  readonly changeKinds: Record<string, ChangeKindUserConfig>;
 }
 
 export type VersionPolicyType = "lockstep" | "independent";
