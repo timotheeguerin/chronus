@@ -54,9 +54,6 @@ importers:
       '@changesets/apply-release-plan':
         specifier: ^7.0.0
         version: 7.0.0
-      '@changesets/parse':
-        specifier: ^0.4.0
-        version: 0.4.0
       '@changesets/write':
         specifier: ^0.3.0
         version: 0.3.0
@@ -364,6 +361,7 @@ packages:
     dependencies:
       '@changesets/types': 6.0.0
       js-yaml: 3.14.1
+    dev: true
 
   /@changesets/pre@2.0.0:
     resolution: {integrity: sha512-HLTNYX/A4jZxc+Sq8D1AMBsv+1qD6rmmJtjsCJa/9MSRybdxh0mjbTvE6JYZQ/ZiQ0mMlDOlGPXTm9KLTU3jyw==}
