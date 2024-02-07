@@ -38,7 +38,7 @@ export async function resolveConfig(host: ChronusHost, dir: string): Promise<Chr
   };
 }
 
-function addNameToChangeKinds(
+export function addNameToChangeKinds(
   changeKinds: Record<string, ChangeKindUserConfig>,
 ): Record<string, ChangeKindResolvedConfig> {
   const items = Object.entries(changeKinds).map(([name, value]) => [name, { ...value, name }]);

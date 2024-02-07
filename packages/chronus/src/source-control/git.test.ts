@@ -44,6 +44,26 @@ describe("git", () => {
     });
   });
 
+  describe("get current branch", () => {
+    beforeEach(async () => {
+      await testDir.addFile("package.json", "{}");
+      await git.add("package.json");
+      await git.commit("initial");
+    });
+
+    it("main default branch", async () => {
+      const git = createGitSourceControl(cwd);
+      expect(await git.getCurrentBranch()).toEqual("main");
+    });
+
+    it("picks up current branch", async () => {
+      const git = createGitSourceControl(cwd);
+      await execAsync("git", ["checkout", "-b", "test-branch"], { cwd });
+
+      expect(await git.getCurrentBranch()).toEqual("test-branch");
+    });
+  });
+
   describe("add", () => {
     beforeEach(async () => {
       await testDir.addFile("packages/pkg-a/package.json", "{}");

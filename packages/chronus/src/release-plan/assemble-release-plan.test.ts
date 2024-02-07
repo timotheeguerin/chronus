@@ -1,5 +1,7 @@
-import type { NewChangeset, VersionType } from "@changesets/types";
+import type { VersionType } from "@changesets/types";
 import { describe, expect, it } from "vitest";
+import type { ChangeDescription } from "../change/types.js";
+import { addNameToChangeKinds, defaultChangeKinds } from "../config/resolve.js";
 import type { ChronusResolvedConfig } from "../config/types.js";
 import type { Package, PackageJson, Workspace } from "../workspace-manager/types.js";
 import { createChronusWorkspace } from "../workspace/load.js";
@@ -7,9 +9,10 @@ import { assembleReleasePlan } from "./assemble-release-plan.js";
 
 describe("Assemble Release Plan", () => {
   let idCounter = 0;
-  function mkChangeset(pkg: string, type: VersionType): NewChangeset {
+  const changeKinds = addNameToChangeKinds(defaultChangeKinds);
+  function mkChange(pkg: string, type: VersionType): ChangeDescription {
     const id = String(idCounter++);
-    return { id, summary: `Changeset ${id}`, releases: [{ name: pkg, type }] };
+    return { id, content: `Changeset ${id}`, changeKind: changeKinds[type], packages: [pkg] };
   }
 
   function mkWorkspace(packages: Package[]): Workspace {
@@ -27,18 +30,18 @@ describe("Assemble Release Plan", () => {
     mkPkg("pkg-private-e", { private: true }),
   ]);
 
-  const baseConfig: ChronusResolvedConfig = { workspaceRoot: "proj", baseBranch: "main" };
+  const baseConfig: ChronusResolvedConfig = { workspaceRoot: "proj", baseBranch: "main", changeKinds };
 
   describe("bumps package independently", () => {
     it("only packages with changeset ", () => {
-      const plan = assembleReleasePlan([mkChangeset("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
+      const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
       expect(plan.actions).toHaveLength(1);
       expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
     });
     describe("picks the heighest version type", () => {
       it("major", () => {
         const plan = assembleReleasePlan(
-          [mkChangeset("pkg-a", "patch"), mkChangeset("pkg-a", "minor"), mkChangeset("pkg-a", "major")],
+          [mkChange("pkg-a", "patch"), mkChange("pkg-a", "minor"), mkChange("pkg-a", "major")],
           createChronusWorkspace(workspace, baseConfig),
         );
         expect(plan.actions).toHaveLength(1);
@@ -46,7 +49,7 @@ describe("Assemble Release Plan", () => {
       });
       it("minor", () => {
         const plan = assembleReleasePlan(
-          [mkChangeset("pkg-a", "patch"), mkChangeset("pkg-a", "minor")],
+          [mkChange("pkg-a", "patch"), mkChange("pkg-a", "minor")],
           createChronusWorkspace(workspace, baseConfig),
         );
         expect(plan.actions).toHaveLength(1);
@@ -56,7 +59,7 @@ describe("Assemble Release Plan", () => {
 
     it("each package with changeset gets bumped accordingly", () => {
       const plan = assembleReleasePlan(
-        [mkChangeset("pkg-a", "minor"), mkChangeset("pkg-b", "patch")],
+        [mkChange("pkg-a", "minor"), mkChange("pkg-b", "patch")],
         createChronusWorkspace(workspace, baseConfig),
       );
       expect(plan.actions).toHaveLength(2);
@@ -70,10 +73,7 @@ describe("Assemble Release Plan", () => {
           mkPkg("pkg-a", {}),
           mkPkg("pkg-b", { dependencies: { "pkg-a": "1.0.0" } }),
         ]);
-        const plan = assembleReleasePlan(
-          [mkChangeset("pkg-a", "minor")],
-          createChronusWorkspace(workspace, baseConfig),
-        );
+        const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
         expect(plan.actions).toHaveLength(2);
         expect(plan.actions[0]).toMatchObject({
           packageName: "pkg-a",
@@ -92,10 +92,7 @@ describe("Assemble Release Plan", () => {
     };
 
     it("bumps all packages in the lockstep if one changed", () => {
-      const plan = assembleReleasePlan(
-        [mkChangeset("pkg-a", "minor")],
-        createChronusWorkspace(workspace, lockStepConfig),
-      );
+      const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, lockStepConfig));
       expect(plan.actions).toHaveLength(2);
       expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
       expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.1.0" });
@@ -103,7 +100,7 @@ describe("Assemble Release Plan", () => {
 
     it("bumps all packages in the lockstep of the step regardless of what changesets says (higher)", () => {
       const plan = assembleReleasePlan(
-        [mkChangeset("pkg-a", "minor"), mkChangeset("pkg-a", "major")],
+        [mkChange("pkg-a", "minor"), mkChange("pkg-a", "major")],
         createChronusWorkspace(workspace, lockStepConfig),
       );
       expect(plan.actions).toHaveLength(2);
@@ -113,7 +110,7 @@ describe("Assemble Release Plan", () => {
 
     it("bumps all packages in the lockstep of the step regardless of what changesets says (lower)", () => {
       const plan = assembleReleasePlan(
-        [mkChangeset("pkg-a", "patch"), mkChangeset("pkg-a", "patch")],
+        [mkChange("pkg-a", "patch"), mkChange("pkg-a", "patch")],
         createChronusWorkspace(workspace, lockStepConfig),
       );
       expect(plan.actions).toHaveLength(2);
@@ -123,7 +120,7 @@ describe("Assemble Release Plan", () => {
 
     it("ignore policy when options.ignorePolicies: true", () => {
       const plan = assembleReleasePlan(
-        [mkChangeset("pkg-a", "patch"), mkChangeset("pkg-c", "patch")],
+        [mkChange("pkg-a", "patch"), mkChange("pkg-c", "patch")],
         createChronusWorkspace(workspace, lockStepConfig),
         { ignorePolicies: true },
       );
@@ -140,7 +137,7 @@ describe("Assemble Release Plan", () => {
         mkPkg("pkg-private-c", { private: true }),
       ]);
       const plan = assembleReleasePlan(
-        [mkChangeset("pkg-private-b", "minor")],
+        [mkChange("pkg-private-b", "minor")],
         createChronusWorkspace(workspace, baseConfig),
       );
       expect(plan.actions).toHaveLength(0);
@@ -149,7 +146,7 @@ describe("Assemble Release Plan", () => {
     it("package marked as ignore will also not get versioned even if a changelog exist", () => {
       const workspace = mkWorkspace([mkPkg("pkg-a", {})]);
       const plan = assembleReleasePlan(
-        [mkChangeset("pkg-a", "minor")],
+        [mkChange("pkg-a", "minor")],
         createChronusWorkspace(workspace, { ...baseConfig, ignore: ["pkg-a"] }),
       );
       expect(plan.actions).toHaveLength(0);
@@ -160,7 +157,7 @@ describe("Assemble Release Plan", () => {
         mkPkg("pkg-a", {}),
         mkPkg("pkg-private-b", { private: true, dependencies: { "pkg-a": "1.0.0" } }),
       ]);
-      const plan = assembleReleasePlan([mkChangeset("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
+      const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
       expect(plan.actions).toHaveLength(1);
       expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
     });
