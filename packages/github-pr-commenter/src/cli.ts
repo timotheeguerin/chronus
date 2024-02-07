@@ -190,7 +190,7 @@ function addChangeSetUrl(
       packages: undocummentedPackages.map((x) => x.package.name),
       content: context.prTitle,
     },
-    { frontMatterComment: `Change versionKind to one of: ${Object.keys(workspace.config.changeKinds)}` },
+    { frontMatterComment: `Change versionKind to one of: ${Object.keys(workspace.config.changeKinds).join(", ")}` },
   );
   return `${repoUrl}/new/${context.headRef}?filename=${filename}&value=${encodeURIComponent(content)}`;
 }

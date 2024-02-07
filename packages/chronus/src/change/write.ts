@@ -16,7 +16,7 @@ export function printChangeDescription(change: Omit<ChangeDescription, "id">, op
     packages: change.packages,
   };
   const frontMatterComment = options?.frontMatterComment && `# ${options?.frontMatterComment}`;
-  return ["---", frontMatterComment, dump(frontMatter, { quotingType: '"' }), "---", change.content]
+  return ["---", frontMatterComment, dump(frontMatter, { quotingType: '"' }).trimEnd(), "---", "", change.content]
     .filter(isDefined)
     .join("\n");
 }
