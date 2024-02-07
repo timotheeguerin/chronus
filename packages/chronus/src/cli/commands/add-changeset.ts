@@ -44,7 +44,7 @@ export async function addChangeset(cwd: string): Promise<void> {
     packages: packageToInclude.map((x) => x.name),
     changeKind,
   });
-  log("Wrote changeset ", pc.cyan(result));
+  log("Wrote change", pc.cyan(result));
 }
 
 async function promptForPackages(status: ChangeStatus): Promise<Package[] | undefined> {
