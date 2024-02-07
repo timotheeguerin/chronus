@@ -1,5 +1,5 @@
 import micromatch from "micromatch";
-import type { ChronusHost, GlobOptions } from "../utils/host.js";
+import type { ChronusHost, GlobOptions, MkdirOptions } from "../utils/host.js";
 import { getDirectoryPath } from "../utils/path-utils.js";
 
 export interface TestHost {
@@ -19,6 +19,7 @@ export function createTestHost(files: Record<string, string> = {}): TestHost {
       fs[path] = content;
       return Promise.resolve();
     },
+    mkdir: (_: string, _options?: MkdirOptions) => Promise.resolve(),
     access: (path: string) => {
       return path in fs ? Promise.resolve() : Promise.reject(new Error(`VFS: File ${path} does not exist`));
     },

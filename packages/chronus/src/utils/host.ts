@@ -14,6 +14,8 @@ export interface ChronusHost {
    * @param content Content of the file.
    */
   writeFile(path: string, content: string): Promise<void>;
+
+  mkdir(path: string, options?: MkdirOptions): Promise<void>;
   /**
    * Check if the file exists
    * @param path Path to the file.
@@ -21,6 +23,10 @@ export interface ChronusHost {
   access(path: string): Promise<void>;
 
   glob(pattern: string, options?: GlobOptions): Promise<string[]>;
+}
+
+export interface MkdirOptions {
+  recursive?: boolean;
 }
 
 export interface GlobOptions {

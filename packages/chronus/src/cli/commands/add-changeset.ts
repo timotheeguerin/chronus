@@ -39,12 +39,12 @@ export async function addChangeset(cwd: string): Promise<void> {
     return;
   }
   const result = await writeChangeDescription(host, workspace, {
-    id: "",
+    id: getChangesetId(await sourceControl.getCurrentBranch()),
     content: changesetContent,
     packages: packageToInclude.map((x) => x.name),
     changeKind,
   });
-  log("Wrote changeset ", result);
+  log("Wrote changeset ", pc.cyan(result));
 }
 
 async function promptForPackages(status: ChangeStatus): Promise<Package[] | undefined> {
@@ -96,4 +96,17 @@ async function promptForContent(): Promise<string | undefined> {
     message: "Enter a summary for the change",
   });
   return response.value;
+}
+
+function getChangesetId(branchName: string): string {
+  const date = new Date();
+  return [
+    branchName.replace(/\//g, "-"),
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+  ].join("-");
 }
