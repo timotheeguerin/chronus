@@ -6,8 +6,9 @@ try {
   // package only present in dev.
 }
 import { getOctokit, context as githubActionContext } from "@actions/github";
-import type { ChangeStatus, PackageStatus } from "@chronus/chronus";
-import { getWorkspaceStatus } from "@chronus/chronus";
+import type { ChangeStatus, ChronusWorkspace, PackageStatus } from "@chronus/chronus";
+import { NodeChronusHost, getWorkspaceStatus, loadChronusWorkspace } from "@chronus/chronus";
+import { printChangeDescription, resolveChangeRelativePath } from "@chronus/chronus/change";
 
 interface Context {
   repoName: string;
@@ -94,13 +95,15 @@ async function main() {
     owner: context.repoOwner,
     repo: context.repoName,
   });
-  const status = await getWorkspaceStatus(process.cwd());
+  const host = NodeChronusHost;
+  const workspace = await loadChronusWorkspace(host, process.cwd());
+  const status = await getWorkspaceStatus(host, workspace);
 
   if (!context.prTitle) {
     context.prTitle = pr.data.title;
   }
 
-  const content = resolveComment(status, pr.data, context as any);
+  const content = resolveComment(workspace, status, pr.data, context as any);
 
   const comments = await github.rest.issues.listComments({
     issue_number: context.prNumber,
@@ -126,7 +129,12 @@ async function main() {
   }
 }
 
-function resolveComment(status: ChangeStatus, pr: any, context: Required<Context>): string {
+function resolveComment(
+  workspace: ChronusWorkspace,
+  status: ChangeStatus,
+  pr: any,
+  context: Required<Context>,
+): string {
   const undocummentedPackages = [...status.packages.values()].filter((x) => x.changed && !x.documented);
   const documentedPackages = [...status.packages.values()].filter((x) => x.changed && x.documented);
 
@@ -134,7 +142,7 @@ function resolveComment(status: ChangeStatus, pr: any, context: Required<Context
 
   if (undocummentedPackages.length > 0) {
     content.push(
-      `:x: There is undocummented changes. Run \`chronus add\` to add a changeset or [click here](${addChangeSetUrl(undocummentedPackages, pr, context)}).`,
+      `:x: There is undocummented changes. Run \`chronus add\` to add a changeset or [click here](${addChangeSetUrl(workspace, undocummentedPackages, pr, context)}).`,
     );
     content.push("");
     content.push(`**The following packages have changes but are not documented.**`);
@@ -157,7 +165,12 @@ function resolveComment(status: ChangeStatus, pr: any, context: Required<Context
   return content.join("\n");
 }
 
-function addChangeSetUrl(undocummentedPackages: PackageStatus[], pr: any, context: Required<Context>): string {
+function addChangeSetUrl(
+  workspace: ChronusWorkspace,
+  undocummentedPackages: PackageStatus[],
+  pr: any,
+  context: Required<Context>,
+): string {
   const repoUrl = pr.head.repo.html_url;
 
   const date = new Date();
@@ -170,12 +183,16 @@ function addChangeSetUrl(undocummentedPackages: PackageStatus[], pr: any, contex
     date.getMinutes(),
     date.getSeconds(),
   ].join("-");
-  const filename = `.changeset/${id}.md`;
-  const content = renderChangesetTemplate(undocummentedPackages, context.prTitle);
+  const filename = resolveChangeRelativePath(id);
+  const content = printChangeDescription(
+    {
+      changeKind: Object.values(workspace.config.changeKinds)[0],
+      packages: undocummentedPackages.map((x) => x.package.name),
+      content: context.prTitle,
+    },
+    { frontMatterComment: `Change versionKind to one of: ${Object.keys(workspace.config.changeKinds).join(", ")}` },
+  );
   return `${repoUrl}/new/${context.headRef}?filename=${filename}&value=${encodeURIComponent(content)}`;
 }
 
-function renderChangesetTemplate(undocummentedPackages: PackageStatus[], title: string): string {
-  return ["---", ...undocummentedPackages.map((x) => `"${x.package.name}": patch`), "---", "", title].join("\n");
-}
 await main();

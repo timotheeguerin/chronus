@@ -1,8 +1,9 @@
-import readChangeset from "@changesets/parse";
 import type { GitRepository } from "../source-control/git.js";
 import type { ChronusHost } from "../utils/host.js";
 import type { Package } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
+import { changesRelativeDir } from "./common.js";
+import { parseChangeDescription } from "./parse.js";
 
 export type ChangeArea = "committed" | "untrackedOrModified" | "staged";
 
@@ -35,9 +36,9 @@ export async function findChangeStatus(
   const stagedFiles = await sourceControl.listUntrackedOrModifiedFiles();
   const publicPackages = workspace.packages;
 
-  const committed = await findAreaStatus(host, publicPackages, filesChanged);
-  const untrackedOrModified = await findAreaStatus(host, publicPackages, untrackedOrModifiedFiles);
-  const staged = await findAreaStatus(host, publicPackages, stagedFiles);
+  const committed = await findAreaStatus(host, workspace, filesChanged);
+  const untrackedOrModified = await findAreaStatus(host, workspace, untrackedOrModifiedFiles);
+  const staged = await findAreaStatus(host, workspace, stagedFiles);
   const packages = new Map<string, PackageStatus>();
   function track(tracking: Package[], data: { readonly changed?: ChangeArea; readonly documented?: ChangeArea }) {
     for (const pkg of tracking) {
@@ -81,11 +82,15 @@ export async function findChangeStatus(
   };
 }
 
-async function findAreaStatus(host: ChronusHost, packages: Package[], filesChanged: string[]): Promise<AreaStatus> {
+async function findAreaStatus(
+  host: ChronusHost,
+  workspace: ChronusWorkspace,
+  filesChanged: string[],
+): Promise<AreaStatus> {
   return {
     filesChanged,
-    packageChanged: findPackageChanges(packages, filesChanged),
-    packagesDocumented: await findAlreadyDocumentedChanges(host, packages, filesChanged),
+    packageChanged: findPackageChanges(workspace.packages, filesChanged),
+    packagesDocumented: await findAlreadyDocumentedChanges(host, workspace, filesChanged),
   };
 }
 
@@ -105,16 +110,16 @@ function findPackageChanges(packages: Package[], fileChanged: string[]): Package
 /** Find which packages changed from the file changed. */
 async function findAlreadyDocumentedChanges(
   host: ChronusHost,
-  packages: Package[],
+  workspace: ChronusWorkspace,
   fileChanged: string[],
 ): Promise<Package[]> {
   const packagesWithChangelog = new Set<Package>();
 
-  for (const filename of fileChanged.filter((x) => x.startsWith(".changeset/") && x.endsWith(".md"))) {
+  for (const filename of fileChanged.filter((x) => x.startsWith(changesRelativeDir) && x.endsWith(".md"))) {
     const file = await host.readFile(filename);
-    const changeset = readChangeset(file.content);
-    for (const release of changeset.releases) {
-      const pkg = packages.find((x) => x.name === release.name);
+    const changeset = parseChangeDescription(workspace.config, file);
+    for (const pkgName of changeset.packages) {
+      const pkg = workspace.packages.find((x) => x.name === pkgName);
       if (pkg) {
         packagesWithChangelog.add(pkg);
       }

@@ -7,6 +7,10 @@ module.exports = {
   rules: {
     "no-console": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { varsIgnorePattern: "^_", argsIgnorePattern: ".*", ignoreRestSiblings: true },
+    ],
+    "prefer-const": "warn",
   },
 };

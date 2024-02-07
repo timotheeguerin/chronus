@@ -1,11 +1,14 @@
 import pc from "picocolors";
 import { getWorkspaceStatus } from "../../change/get-workspace-status.js";
+import { NodeChronusHost, loadChronusWorkspace } from "../../index.js";
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
   console.log(...args);
 }
 export async function verifyChangeset(cwd: string): Promise<void> {
-  const status = await getWorkspaceStatus(cwd);
+  const host = NodeChronusHost;
+  const workspace = await loadChronusWorkspace(host, cwd);
+  const status = await getWorkspaceStatus(host, workspace);
   const undocummentedPackages = [...status.packages.values()].filter((x) => x.changed && !x.documented);
   const documentedPackages = [...status.packages.values()].filter((x) => x.changed && x.documented);
   if (undocummentedPackages.length > 0) {

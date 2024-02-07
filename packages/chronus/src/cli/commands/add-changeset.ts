@@ -1,10 +1,11 @@
-import writeChangeset from "@changesets/write";
 import pc from "picocolors";
 import prompts from "prompts";
 import type { ChangeStatus } from "../../change/find.js";
 import { findChangeStatus } from "../../change/index.js";
+import { writeChangeDescription } from "../../change/write.js";
+import type { ChangeKindResolvedConfig, ChronusResolvedConfig } from "../../config/types.js";
 import { createGitSourceControl } from "../../source-control/git.js";
-import { NodechronusHost } from "../../utils/node-host.js";
+import { NodeChronusHost } from "../../utils/node-host.js";
 import type { Package } from "../../workspace-manager/types.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
 
@@ -13,7 +14,7 @@ function log(...args: any[]) {
   console.log(...args);
 }
 export async function addChangeset(cwd: string): Promise<void> {
-  const host = NodechronusHost;
+  const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
   const sourceControl = createGitSourceControl(workspace.path);
   const status = await findChangeStatus(host, sourceControl, workspace);
@@ -23,24 +24,30 @@ export async function addChangeset(cwd: string): Promise<void> {
   }
   const packageToInclude = await promptForPackages(status);
 
-  if (packageToInclude.length === 0) {
+  if (packageToInclude === undefined || packageToInclude.length === 0) {
     log("No package selected. Exiting.\n");
     return;
   }
-  const changeType = await promptBumpType();
+  const changeKind = await promptChangeKind(workspace.config);
+  if (changeKind === undefined) {
+    log("No change kind selected, cancelling.");
+    return;
+  }
   const changesetContent = await promptForContent();
-
-  const result = await writeChangeset(
-    {
-      summary: changesetContent,
-      releases: packageToInclude.map((x) => ({ name: x.name, type: changeType })),
-    },
-    workspace.path,
-  );
-  log("Wrote changeset ", result);
+  if (changesetContent === undefined) {
+    log("No change content, cancelling.");
+    return;
+  }
+  const result = await writeChangeDescription(host, workspace, {
+    id: getChangesetId(await sourceControl.getCurrentBranch()),
+    content: changesetContent,
+    packages: packageToInclude.map((x) => x.name),
+    changeKind,
+  });
+  log("Wrote change", pc.cyan(result));
 }
 
-async function promptForPackages(status: ChangeStatus): Promise<Package[]> {
+async function promptForPackages(status: ChangeStatus): Promise<Package[] | undefined> {
   const undocummentedPackages = status.committed.packageChanged.filter(
     (x) => !status.all.packagesDocumented.find((y) => x.name === y.name),
   );
@@ -67,23 +74,21 @@ async function promptForPackages(status: ChangeStatus): Promise<Package[]> {
   return response.value;
 }
 
-async function promptBumpType(): Promise<"major" | "minor" | "patch" | "none"> {
+async function promptChangeKind(config: ChronusResolvedConfig): Promise<ChangeKindResolvedConfig | undefined> {
+  const choices: prompts.Choice[] = Object.entries(config.changeKinds).map(([key, value]) => {
+    return { title: value.title ?? key, value };
+  });
   const response = await prompts({
     type: "select",
     name: "value",
     instructions: false,
     message: "Describe the type of change",
-    choices: [
-      { title: "none", value: "none" },
-      { title: "patch", value: "patch" },
-      { title: "minor", value: "minor" },
-      { title: "major", value: "major" },
-    ],
+    choices,
   });
   return response.value;
 }
 
-async function promptForContent(): Promise<string> {
+async function promptForContent(): Promise<string | undefined> {
   const response = await prompts({
     type: "text",
     name: "value",
@@ -91,4 +96,17 @@ async function promptForContent(): Promise<string> {
     message: "Enter a summary for the change",
   });
   return response.value;
+}
+
+function getChangesetId(branchName: string): string {
+  const date = new Date();
+  return [
+    branchName.replace(/\//g, "-"),
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+  ].join("-");
 }

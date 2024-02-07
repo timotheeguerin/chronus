@@ -54,12 +54,6 @@ importers:
       '@changesets/apply-release-plan':
         specifier: ^7.0.0
         version: 7.0.0
-      '@changesets/parse':
-        specifier: ^0.4.0
-        version: 0.4.0
-      '@changesets/write':
-        specifier: ^0.3.0
-        version: 0.3.0
       globby:
         specifier: ^14.0.0
         version: 14.0.0
@@ -364,6 +358,7 @@ packages:
     dependencies:
       '@changesets/types': 6.0.0
       js-yaml: 3.14.1
+    dev: true
 
   /@changesets/pre@2.0.0:
     resolution: {integrity: sha512-HLTNYX/A4jZxc+Sq8D1AMBsv+1qD6rmmJtjsCJa/9MSRybdxh0mjbTvE6JYZQ/ZiQ0mMlDOlGPXTm9KLTU3jyw==}
@@ -402,6 +397,7 @@ packages:
       fs-extra: 7.0.1
       human-id: 1.0.2
       prettier: 2.8.8
+    dev: true
 
   /@cspell/cspell-bundled-dicts@8.3.2:
     resolution: {integrity: sha512-3ubOgz1/MDixJbq//0rQ2omB3cSdhVJDviERZeiREGz4HOq84aaK1Fqbw5SjNZHvhpoq+AYXm6kJbIAH8YhKgg==}
@@ -3188,6 +3184,7 @@ packages:
 
   /human-id@1.0.2:
     resolution: {integrity: sha512-UNopramDEhHJD+VR+ehk8rOslwSfByxPIZyJRfV739NDhN5LF1fa1MqnzKm2lGTQRjNrjK19Q5fhkgIfjlVUKw==}
+    dev: true
 
   /human-id@4.1.1:
     resolution: {integrity: sha512-3gKm/gCSUipeLsRYZbbdA1BD83lBoWUkZ7G9VFrhWPAU76KwYo5KR8V28bpoPm/ygy0x5/GCbpRQdY7VLYCoIg==}

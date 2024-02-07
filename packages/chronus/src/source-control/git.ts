@@ -73,6 +73,11 @@ export interface GitRepository {
    * @param dir Repository directory
    */
   listChangedFilesFromBase(baseBranch: string): Promise<string[]>;
+
+  /**
+   * Get the name of the current local branch.
+   */
+  getCurrentBranch(): Promise<string>;
 }
 
 export class GitError extends Error {
@@ -110,12 +115,12 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     getMergeBase,
     listChangedFilesFromBase,
     listChangedFilesSince,
+    getCurrentBranch,
   };
 
   async function getRepoRoot(): Promise<string> {
     if (repoRoot === undefined) {
-      const { stdout } = await execGit(["rev-parse", "--show-toplevel"], { repositoryPath });
-      repoRoot = stdout.toString().trim().replace(/\n|\r/g, "");
+      repoRoot = trimSingleLine(await execGit(["rev-parse", "--show-toplevel"], { repositoryPath }));
     }
     return repoRoot;
   }
@@ -180,6 +185,10 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
       await execGit(["for-each-ref", "--format", "%(upstream:short)", ref], { repositoryPath }),
     )[0];
   }
+
+  async function getCurrentBranch() {
+    return trimSingleLine(await execGit(["rev-parse", "--abbrev-ref", "HEAD"], { repositoryPath }));
+  }
 }
 
 function splitStdoutLines(result: ExecResult): string[] {
@@ -187,4 +196,8 @@ function splitStdoutLines(result: ExecResult): string[] {
     .toString()
     .split("\n")
     .filter((a) => a);
+}
+
+function trimSingleLine(result: ExecResult) {
+  return result.stdout.toString().trim().replace(/\n|\r/g, "");
 }
