@@ -2,6 +2,7 @@ import { resolvePath } from "../utils/index.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 
 export const changesRelativeDir = ".chronus/changes";
+
 export function resolveChangesDir(workspace: ChronusWorkspace) {
   return resolvePath(workspace.path, changesRelativeDir);
 }

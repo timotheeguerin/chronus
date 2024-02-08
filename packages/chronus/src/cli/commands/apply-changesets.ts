@@ -1,11 +1,13 @@
 import applyReleasePlan from "@changesets/apply-release-plan";
 import type { ReleasePlan as ChangesetReleasePlan, ComprehensiveRelease, NewChangeset } from "@changesets/types";
-import { parseChangeDescription } from "../../change/parse.js";
+import { changesRelativeDir } from "../../change/common.js";
+import { readChangeDescription } from "../../change/read.js";
 import type { ChangeDescription } from "../../change/types.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { ReleasePlan } from "../../release-plan/types.js";
 import type { ChronusHost } from "../../utils/host.js";
 import { NodeChronusHost } from "../../utils/node-host.js";
+import { resolvePath } from "../../utils/path-utils.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
 import type { ChronusWorkspace } from "../../workspace/types.js";
 
@@ -51,15 +53,8 @@ export async function resolveReleasePlan(
   workspace: ChronusWorkspace,
   options?: ApplyChangesetsOptions | undefined,
 ): Promise<ReleasePlan> {
-  const changelogs = await host.glob(".changeset/*.md", { baseDir: workspace.path });
-  const changesets = await Promise.all(
-    changelogs
-      .filter((x) => x.toLowerCase() !== ".changeset/readme.md")
-      .map(async (x) => {
-        const file = await host.readFile(x);
-        return { ...parseChangeDescription(workspace.config, file), id: x.slice(".changeset/".length, -3) };
-      }),
-  );
+  const changelogs = await host.glob(resolvePath(changesRelativeDir, "*.md"), { baseDir: workspace.path });
+  const changesets = await Promise.all(changelogs.map((x) => readChangeDescription(host, workspace, x)));
 
   const releasePlan = assembleReleasePlan(changesets, workspace, options);
   return releasePlan;
