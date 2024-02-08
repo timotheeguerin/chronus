@@ -1,5 +1,17 @@
 # @chronus/github-pr-commenter
 
+## 0.2.0
+
+### Minor Changes
+
+- Add ability to define a different set of change kinds. For example: Feature, Breaking, Deprecation, Fix, Internal, etc.
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies
+  - @chronus/chronus@0.6.0
+
 ## 0.1.7
 
 ### Patch Changes
