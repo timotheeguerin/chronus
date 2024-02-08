@@ -1,5 +1,11 @@
 # @chronus/chronus
 
+## 0.6.0
+
+### Minor Changes
+
+- Add ability to define a different set of change kinds. For example: Feature, Breaking, Deprecation, Fix, Internal, etc.
+
 ## 0.5.1
 
 ### Patch Changes
