@@ -23,7 +23,7 @@ if (stdout.trim() !== "") {
   const github = getOctokit(process.env.GITHUB_TOKEN ?? "");
   const prs = await github.rest.pulls.list({
     ...context.repo,
-    head: branchName,
+    head: `${context.repo.owner}:${branchName}`,
     base: "main",
     state: "open",
   });
