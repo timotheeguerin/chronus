@@ -2,7 +2,8 @@ name: Check Changes
 
 on:
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
 
 permissions:
   pull-requests: write
@@ -29,11 +30,10 @@ jobs:
       - run: pnpm build
         name: Build
 
-      - run: node ./packages/github-pr-commenter/cmd/cli.mjs verify
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        name: Create/update comment
+      # - run: node ./packages/github-pr-commenter/cmd/cli.mjs verify
+      #   env:
+      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      #   name: Create/update comment
 
       - run: node ./packages/chronus/cmd/cli.mjs verify
         name: Verify changes
-        if: always()
