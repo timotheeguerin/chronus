@@ -163,7 +163,7 @@ function resolveComment(
     }
     content.push("");
   } else {
-    content.push(`**All changed packages have been documented!**`);
+    content.push(`All changed packages have been documented.`);
   }
   return content.join("\n");
 }
