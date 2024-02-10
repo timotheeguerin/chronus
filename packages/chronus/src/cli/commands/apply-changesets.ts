@@ -3,6 +3,7 @@ import type { ReleasePlan as ChangesetReleasePlan, ComprehensiveRelease, NewChan
 import { changesRelativeDir } from "../../change/common.js";
 import { readChangeDescription } from "../../change/read.js";
 import type { ChangeDescription } from "../../change/types.js";
+import { deleteChangeDescription } from "../../change/write.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { ReleasePlan } from "../../release-plan/types.js";
 import type { ChronusHost } from "../../utils/host.js";
@@ -46,6 +47,9 @@ export async function applyChangesets(cwd: string, options?: ApplyChangesetsOpti
     packages: workspace.allPackages.map((x) => ({ packageJson: x.manifest as any, name: x.name, dir: x.relativePath })),
   } as const;
   applyReleasePlan(changeSetReleasePlan, manyPkgs, undefined);
+  for (const change of releasePlan.changes) {
+    deleteChangeDescription(host, workspace, change);
+  }
 }
 
 export async function resolveReleasePlan(

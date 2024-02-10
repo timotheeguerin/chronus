@@ -1,5 +1,5 @@
 import micromatch from "micromatch";
-import type { ChronusHost, GlobOptions, MkdirOptions } from "../utils/host.js";
+import type { ChronusHost, GlobOptions, MkdirOptions, RmOptions } from "../utils/host.js";
 import { getDirectoryPath } from "../utils/path-utils.js";
 
 export interface TestHost {
@@ -17,6 +17,18 @@ export function createTestHost(files: Record<string, string> = {}): TestHost {
     },
     writeFile: (path: string, content: string) => {
       fs[path] = content;
+      return Promise.resolve();
+    },
+    rm: (path: string, options?: RmOptions) => {
+      if (options?.recursive) {
+        for (const key of Object.keys(fs)) {
+          if (key.startsWith(path)) {
+            delete fs[key];
+          }
+        }
+      } else {
+        delete fs[path];
+      }
       return Promise.resolve();
     },
     mkdir: (_: string, _options?: MkdirOptions) => Promise.resolve(),
