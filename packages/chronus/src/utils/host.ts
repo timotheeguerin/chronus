@@ -14,6 +14,10 @@ export interface ChronusHost {
    * @param content Content of the file.
    */
   writeFile(path: string, content: string): Promise<void>;
+  /**
+   * @param path
+   */
+  rm(path: string, options?: RmOptions): Promise<void>;
 
   mkdir(path: string, options?: MkdirOptions): Promise<void>;
   /**
@@ -23,6 +27,11 @@ export interface ChronusHost {
   access(path: string): Promise<void>;
 
   glob(pattern: string, options?: GlobOptions): Promise<string[]>;
+}
+
+export interface RmOptions {
+  force?: boolean;
+  recursive?: boolean;
 }
 
 export interface MkdirOptions {

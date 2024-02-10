@@ -33,3 +33,12 @@ export async function writeChangeDescription(
 
   return filename;
 }
+
+export async function deleteChangeDescription(
+  host: ChronusHost,
+  workspace: ChronusWorkspace,
+  change: ChangeDescription,
+): Promise<void> {
+  const filename = resolveChangePath(workspace, change.id);
+  await host.rm(filename);
+}

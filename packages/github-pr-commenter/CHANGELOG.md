@@ -1,5 +1,12 @@
 # @chronus/github-pr-commenter
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @chronus/chronus@0.6.1
+
 ## 0.2.0
 
 ### Minor Changes
