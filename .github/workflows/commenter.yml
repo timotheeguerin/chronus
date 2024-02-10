@@ -1,0 +1,25 @@
+name: Check Changes
+
+on:
+  pull_request_target:
+    branches:
+      - main
+
+permissions:
+  pull-requests: write
+
+jobs:
+  changes:
+    if: ${{ github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'publish/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 ## Needed for changelog
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - run: npx -p @chronus/github-pr-commenter chronus-github-pr-commenter verify
+        name: Create/update comment
