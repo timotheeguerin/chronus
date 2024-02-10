@@ -23,5 +23,7 @@ jobs:
           node-version: 20.x
 
       # DO NOT BUILD ANYTHING FROM THE PR HERE https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
-      - run: npx -p @chronus/github-pr-commenter chronus-github-pr-commenter verify
+      - run: |
+          npm install -g @chronus/github-pr-commenter 
+          chronus-github-pr-commenter
         name: Create/update comment
