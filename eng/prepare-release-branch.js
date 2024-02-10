@@ -27,6 +27,7 @@ if (stdout.trim() !== "") {
     base: "main",
     state: "open",
   });
+  console.log("Found those prs", prs);
   const existing = prs.data[0];
   if (existing) {
     console.log("Existing, updating pr", existing.number);
