@@ -1,7 +1,30 @@
+const workspaceScheme = "workspace:";
+
 export function updateDependencyVersion(currentVersion: string, newVersion: string): string {
-  const currentVersionIsRange = currentVersion.startsWith("^") || currentVersion.startsWith("~");
-  if (currentVersionIsRange) {
+  if (currentVersion.startsWith("workspace:")) {
+    return updateWorkspaceDependencyVersion(currentVersion, newVersion);
+  }
+  if (currentVersion === "*") {
+    return currentVersion;
+  }
+  if (currentVersion.startsWith("^") || currentVersion.startsWith("~")) {
     return `${currentVersion[0]}${newVersion}`;
+  } else if (currentVersion.startsWith(">=")) {
+    return `${currentVersion.slice(0, 2)}${newVersion}`;
   }
   return newVersion;
+}
+
+/** For version that are prefixed with `workspace:` */
+function updateWorkspaceDependencyVersion(currentVersion: string, newVersion: string): string {
+  const versionWithoutScheme = currentVersion.slice(workspaceScheme.length);
+  switch (versionWithoutScheme) {
+    case "*":
+    case "^":
+    case "~":
+    case ">=":
+      return currentVersion;
+    default:
+      return `${workspaceScheme}${updateDependencyVersion(versionWithoutScheme, newVersion)}`;
+  }
 }
