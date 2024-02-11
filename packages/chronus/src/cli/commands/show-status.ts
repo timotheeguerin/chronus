@@ -1,6 +1,6 @@
-import type { VersionType } from "@changesets/types";
 import pc from "picocolors";
 import type { ReleaseAction, ReleasePlan } from "../../release-plan/types.js";
+import type { VersionType } from "../../types.js";
 import { NodeChronusHost } from "../../utils/node-host.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
 import { resolveReleasePlan, type ApplyChangesetsOptions } from "./apply-changesets.js";

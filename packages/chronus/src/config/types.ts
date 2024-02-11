@@ -1,4 +1,4 @@
-import type { VersionType } from "@changesets/types";
+import type { VersionType } from "../types.js";
 import type { WorkspaceType } from "../workspace-manager/types.js";
 
 export interface ChronusUserConfig {
