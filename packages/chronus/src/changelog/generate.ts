@@ -1,3 +1,4 @@
+import pluralize from "pluralize";
 import type { ChangeDescription } from "../change/types.js";
 import type { ChronusWorkspace } from "../index.js";
 import type { ReleaseAction } from "../release-plan/types.js";
@@ -18,7 +19,6 @@ export async function updateChangelog(
   const existingContent = await getExistingChangelog(host, changelogPath);
 
   const newContent = existingContent ? prependChangelogEntry(existingContent, wrapped) : newChangelog(pkg, wrapped);
-  console.log("New content", newContent);
   await host.writeFile(changelogPath, newContent);
 }
 
@@ -50,16 +50,25 @@ export function getChangelogEntry(workspace: ChronusWorkspace, action: ReleaseAc
     }
   }
 
-  const lines = [];
+  const lines = [`## ${action.newVersion}`, ""];
+  let hasChange = false;
   for (const changeKind of Object.values(workspace.config.changeKinds)) {
     const changes = changesByKind.get(changeKind.name);
     if (changes && changes.length > 0) {
-      lines.push(`### ${changeKind.name}`);
+      hasChange = true;
+      lines.push(`### ${changeKind.title ? pluralize(changeKind.title) : capitalize(changeKind.name)}`);
       lines.push(" ");
       for (const change of changes) {
         lines.push(`- ${change.content}`);
       }
     }
   }
+  if (!hasChange) {
+    lines.push("No changes, version bump only.");
+  }
   return lines.join("\n");
+}
+
+function capitalize(str: string): string {
+  return str[0].toUpperCase() + str.slice(1);
 }
