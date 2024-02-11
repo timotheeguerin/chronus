@@ -189,13 +189,22 @@ function addChangeSetUrl(
   const filename = resolveChangeRelativePath(id);
   const content = printChangeDescription(
     {
-      changeKind: Object.values(workspace.config.changeKinds)[0],
+      changeKind: getDefaultChangeKind(workspace),
       packages: undocummentedPackages.map((x) => x.package.name),
       content: context.prTitle,
     },
     { frontMatterComment: `Change versionKind to one of: ${Object.keys(workspace.config.changeKinds).join(", ")}` },
   );
   return `${repoUrl}/new/${context.headRef}?filename=${filename}&value=${encodeURIComponent(content)}`;
+}
+
+function getDefaultChangeKind(workspace: ChronusWorkspace): string {
+  const changeKinds = Object.values(workspace.config.changeKinds);
+  const patch = changeKinds.find((x) => x.versionType === "patch");
+  if (patch) return patch.name;
+  const none = changeKinds.find((x) => x.versionType === "none");
+  if (none) return none.name;
+  return changeKinds[0].name;
 }
 
 await main();
