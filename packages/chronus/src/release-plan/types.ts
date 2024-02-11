@@ -1,5 +1,5 @@
-import type { VersionType } from "@changesets/types";
 import type { ChangeDescription } from "../change/types.js";
+import type { VersionType } from "../types.js";
 
 export interface ReleaseAction {
   readonly packageName: string;

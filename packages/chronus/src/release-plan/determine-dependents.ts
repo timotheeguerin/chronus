@@ -1,5 +1,5 @@
-import type { DependencyType, VersionType } from "@changesets/types";
 import semverSatisfies from "semver/functions/satisfies.js";
+import type { DependencyType, VersionType } from "../types.js";
 import type { PackageJson } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { incrementVersion } from "./increment-version.js";

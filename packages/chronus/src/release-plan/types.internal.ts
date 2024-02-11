@@ -1,5 +1,5 @@
-import type { VersionType } from "@changesets/types";
 import type { VersionPolicy } from "../config/types.js";
+import type { VersionType } from "../types.js";
 
 export interface InternalReleaseAction {
   packageName: string;
