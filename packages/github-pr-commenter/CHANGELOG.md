@@ -1,5 +1,11 @@
 # @chronus/github-pr-commenter
 
+## 0.3.0
+
+### Features
+ 
+- Change logic to resolve the default changekind on github commenter
+
 ## 0.2.3
 
 ### Patch Changes

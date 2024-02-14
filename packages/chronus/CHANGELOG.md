@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.7.0
+
+### Features
+ 
+- Feature: New apply changes system that respect the change kinds names
+- Add new function to `@chornus/chronus/change` `readChangeDescriptions` that list all change descriptions in the workspace currently.
+
 ## 0.6.1
 
 ### Patch Changes
