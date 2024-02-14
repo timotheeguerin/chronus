@@ -1,23 +1,12 @@
-import { dump } from "js-yaml";
 import type { ChronusHost } from "../utils/host.js";
-import { isDefined } from "../utils/misc-utils.js";
+import { resolvePath } from "../utils/path-utils.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
+import { changesRelativeDir } from "./common.js";
 import { parseChangeDescription } from "./parse.js";
-import type { ChangeDescription, ChangeDescriptionFrontMatter } from "./types.js";
+import type { ChangeDescription } from "./types.js";
 
 export interface PrintChangeDescriptionOptions {
   readonly frontMatterComment?: string;
-}
-
-export function printChangeDescription(change: Omit<ChangeDescription, "id">, options?: PrintChangeDescriptionOptions) {
-  const frontMatter: ChangeDescriptionFrontMatter = {
-    changeKind: change.changeKind.name,
-    packages: change.packages,
-  };
-  const frontMatterComment = options?.frontMatterComment && `# ${options?.frontMatterComment}`;
-  return ["---", frontMatterComment, dump(frontMatter, { quotingType: '"' }).trimEnd(), "---", "", change.content]
-    .filter(isDefined)
-    .join("\n");
 }
 
 export async function readChangeDescription(
@@ -27,4 +16,14 @@ export async function readChangeDescription(
 ): Promise<ChangeDescription> {
   const file = await host.readFile(filename);
   return parseChangeDescription(workspace.config, file);
+}
+
+/** Read all change descriptions */
+export async function readChangeDescriptions(
+  host: ChronusHost,
+  workspace: ChronusWorkspace,
+): Promise<ChangeDescription[]> {
+  const changelogs = await host.glob(resolvePath(changesRelativeDir, "*.md"), { baseDir: workspace.path });
+  const changesets = await Promise.all(changelogs.map((x) => readChangeDescription(host, workspace, x)));
+  return changesets;
 }
