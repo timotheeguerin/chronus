@@ -40,7 +40,7 @@
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "devDependencies": {
     "@actions/github": "^6.0.0",
-    "@types/node": "^20.11.16",
+    "@types/node": "^20.11.19",
     "cspell": "^8.3.2",
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",
