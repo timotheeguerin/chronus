@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
 // @ts-check
 import { context, getOctokit } from "@actions/github";
 import { execSync } from "child_process";
