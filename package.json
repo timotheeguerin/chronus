@@ -41,6 +41,7 @@
   "devDependencies": {
     "@actions/github": "^6.0.0",
     "@types/node": "^20.11.19",
+    "@typescript-eslint/utils": "^7.0.2",
     "cspell": "^8.4.0",
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",
@@ -49,7 +50,8 @@
     "prettier-plugin-organize-imports": "^3.2.4",
     "rimraf": "^5.0.5",
     "syncpack": "^12.3.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^7.0.2"
   },
   "syncpack": {
     "dependencyTypes": [
