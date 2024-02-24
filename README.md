@@ -10,12 +10,26 @@ chronus goal is to provide changelog management. It was heavily inspired by [cha
 - Design to be able to plug in different monorepo(changesets also does that), source control system as a plugin system(only git added but left room for more).
 - Change can be defined in custom categories that allow more meaningful grouping of changes in the changelog. See [Change kinds doc](./docs/change-kinds.md)
 
-## Requirements
+## Documentation
 
-- Node 16+
-- pnpm 7.5.2+
+- [CLI](cli.md)
+
+Chronus functionalities:
+
+- [Configure change kinds](change-kinds.md) _Use a different set of change kinds from `major`, `minor`, `patch`_
 
 ## Develop
+
+- [CLI](cli.md)
+
+Chronus functionalities:
+
+- [Configure change kinds](change-kinds.md) _Use a different set of change kinds from `major`, `minor`, `patch`_
+
+### Requirements
+
+- Node LTS
+- `pnpm`
 
 [Click here to release current changes](https://github.com/timotheeguerin/chronus/pull/new/publish/auto-release)
 

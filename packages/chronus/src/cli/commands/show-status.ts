@@ -7,6 +7,7 @@ import { resolveReleasePlan, type ApplyChangesetsOptions } from "./apply-changes
 
 export interface ShowStatusOptions {
   readonly ignorePolicies?: boolean;
+  readonly only?: string[];
 }
 
 function log(...args: any[]) {
