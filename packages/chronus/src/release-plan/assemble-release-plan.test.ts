@@ -33,7 +33,7 @@ describe("Assemble Release Plan", () => {
   const baseConfig: ChronusResolvedConfig = { workspaceRoot: "proj", baseBranch: "main", changeKinds };
 
   describe("bumps package independently", () => {
-    it("only packages with changeset ", () => {
+    it("only packages with changeset", () => {
       const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
       expect(plan.actions).toHaveLength(1);
       expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
@@ -158,6 +158,31 @@ describe("Assemble Release Plan", () => {
         mkPkg("pkg-private-b", { private: true, dependencies: { "pkg-a": "1.0.0" } }),
       ]);
       const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
+      expect(plan.actions).toHaveLength(1);
+      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+    });
+  });
+
+  describe.only("partial release plan using only option", () => {
+    it("ignore other packages with changes", () => {
+      const workspace: Workspace = mkWorkspace([mkPkg("pkg-a", {}), mkPkg("pkg-b", {})]);
+      const plan = assembleReleasePlan(
+        [mkChange("pkg-a", "minor"), mkChange("pkg-b", "minor")],
+        createChronusWorkspace(workspace, baseConfig),
+        { only: ["pkg-a"] },
+      );
+      expect(plan.actions).toHaveLength(1);
+      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+    });
+
+    it("ignore packages that would need to be bumped as dependent", () => {
+      const workspace: Workspace = mkWorkspace([
+        mkPkg("pkg-a", {}),
+        mkPkg("pkg-b", { dependencies: { "pkg-a": "1.0.0" } }),
+      ]);
+      const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig), {
+        only: ["pkg-a"],
+      });
       expect(plan.actions).toHaveLength(1);
       expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
     });

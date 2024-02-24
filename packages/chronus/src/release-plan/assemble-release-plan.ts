@@ -4,7 +4,7 @@ import type { ChronusWorkspace } from "../workspace/types.js";
 import { applyDependents } from "./determine-dependents.js";
 import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
-import type { ReleaseAction, ReleasePlan } from "./types.js";
+import type { ReleaseAction, ReleasePlan, ReleasePlanChangeApplication } from "./types.js";
 
 export interface ApplyChangesetsOptions {
   readonly ignorePolicies?: boolean;
@@ -17,7 +17,7 @@ export function assembleReleasePlan(
   options?: ApplyChangesetsOptions,
 ): ReleasePlan {
   const packagesByName = new Map(workspace.allPackages.map((pkg) => [pkg.name, pkg]));
-  const requested = reduceChanges(changes, workspace, options?.only);
+  const { changeApplications, actions: requested } = reduceChanges(changes, workspace, options?.only);
 
   const dependentsGraph = getDependentsGraph(workspace.allPackages);
   const internalActions = new Map<string, InternalReleaseAction>();
@@ -63,7 +63,7 @@ export function assembleReleasePlan(
   });
 
   return {
-    changes,
+    changes: changeApplications,
     actions,
   };
 }
@@ -72,45 +72,53 @@ function reduceChanges(
   changes: ChangeDescription[],
   workspace: ChronusWorkspace,
   only?: string[],
-): Map<string, InternalReleaseAction> {
-  const releases: Map<string, InternalReleaseAction> = new Map();
-
-  changes.forEach((change) => {
+): { changeApplications: ReleasePlanChangeApplication[]; actions: Map<string, InternalReleaseAction> } {
+  const actions: Map<string, InternalReleaseAction> = new Map();
+  const changeApplications: ReleasePlanChangeApplication[] = [];
+  for (const change of changes) {
     const type = change.changeKind.versionType;
-    change.packages
-      // Filter out ignored packages because they should not trigger a release
-      // If their dependencies need updates, they will be added to releases by `determineDependents()` with release type `none`
-      .filter((name) => !workspace.getPackage(name).ignored)
+    // Filter out ignored packages because they should not trigger a release
+    // If their dependencies need updates, they will be added to releases by `determineDependents()` with release type `none`
+    const packages = change.packages
       .filter((name) => !only || only.includes(name))
-      .forEach((name) => {
-        let release: InternalReleaseAction | undefined = releases.get(name);
-        const pkg = workspace.allPackages.find((x) => x.name === name);
-        if (!pkg) {
-          throw new Error(
-            `"${change}" changeset mentions a release for a package "${name}" but such a package could not be found.`,
-          );
-        }
-        if (!release) {
-          release = {
-            packageName: name,
-            type,
-            oldVersion: pkg.version,
-            policy: { name: "<auto>", type: "independent", packages: [name] },
-          };
-        } else {
-          if (
-            type === "major" ||
-            ((release.type === "patch" || release.type === "none") && (type === "minor" || type === "patch"))
-          ) {
-            release.type = type;
-          }
-        }
+      .map((name) => workspace.getPackage(name))
+      .filter((pkg) => !pkg.ignored);
 
-        releases.set(name, release);
-      });
-  });
+    changeApplications.push({
+      usage: change.packages.length === packages.length ? "used" : packages.length === 0 ? "unused" : "partial",
+      packages: packages.map((pkg) => pkg.name),
+      change,
+    });
 
-  return releases;
+    packages.forEach((pkg) => {
+      const name = pkg.name;
+      let release: InternalReleaseAction | undefined = actions.get(name);
+      if (!pkg) {
+        throw new Error(
+          `"${change}" changeset mentions a release for a package "${name}" but such a package could not be found.`,
+        );
+      }
+      if (!release) {
+        release = {
+          packageName: name,
+          type,
+          oldVersion: pkg.version,
+          policy: { name: "<auto>", type: "independent", packages: [name] },
+        };
+      } else {
+        if (
+          type === "major" ||
+          ((release.type === "patch" || release.type === "none") && (type === "minor" || type === "patch"))
+        ) {
+          release.type = type;
+        }
+      }
+
+      actions.set(name, release);
+    });
+  }
+
+  return { actions, changeApplications };
 }
 
 function getNewVersion(release: InternalReleaseAction): string {
