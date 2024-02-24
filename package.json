@@ -16,7 +16,7 @@
     "watch": "tsc --build ./tsconfig.ws.json --watch",
     "build": "pnpm -r run build",
     "clean": "pnpm -r run clean && rimraf **/.temp/",
-    "lint": "pnpm -r run lint",
+    "lint": "eslint .",
     "format": "npm run -s prettier -- --write",
     "check-format": "npm run -s prettier -- --check",
     "check-version-mismatch": "syncpack list-mismatches",
@@ -40,7 +40,9 @@
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "devDependencies": {
     "@actions/github": "^6.0.0",
+    "@eslint/js": "^8.57.0",
     "@types/node": "^20.11.19",
+    "@typescript-eslint/parser": "^7.0.1",
     "@typescript-eslint/utils": "^7.0.2",
     "cspell": "^8.4.0",
     "eslint": "^8.56.0",

@@ -47,5 +47,5 @@ async function patchChangeDescription(
     ...change,
     packages: change.packages.filter((x) => !exclude.includes(x)),
   };
-  writeChangeDescription(host, workspace, newChange);
+  await writeChangeDescription(host, workspace, newChange);
 }

@@ -20,6 +20,7 @@ interface Context {
 }
 
 function getGithubContext(): Context | undefined {
+  // eslint-disable-next-line no-console
   console.log("Github context", githubActionContext);
 
   if (
@@ -116,14 +117,14 @@ async function main() {
   const existingComment = comments.data.find((x) => x.body?.includes(magicString));
 
   if (existingComment) {
-    github.rest.issues.updateComment({
+    await github.rest.issues.updateComment({
       comment_id: existingComment.id,
       owner: context.repoOwner,
       repo: context.repoName,
       body: content,
     });
   } else {
-    github.rest.issues.createComment({
+    await github.rest.issues.createComment({
       issue_number: context.prNumber,
       owner: context.repoOwner,
       repo: context.repoName,
