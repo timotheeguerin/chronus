@@ -20,7 +20,6 @@ interface Context {
 }
 
 function getGithubContext(): Context | undefined {
-  // eslint-disable-next-line no-console
   console.log("Github context", githubActionContext);
 
   if (
