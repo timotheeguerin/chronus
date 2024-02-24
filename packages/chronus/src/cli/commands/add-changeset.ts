@@ -64,6 +64,7 @@ async function promptForPackages(status: ChangeStatus): Promise<Package[] | unde
       ...undocummentedPackages.map((x) => ({
         title: x.name,
         value: x,
+        selected: true,
       })),
       ...documentedPackages.map((x) => ({
         title: `${x.name} ${pc.green("(Already documented)")}`,
