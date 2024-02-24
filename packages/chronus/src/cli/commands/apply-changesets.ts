@@ -8,8 +8,10 @@ import { loadChronusWorkspace } from "../../workspace/load.js";
 import type { ChronusWorkspace } from "../../workspace/types.js";
 
 export interface ApplyChangesetsOptions {
-  ignorePolicies?: boolean;
+  readonly ignorePolicies?: boolean;
+  readonly only?: string[];
 }
+
 export async function applyChangesets(cwd: string, options?: ApplyChangesetsOptions): Promise<void> {
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);

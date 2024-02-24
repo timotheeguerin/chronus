@@ -21,10 +21,12 @@ export function applyDependents({
   actions,
   workspace,
   dependentsGraph,
+  only,
 }: {
   actions: Map<string, InternalReleaseAction>;
   workspace: ChronusWorkspace;
   dependentsGraph: Map<string, string[]>;
+  only?: string[];
 }): boolean {
   let updated = false;
   // NOTE this is intended to be called recursively
@@ -40,6 +42,7 @@ export function applyDependents({
       continue;
     }
     pkgDependents
+      .filter((x) => !only || only.includes(x))
       .map((x) => workspace.getPackage(x))
       .map((dependentPackage) => {
         let type: VersionType | undefined;

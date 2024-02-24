@@ -27,23 +27,35 @@ async function main() {
       "version",
       "Apply change changeset and bump the versions",
       (cmd) =>
-        cmd.option("ignore-policies", {
-          type: "boolean",
-          description: "Ignore versioning policies and bump each package independently",
-          default: false,
-        }),
-      (args) => applyChangesets(process.cwd(), { ignorePolicies: args.ignorePolicies }),
+        cmd
+          .option("ignore-policies", {
+            type: "boolean",
+            description: "Ignore versioning policies and bump each package independently",
+            default: false,
+          })
+          .option("only", {
+            type: "string",
+            array: true,
+            description: "Only bump the specified package(s)",
+          }),
+      (args) => applyChangesets(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only }),
     )
     .command(
       "status",
       "Display the status of changes. What will happen during the next release",
       (cmd) =>
-        cmd.option("ignore-policies", {
-          type: "boolean",
-          description: "Ignore versioning policies and bump each package independently",
-          default: false,
-        }),
-      (args) => showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies }),
+        cmd
+          .option("ignore-policies", {
+            type: "boolean",
+            description: "Ignore versioning policies and bump each package independently",
+            default: false,
+          })
+          .option("only", {
+            type: "string",
+            array: true,
+            description: "Only bump the specified package(s)",
+          }),
+      (args) => showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only }),
     )
     .parse();
 }

@@ -7,7 +7,8 @@ import type { InternalReleaseAction } from "./types.internal.js";
 import type { ReleaseAction, ReleasePlan } from "./types.js";
 
 export interface ApplyChangesetsOptions {
-  ignorePolicies?: boolean;
+  readonly ignorePolicies?: boolean;
+  readonly only?: string[];
 }
 
 export function assembleReleasePlan(
@@ -16,7 +17,7 @@ export function assembleReleasePlan(
   options?: ApplyChangesetsOptions,
 ): ReleasePlan {
   const packagesByName = new Map(workspace.allPackages.map((pkg) => [pkg.name, pkg]));
-  const requested = reduceChanges(changes, workspace);
+  const requested = reduceChanges(changes, workspace, options?.only);
 
   const dependentsGraph = getDependentsGraph(workspace.allPackages);
   const internalActions = new Map<string, InternalReleaseAction>();
@@ -24,6 +25,7 @@ export function assembleReleasePlan(
     for (const policy of workspace.config.versionPolicies) {
       if (policy.type === "lockstep") {
         for (const pkgName of policy.packages) {
+          if (options?.only && !options.only.includes(pkgName)) continue;
           const pkg = packagesByName.get(pkgName);
           if (!pkg) throw new Error(`Could not find package ${pkgName}`);
           internalActions.set(pkgName, {
@@ -49,6 +51,7 @@ export function assembleReleasePlan(
     actions: internalActions,
     workspace,
     dependentsGraph,
+    only: options?.only,
   });
 
   const actions = [...internalActions.values()].map((incompleteRelease): ReleaseAction => {
@@ -65,7 +68,11 @@ export function assembleReleasePlan(
   };
 }
 
-function reduceChanges(changes: ChangeDescription[], workspace: ChronusWorkspace): Map<string, InternalReleaseAction> {
+function reduceChanges(
+  changes: ChangeDescription[],
+  workspace: ChronusWorkspace,
+  only?: string[],
+): Map<string, InternalReleaseAction> {
   const releases: Map<string, InternalReleaseAction> = new Map();
 
   changes.forEach((change) => {
@@ -74,6 +81,7 @@ function reduceChanges(changes: ChangeDescription[], workspace: ChronusWorkspace
       // Filter out ignored packages because they should not trigger a release
       // If their dependencies need updates, they will be added to releases by `determineDependents()` with release type `none`
       .filter((name) => !workspace.getPackage(name).ignored)
+      .filter((name) => !only || only.includes(name))
       .forEach((name) => {
         let release: InternalReleaseAction | undefined = releases.get(name);
         const pkg = workspace.allPackages.find((x) => x.name === name);
