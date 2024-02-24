@@ -10,9 +10,14 @@ import { assembleReleasePlan } from "./assemble-release-plan.js";
 describe("Assemble Release Plan", () => {
   let idCounter = 0;
   const changeKinds = addNameToChangeKinds(defaultChangeKinds);
-  function mkChange(pkg: string, type: VersionType): ChangeDescription {
+  function mkChange(pkg: string | string[], type: VersionType): ChangeDescription {
     const id = String(idCounter++);
-    return { id, content: `Changeset ${id}`, changeKind: changeKinds[type], packages: [pkg] };
+    return {
+      id,
+      content: `Changeset ${id}`,
+      changeKind: changeKinds[type],
+      packages: Array.isArray(pkg) ? pkg : [pkg],
+    };
   }
 
   function mkWorkspace(packages: Package[]): Workspace {
@@ -163,7 +168,7 @@ describe("Assemble Release Plan", () => {
     });
   });
 
-  describe.only("partial release plan using only option", () => {
+  describe("partial release plan using only option", () => {
     it("ignore other packages with changes", () => {
       const workspace: Workspace = mkWorkspace([mkPkg("pkg-a", {}), mkPkg("pkg-b", {})]);
       const plan = assembleReleasePlan(
@@ -185,6 +190,31 @@ describe("Assemble Release Plan", () => {
       });
       expect(plan.actions).toHaveLength(1);
       expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+    });
+
+    it("report changes as fully used if bumping all packages tagged in it", () => {
+      const workspace: Workspace = mkWorkspace([mkPkg("pkg-a", {}), mkPkg("pkg-b", {}), mkPkg("pkg-c", {})]);
+      const plan = assembleReleasePlan(
+        [mkChange(["pkg-a", "pkg-b"], "minor")],
+        createChronusWorkspace(workspace, baseConfig),
+        {
+          only: ["pkg-a", "pkg-b"],
+        },
+      );
+      expect(plan.changes).toHaveLength(1);
+      expect(plan.changes[0]).toMatchObject({ usage: "used", packages: ["pkg-a", "pkg-b"] });
+    });
+    it("report changes as partially used if only bumping some packages tagged in it", () => {
+      const workspace: Workspace = mkWorkspace([mkPkg("pkg-a", {}), mkPkg("pkg-b", {})]);
+      const plan = assembleReleasePlan(
+        [mkChange(["pkg-a", "pkg-b"], "minor")],
+        createChronusWorkspace(workspace, baseConfig),
+        {
+          only: ["pkg-a"],
+        },
+      );
+      expect(plan.changes).toHaveLength(1);
+      expect(plan.changes[0]).toMatchObject({ usage: "partial", packages: ["pkg-a"] });
     });
   });
 });
