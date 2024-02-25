@@ -5,7 +5,7 @@
 ### Features
  
 - Feature: New apply changes system that respect the change kinds names
-- Add new function to `@chornus/chronus/change` `readChangeDescriptions` that list all change descriptions in the workspace currently.
+- Add new function to `@chronus/chronus/change` `readChangeDescriptions` that list all change descriptions in the workspace currently.
 
 ## 0.6.1
 
@@ -56,7 +56,7 @@
 
 ### Patch Changes
 
-- f08a722: Fix various issues(Missing depedencies on globby), resolving correct upstream branch
+- f08a722: Fix various issues(Missing dependencies on globby), resolving correct upstream branch
 
 ## 0.2.0
 

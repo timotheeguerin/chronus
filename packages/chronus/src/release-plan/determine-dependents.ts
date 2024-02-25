@@ -167,7 +167,7 @@ function getDependencyVersionRanges(
           // intentionally keep other workspace ranges untouched
           // this has to be fixed but this should only be done when adding appropriate tests
           versionRange === "workspace:*"
-            ? // workspace:* actually means the current exact version, and not a wildcard similar to a reguler * range
+            ? // workspace:* actually means the current exact version, and not a wildcard similar to a regular * range
               dependencyRelease.oldVersion
             : versionRange.replace(/^workspace:/, ""),
       });

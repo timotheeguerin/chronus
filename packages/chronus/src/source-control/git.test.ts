@@ -186,12 +186,12 @@ describe("git", () => {
       await execAsync("git", ["checkout", "-b", "feat-1"], { cwd });
       await addFileAndCommit("Feat commit", ["feat-1.ts", "feat-2.ts"]);
 
-      await testDir.addFile("uncommited.ts");
-      await git.add("uncommited.ts");
+      await testDir.addFile("uncommitted.ts");
+      await git.add("uncommitted.ts");
       await testDir.addFile("untracked.ts");
     });
 
-    it("shows every change since the inital commit", async () => {
+    it("shows every change since the initial commit", async () => {
       expect(await git.listChangedFilesSince(initialCommit)).toEqual([
         "feat-1.ts",
         "feat-2.ts",

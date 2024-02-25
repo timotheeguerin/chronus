@@ -22,7 +22,7 @@
     "check-version-mismatch": "syncpack list-mismatches",
     "fix-version-mismatch": "syncpack fix-mismatches",
     "prettier": "prettier --config ./.prettierrc.yaml **/*.{ts,js,cjs,mjs,json,yml,yaml,md}",
-    "cspell": "cspell **/*.md **/*.ts"
+    "cspell": "cspell --no-progress ."
   },
   "engines": {
     "node": ">=16.0.0",
