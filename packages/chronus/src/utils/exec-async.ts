@@ -2,9 +2,9 @@ import type { SpawnOptions } from "child_process";
 import crosspawn from "cross-spawn";
 
 export interface ExecResult {
-  code: number | null;
-  stdout: Buffer;
-  stderr: Buffer;
+  readonly code: number | null;
+  readonly stdout: Buffer;
+  readonly stderr: Buffer;
 }
 export function execAsync(cmd: string, args: string[], opts: SpawnOptions): Promise<ExecResult> {
   return new Promise((resolve, reject) => {
