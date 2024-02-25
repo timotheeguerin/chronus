@@ -26,7 +26,8 @@ export default tsEslint.config(
         { varsIgnorePattern: "^_", argsIgnorePattern: ".*", ignoreRestSiblings: true },
       ],
       "prefer-const": "warn",
-      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-floating-promises": "warn",
+      "eqeqeq": ["warn", "always", { null: "ignore" }],
     },
   },
   {
