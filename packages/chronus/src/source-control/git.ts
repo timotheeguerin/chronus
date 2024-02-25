@@ -34,7 +34,7 @@ export interface GitRepository {
   listUntrackedFiles(): Promise<string[]>;
 
   /**
-   * List tracked files that are modfied since last commit.(Does not include staged files.)
+   * List tracked files that are modified since last commit.(Does not include staged files.)
    * ```bash
    * git ls-files --modified --exclude-standard
    * ```

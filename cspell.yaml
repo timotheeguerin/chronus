@@ -10,5 +10,4 @@ ignorePaths:
   - "**/node_modules/**"
   - "**/dist/**"
   - "**/dist-dev/**"
-enableFiletypes:
-  - cadl
+  - pnpm-lock.yaml

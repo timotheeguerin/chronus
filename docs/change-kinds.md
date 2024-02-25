@@ -1,6 +1,6 @@
 # Change kinds
 
-Semver is great and understood a major for breaking changes, minor for new features and patch for bug fixes. However sometimes you might just want to be a little more descriptive or add extra chnage types to categorize in the changelog.
+Semver is great and understood a major for breaking changes, minor for new features and patch for bug fixes. However sometimes you might just want to be a little more descriptive or add extra change types to categorize in the changelog.
 
 This can be done in the config by setting `changeKinds`.s
 
