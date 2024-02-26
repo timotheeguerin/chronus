@@ -41,7 +41,7 @@
   "devDependencies": {
     "@actions/github": "^6.0.0",
     "@eslint/js": "^8.57.0",
-    "@types/node": "^20.11.19",
+    "@types/node": "^20.11.20",
     "@typescript-eslint/parser": "^7.0.1",
     "@typescript-eslint/utils": "^7.0.2",
     "cspell": "^8.4.0",
