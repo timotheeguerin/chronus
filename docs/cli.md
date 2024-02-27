@@ -29,5 +29,24 @@ This allows to ignore the [version policies](version-policies.md) and bump the p
 Only bumps the packages specified. This can be useful if wanting to only release certain packages. This command will extract the change descriptions for the specified packages and bump the version of those packages. If a change applied to a package is not specified in the `--only` option it will be ignored. If a change is specified in both it will be applied and the packages included in the `only` array will be removed from the change description file.
 
 ```bash
-chronus version --only @my-scope/my-package1 --only @my-scope/my-package2
+$ chronus version --only @my-scope/my-package1 --only @my-scope/my-package2
+```
+
+## `chronus pack`
+
+Pack all the packages configured for the workspace.
+
+By default it will have the same effect as `npm pack` run in each package directory.
+
+### Options
+
+#### `--pack-destination`
+
+Directory where the packed packages will be placed. By default each tar file will be placed in the package directory.
+
+```bash
+$ chronus pack --pack-destination /temp/artifacts
+
+✔ @chronus/chronus packed in chronus-chronus-0.7.0.tgz (94.5 kB)
+✔ @chronus/github-pr-commenter packed in chronus-github-pr-commenter-0.3.0.tgz (5.49 kB)
 ```
