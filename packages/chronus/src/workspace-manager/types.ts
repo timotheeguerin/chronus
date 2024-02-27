@@ -1,4 +1,5 @@
 export type WorkspaceType = "npm" | "pnpm" | "rush";
+
 export interface Workspace {
   readonly type: WorkspaceType;
   readonly path: string;
