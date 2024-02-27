@@ -1,9 +1,9 @@
 import pc from "picocolors";
 import { BasicReporter } from "./basic.js";
-import type { Task } from "./types.js";
+import type { Reporter, Task } from "./types.js";
 import { createSpinner } from "./utils.js";
 
-export class DynamicReporter extends BasicReporter {
+export class DynamicReporter extends BasicReporter implements Reporter {
   async task(message: string, action: (task: Task) => Promise<void>) {
     if (!this.isTTY) {
       return super.task(message, action);

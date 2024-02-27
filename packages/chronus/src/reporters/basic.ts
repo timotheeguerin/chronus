@@ -1,8 +1,8 @@
 import pc from "picocolors";
 import { isCI } from "std-env";
-import type { Task } from "./types.js";
+import type { Reporter, Task } from "./types.js";
 
-export class BasicReporter {
+export class BasicReporter implements Reporter {
   isTTY = process.stdout?.isTTY && !isCI;
 
   log(message: string) {

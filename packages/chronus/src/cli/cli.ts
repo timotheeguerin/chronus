@@ -1,5 +1,6 @@
 import "source-map-support/register.js";
 import yargs from "yargs";
+import { DynamicReporter, type Reporter } from "../reporters/index.js";
 import { addChangeset } from "./commands/add-changeset.js";
 import { applyChangesets } from "./commands/apply-changesets.js";
 import { listPendingPublish } from "./commands/list-pending-publish.js";
@@ -78,10 +79,19 @@ async function main() {
           type: "string",
           description: "Containing directory for the packed packages. Default to each package own directory.",
         }),
-      (args) => pack(process.cwd(), { packDestination: args.packDestination }),
+      withReporter((args) =>
+        pack({ reporter: args.reporter, dir: process.cwd(), packDestination: args.packDestination }),
+      ),
     )
     .demandCommand(1, "You need at least one command before moving on")
     .parse();
+}
+
+function withReporter<T>(fn: (reporter: T & { reporter: Reporter }) => Promise<void>): (args: T) => Promise<void> {
+  return (args: T) => {
+    const reporter = new DynamicReporter();
+    return fn({ reporter, ...args });
+  };
 }
 
 main().catch((error) => {
