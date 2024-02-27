@@ -93,6 +93,9 @@ importers:
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
+      std-env:
+        specifier: ^3.7.0
+        version: 3.7.0
       vitest:
         specifier: ^1.3.1
         version: 1.3.1(@types/node@20.11.20)

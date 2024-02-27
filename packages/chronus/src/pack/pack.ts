@@ -57,9 +57,9 @@ interface Command {
   readonly args: string[];
 }
 
-function getPnpmCommand(destination: string): Command {
-  return { command: "pnpm", args: ["pack", "--json", "--pack-destination", destination] };
-}
+// function getPnpmCommand(destination: string): Command {
+//   return { command: "pnpm", args: ["pack", "--json", "--pack-destination", destination] };
+// }
 function getNpmCommand(destination: string): Command {
   return { command: "npm", args: ["pack", "--json", "--pack-destination", destination] };
 }
