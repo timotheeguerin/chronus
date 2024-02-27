@@ -3,6 +3,7 @@ import yargs from "yargs";
 import { addChangeset } from "./commands/add-changeset.js";
 import { applyChangesets } from "./commands/apply-changesets.js";
 import { listPendingPublish } from "./commands/list-pending-publish.js";
+import { pack } from "./commands/pack.js";
 import { showStatus } from "./commands/show-status.js";
 import { verifyChangeset } from "./commands/verify-changeset.js";
 
@@ -68,6 +69,16 @@ async function main() {
           default: false,
         }),
       (args) => listPendingPublish(process.cwd(), { json: args.json }),
+    )
+    .command(
+      ["pack"],
+      "Pack all packages that can be published",
+      (cmd) =>
+        cmd.option("pack-destination", {
+          type: "string",
+          description: "Containing directory for the packed packages. Default to each package own directory.",
+        }),
+      (args) => pack(process.cwd(), { packDestination: args.packDestination }),
     )
     .demandCommand(1, "You need at least one command before moving on")
     .parse();
