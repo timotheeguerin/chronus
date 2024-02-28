@@ -92,10 +92,17 @@ async function main() {
     .command(
       ["publish"],
       "Publish all the packages that can be published. If a package is already published at the same version, it will be skipped.",
+      (cmd) =>
+        cmd.option("access", {
+          type: "string",
+          choices: ["public", "restricted"],
+          description: "Tells the registry whether this package should be published as public or restricted",
+        }),
       withReporter((args) =>
         publish({
           reporter: args.reporter,
           dir: process.cwd(),
+          access: args.access,
         }),
       ),
     )
