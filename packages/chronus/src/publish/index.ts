@@ -1,1 +1,1 @@
-export {publishPackage} from "./publish-package.js";
+export { publishPackage } from "./publish-package.js";
