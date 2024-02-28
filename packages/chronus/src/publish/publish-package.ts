@@ -35,7 +35,7 @@ export async function publishPackage(workspace: ChronusWorkspace, pkg: Package, 
       ) {
         // eslint-disable-next-line no-console
         console.error(
-          `an error occurred while publishing ${pkg.name}: ${json.error.code}`,
+          `\nAn error occurred while publishing ${pkg.name}: ${json.error.code}`,
           json.error.summary,
           json.error.detail ? "\n" + json.error.detail : "",
         );
@@ -50,7 +50,8 @@ export async function publishPackage(workspace: ChronusWorkspace, pkg: Package, 
   }
 
   const parsedResult = getLastJsonObject(result.stdout.toString());
-  console.log("Parsed result", parsedResult);
+  // eslint-disable-next-line no-console
+  console.log("\nParsed result", parsedResult);
   return {
     published: true,
   };
