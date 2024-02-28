@@ -152,6 +152,8 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
 
+  packages/dummy: {}
+
   packages/github-pr-commenter:
     dependencies:
       '@actions/github':
