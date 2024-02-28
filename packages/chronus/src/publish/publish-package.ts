@@ -7,17 +7,34 @@ import type { ChronusWorkspace } from "../workspace/index.js";
 export interface PublishPackageOptions {
 }
 
+export type PublishedPackageResult = PublishedPackageSuccess | PublishedPackageFailure;
+
+export interface PublishedPackageSuccess{
+  readonly published: true;
+}
+
+export interface PublishedPackageFailure{
+  readonly published: false;
+}
+
 export async function publishPackage(workspace: ChronusWorkspace, pkg: Package, options: PublishPackageOptions = {}) {
   const pkgDir = resolvePath(workspace.path, pkg.relativePath);
   const command = getPublishCommand(workspace.workspace.type);
   const result = await execAsync(command.command, command.args, { cwd: pkgDir });
   if (result.code !== 0) {
-    const parsedResult = getLastJsonObject(result.stderr.toString()) ?? getLastJsonObject(result.stdout.toString());
-    throw new Error(`Failed to publish package ${pkg.name} at ${pkg.relativePath}. Log:\n${result.stdall}`);
+    const parsedError = getLastJsonObject(result.stderr.toString()) ?? getLastJsonObject(result.stdout.toString());
+    // eslint-disable-next-line no-console
+    console.log(parsedError);
+
+    return {
+      published: false,
+    }
   }
 
+  const parsedResult =  getLastJsonObject(result.stdout.toString());
+  console.log("Parsed result", parsedResult);
   return {
-   
+    published: true,
   };
 }
 

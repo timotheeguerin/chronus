@@ -1,5 +1,7 @@
-export const spinnerFrames =
-  process.platform === "win32" ? ["-", "\\", "|", "/"] : ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+import isUnicodeSupported from "is-unicode-supported";
+export const spinnerFrames = isUnicodeSupported()
+  ? ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+  : ["-", "\\", "|", "/"];
 
 export function createSpinner() {
   let index = 0;

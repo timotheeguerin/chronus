@@ -1,6 +1,7 @@
 import pc from "picocolors";
 import { publishPackage } from "../../publish/publish-package.js";
 import type { Reporter } from "../../reporters/index.js";
+import { findUnpublishedPackages } from "../../unpublished-packages/index.js";
 import { NodeChronusHost } from "../../utils/index.js";
 import { loadChronusWorkspace } from "../../workspace/index.js";
 
@@ -10,12 +11,18 @@ export interface PublishOptions {
   readonly opt?: string;
 }
 
-export async function publish({ reporter, dir, otp }: PublishOptions) {
+export async function publish({ reporter, dir }: PublishOptions) {
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, dir);
-  for (const pkg of workspace.packages) {
+  const packageToPublish = await findUnpublishedPackages(workspace);
+  for (const pkg of packageToPublish) {
     await reporter.task(`${pc.yellow(pkg.name)} packing`, async (task) => {
-      const result = await publishPackage(workspace, pkg, { otp });
+      const result = await publishPackage(workspace, pkg, {});
+      if (result.published) {
+        return "success";
+      } else {
+        return "failure";
+      }
     });
   }
 }
