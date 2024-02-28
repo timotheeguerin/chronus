@@ -10,17 +10,38 @@ export interface PublishPackageOptions {
   readonly access?: string;
 }
 
-export type PublishedPackageResult = PublishedPackageSuccess | PublishedPackageFailure;
+export type PublishPackageResult = PublishedPackageSuccess | PublishedPackageFailure;
 
 export interface PublishedPackageSuccess {
   readonly published: true;
+  readonly name: string;
+  readonly version: string;
+  readonly filename: string;
+  readonly size: number;
+  readonly unpackedSize: number;
 }
 
 export interface PublishedPackageFailure {
   readonly published: false;
 }
 
-export async function publishPackage(workspace: ChronusWorkspace, pkg: Package, options: PublishPackageOptions = {}) {
+/** Npm publish json output. */
+interface NpmPublishResult {
+  readonly id: string;
+  readonly name: string;
+  readonly version: string;
+  readonly filename: string;
+  readonly size: number;
+  readonly unpackedSize: number;
+  readonly shasum: string;
+  readonly integrity: string;
+}
+
+export async function publishPackage(
+  workspace: ChronusWorkspace,
+  pkg: Package,
+  options: PublishPackageOptions = {},
+): Promise<PublishPackageResult> {
   const pkgDir = resolvePath(workspace.path, pkg.relativePath);
   const command = getPublishCommand(workspace.workspace.type, options);
   const result = await execAsync(command.command, command.args, { cwd: pkgDir });
@@ -49,11 +70,15 @@ export async function publishPackage(workspace: ChronusWorkspace, pkg: Package, 
     };
   }
 
-  const parsedResult = getLastJsonObject(result.stdout.toString());
-  // eslint-disable-next-line no-console
-  console.log("\nParsed result", parsedResult);
+  const json: Record<string, NpmPublishResult> = getLastJsonObject(result.stdout.toString());
+  const parsedResult = json[pkg.name];
   return {
     published: true,
+    name: parsedResult.name,
+    version: parsedResult.version,
+    filename: parsedResult.filename,
+    size: parsedResult.size,
+    unpackedSize: parsedResult.unpackedSize,
   };
 }
 
