@@ -4,8 +4,8 @@
   "description": "chronus",
   "type": "module",
   "bin": {
-    "kro": "./cmd/cli.mjs",
-    "chronus": "./cmd/cli.mjs"
+    "kro": "cmd/cli.mjs",
+    "chronus": "cmd/cli.mjs"
   },
   "main": "dist/index.js",
   "exports": {
@@ -36,6 +36,7 @@
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "dependencies": {
     "globby": "^14.0.1",
+    "is-unicode-supported": "^2.0.0",
     "js-yaml": "^4.1.0",
     "micromatch": "^4.0.5",
     "pacote": "^17.0.6",

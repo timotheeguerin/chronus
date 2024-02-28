@@ -1,4 +1,4 @@
-name: Check Changes
+name: Make Change Comment
 
 on:
   pull_request_target:
@@ -18,7 +18,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0 ## Needed for changelog
       - name: Use Node.js 20.x
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20.x
 

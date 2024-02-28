@@ -1,10 +1,10 @@
 import pc from "picocolors";
 import { BasicReporter } from "./basic.js";
-import type { Reporter, Task } from "./types.js";
+import type { Reporter, Task, TaskStatus } from "./types.js";
 import { createSpinner } from "./utils.js";
 
 export class DynamicReporter extends BasicReporter implements Reporter {
-  async task(message: string, action: (task: Task) => Promise<void>) {
+  async task(message: string, action: (task: Task) => Promise<TaskStatus | void>) {
     if (!this.isTTY) {
       return super.task(message, action);
     }
@@ -20,9 +20,9 @@ export class DynamicReporter extends BasicReporter implements Reporter {
     const interval = setInterval(() => {
       this.#printProgress(`\r${pc.yellow(spinner())} ${current}`);
     }, 300);
-    await action(task);
+    const status = await action(task);
     clearInterval(interval);
-    this.#printProgress(`\r${pc.green("✔")} ${current}\n`);
+    this.#printProgress(`\r${this.getStatusChar(status)} ${current}\n`);
   }
 
   #printProgress(content: string) {
