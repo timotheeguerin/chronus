@@ -68,6 +68,8 @@ export async function publishPackage(
   }
 
   const json: Record<string, NpmPublishResult> = getLastJsonObject(result.stdout.toString());
+  // eslint-disable-next-line no-console
+  console.log(json);
   const parsedResult = json[pkg.name];
   return {
     published: true,
