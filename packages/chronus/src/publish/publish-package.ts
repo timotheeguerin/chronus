@@ -162,5 +162,5 @@ function getPnpmCommand(fileOrDir: string, options: PublishPackageOptions): Comm
   if (options.registry) {
     args.push("--registry", options.registry);
   }
-  return { command: "npm", args };
+  return { command: "pnpm", args };
 }
