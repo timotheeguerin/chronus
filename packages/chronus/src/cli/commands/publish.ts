@@ -10,9 +10,10 @@ export interface PublishOptions {
   readonly pattern: string;
   readonly otp?: string;
   readonly access?: string;
+  readonly registry?: string;
 }
 
-export async function publish({ reporter, pattern, access, otp }: PublishOptions) {
+export async function publish({ reporter, pattern, ...others }: PublishOptions) {
   const host = NodeChronusHost;
   const filesOrFolders = await host.glob(pattern);
   if (filesOrFolders.length === 0) {
@@ -23,22 +24,25 @@ export async function publish({ reporter, pattern, access, otp }: PublishOptions
     if (tgzFiles.length !== filesOrFolders.length) {
       throw new ChronusError(`Can only bulk publish tarballs or a single workspace at a time.`);
     }
-    await publishTarballs(host, tgzFiles, { reporter, access, otp });
+    await publishTarballs(host, tgzFiles, { reporter, ...others });
   } else {
-    await publishWorkspacePackages(host, filesOrFolders[0], { reporter, access, otp });
+    await publishWorkspacePackages(host, filesOrFolders[0], { reporter, ...others });
   }
 }
 
 async function publishWorkspacePackages(
   host: ChronusHost,
   workspaceDir: string,
-  { reporter, otp, access }: Omit<PublishOptions, "pattern">,
+  { reporter, ...others }: Omit<PublishOptions, "pattern">,
 ) {
   const workspace = await loadChronusWorkspace(host, workspaceDir);
   const packageToPublish = await findUnpublishedWorkspacePackages(workspace);
+  if (packageToPublish.length === 0) {
+    reporter.log(pc.green("All packages are already published."));
+  }
   for (const pkg of packageToPublish) {
     await reporter.task(`${pc.yellow(pkg.name)} publishing`, async (task) => {
-      const result = await publishPackage(pkg, resolvePath(workspace.path, pkg.relativePath), { access, otp });
+      const result = await publishPackage(pkg, resolvePath(workspace.path, pkg.relativePath), others);
       if (result.published) {
         task.update(
           `${pc.yellow(pkg.name)} published at version ${pc.cyan(pkg.version)} (${pc.magenta(prettyBytes(result.size))})`,
@@ -54,12 +58,15 @@ async function publishWorkspacePackages(
 async function publishTarballs(
   host: ChronusHost,
   tarballs: string[],
-  { reporter, otp, access }: Omit<PublishOptions, "pattern">,
+  { reporter, ...others }: Omit<PublishOptions, "pattern">,
 ) {
   const unpublished = await findUnpublishedPackages(tarballs);
+  if (unpublished.length === 0) {
+    reporter.log(pc.green("All tarballs are already published."));
+  }
   for (const pkg of unpublished) {
     await reporter.task(`${pc.yellow(pkg.name)} publishing`, async (task) => {
-      const result = await publishPackage(pkg, pkg.tarballPath, { access, otp });
+      const result = await publishPackage(pkg, pkg.tarballPath, others);
       if (result.published) {
         task.update(
           `${pc.yellow(pkg.name)} published at version ${pc.cyan(pkg.version)} (${pc.magenta(prettyBytes(result.size))})`,

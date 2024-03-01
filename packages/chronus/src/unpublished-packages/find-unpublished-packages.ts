@@ -29,8 +29,11 @@ export async function findUnpublishedPackages(tarballs: string[]): Promise<(Pack
 async function isPackageVersionPublished(name: string, version: string): Promise<boolean> {
   try {
     const manifest = await pacote.manifest(`${name}@${version}`);
+    console.error(manifest);
+
     return manifest.version === version;
   } catch (e: unknown) {
+    console.error(e);
     if (isPacoteError(e) && ((e.code === "ETARGET" && e.type === "version") || e.code === "E404")) {
       return false;
     }

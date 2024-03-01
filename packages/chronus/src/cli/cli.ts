@@ -103,12 +103,17 @@ async function main() {
             type: "string",
             choices: ["public", "restricted"],
             description: "Tells the registry whether this package should be published as public or restricted",
+          })
+          .option("registry", {
+            type: "string",
+            description: "Npm registry to use for publishing",
           }),
       withReporter((args) =>
         publish({
           reporter: args.reporter,
           pattern: args.include ? resolvePath(process.cwd(), args.include) : process.cwd(),
           access: args.access,
+          registry: args.registry,
         }),
       ),
     )

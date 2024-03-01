@@ -6,6 +6,7 @@ import type { PackageBase } from "../workspace-manager/types.js";
 export interface PublishPackageOptions {
   readonly otp?: string;
   readonly access?: string;
+  readonly registry?: string;
 }
 
 export type PublishPackageResult = PublishedPackageSuccess | PublishedPackageFailure;
@@ -91,6 +92,9 @@ function getNpmCommand(fileOrDir: string, options: PublishPackageOptions): Comma
   }
   if (options.otp) {
     args.push("--otp", options.otp);
+  }
+  if (options.registry) {
+    args.push("--registry", options.registry);
   }
   return { command: "npm", args };
 }
