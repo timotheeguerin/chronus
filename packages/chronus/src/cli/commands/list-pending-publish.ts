@@ -1,5 +1,5 @@
 import pc from "picocolors";
-import { findUnpublishedPackages } from "../../unpublished-packages/find-unpublished-packages.js";
+import { findUnpublishedWorkspacePackages } from "../../unpublished-packages/find-unpublished-packages.js";
 import { NodeChronusHost } from "../../utils/node-host.js";
 import { loadChronusWorkspace } from "../../workspace/index.js";
 
@@ -11,7 +11,7 @@ export async function listPendingPublish(dir: string, options?: ListPendingPubli
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, dir);
 
-  const packages = await findUnpublishedPackages(workspace);
+  const packages = await findUnpublishedWorkspacePackages(workspace);
   if (options?.json) {
     log(JSON.stringify(packages, null, 2));
   } else {

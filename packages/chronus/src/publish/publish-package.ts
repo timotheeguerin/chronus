@@ -1,9 +1,7 @@
 import { isCI } from "std-env";
 import { execAsync } from "../utils/exec-async.js";
 import { getLastJsonObject } from "../utils/index.js";
-import { resolvePath } from "../utils/path-utils.js";
-import type { Package, WorkspaceType } from "../workspace-manager/types.js";
-import type { ChronusWorkspace } from "../workspace/index.js";
+import type { PackageBase } from "../workspace-manager/types.js";
 
 export interface PublishPackageOptions {
   readonly otp?: string;
@@ -38,13 +36,12 @@ interface NpmPublishResult {
 }
 
 export async function publishPackage(
-  workspace: ChronusWorkspace,
-  pkg: Package,
+  pkg: PackageBase,
+  pkgDir: string,
   options: PublishPackageOptions = {},
 ): Promise<PublishPackageResult> {
-  const pkgDir = resolvePath(workspace.path, pkg.relativePath);
-  const command = getPublishCommand(workspace.workspace.type, options);
-  const result = await execAsync(command.command, command.args, { cwd: pkgDir });
+  const command = getNpmCommand(pkgDir, options);
+  const result = await execAsync(command.command, command.args);
   if (result.code !== 0) {
     const json = getLastJsonObject(result.stderr.toString()) ?? getLastJsonObject(result.stdout.toString());
 
@@ -82,26 +79,13 @@ export async function publishPackage(
   };
 }
 
-function getPublishCommand(type: WorkspaceType, options: PublishPackageOptions): Command {
-  switch (type) {
-    // case "pnpm":
-    //   return getPnpmCommand();
-    case "npm":
-    default:
-      return getNpmCommand(options);
-  }
-}
-
 interface Command {
   readonly command: string;
   readonly args: string[];
 }
 
-// function getPnpmCommand(destination: string): Command {
-//   return { command: "pnpm", args: ["publish", "--json", "--no-git-checks"] };
-// }
-function getNpmCommand(options: PublishPackageOptions): Command {
-  const args = ["publish", "--json", "--pack-destination"];
+function getNpmCommand(fileOrDir: string, options: PublishPackageOptions): Command {
+  const args = ["publish", fileOrDir, "--json"];
   if (options.access) {
     args.push("--access", options.access);
   }

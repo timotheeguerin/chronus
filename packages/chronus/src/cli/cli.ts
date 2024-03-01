@@ -90,18 +90,24 @@ async function main() {
       ),
     )
     .command(
-      ["publish"],
+      ["publish [include]"],
       "Publish all the packages that can be published. If a package is already published at the same version, it will be skipped.",
       (cmd) =>
-        cmd.option("access", {
-          type: "string",
-          choices: ["public", "restricted"],
-          description: "Tells the registry whether this package should be published as public or restricted",
-        }),
+        cmd
+          .positional("include", {
+            type: "string",
+            description:
+              "Pattern of package to publish. This can be pointing to tarball, folder(with package.json or workspace root) to publish. Default to publishing package in the workspace.",
+          })
+          .option("access", {
+            type: "string",
+            choices: ["public", "restricted"],
+            description: "Tells the registry whether this package should be published as public or restricted",
+          }),
       withReporter((args) =>
         publish({
           reporter: args.reporter,
-          dir: process.cwd(),
+          pattern: args.include ? resolvePath(process.cwd(), args.include) : process.cwd(),
           access: args.access,
         }),
       ),
@@ -124,6 +130,12 @@ function withReporter<T>(fn: (reporter: T & { reporter: Reporter }) => Promise<v
 main().catch((error) => {
   // eslint-disable-next-line no-console
   console.log("Error", error);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (error: unknown) => {
+  // eslint-disable-next-line no-console
+  console.error("Unhandled promise rejection!", error);
   process.exit(1);
 });
 
