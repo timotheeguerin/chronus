@@ -1,6 +1,7 @@
+import { stat } from "fs/promises";
 import { isCI } from "std-env";
 import { execAsync } from "../utils/exec-async.js";
-import { getLastJsonObject } from "../utils/index.js";
+import { getDirectoryPath, getLastJsonObject } from "../utils/index.js";
 import type { PackageBase } from "../workspace-manager/types.js";
 
 export interface PublishPackageOptions {
@@ -36,13 +37,27 @@ interface NpmPublishResult {
   readonly integrity: string;
 }
 
+async function isDir(path: string) {
+  try {
+    const s = await stat(path);
+    return s.isDirectory();
+  } catch (e) {
+    // lstatSync throws an error if path doesn't exist
+    return false;
+  }
+}
+
 export async function publishPackage(
   pkg: PackageBase,
   pkgDir: string,
   options: PublishPackageOptions = {},
 ): Promise<PublishPackageResult> {
   const command = getNpmCommand(pkgDir, options);
-  const result = await execAsync(command.command, command.args);
+  const cwd = (await isDir(pkgDir)) ? pkgDir : getDirectoryPath(pkgDir);
+  console.log("Command", command, cwd);
+  const result = await execAsync(command.command, command.args, {
+    cwd,
+  });
   if (result.code !== 0) {
     const json = getLastJsonObject(result.stderr.toString()) ?? getLastJsonObject(result.stdout.toString());
 
