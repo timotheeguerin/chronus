@@ -5,7 +5,8 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches:
-      - "main"
+      - main
+      - bulk-publish-tarballs
 
   workflow_dispatch: {}
 
@@ -48,7 +49,16 @@ jobs:
           git diff --no-ext-diff --quiet --exit-code
         name: Check not out of date generated files
 
-      - run: node ./packages/chronus/cmd/cli.mjs publish --access public
+      - run: node ./packages/chronus/cmd/cli.mjs pack --pack-destination ./artifacts
+        name: Pack
+
+      - run: node ./packages/chronus/cmd/cli.mjs publish ./artifacts/*.tgz --access public
         name: Publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # To pack and publish as one step
+      # - run: node ./packages/chronus/cmd/cli.mjs publish --access public
+      #   name: Publish
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
