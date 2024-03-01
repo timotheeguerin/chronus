@@ -34,6 +34,10 @@
     "url": "https://github.com/timotheeguerin/chronus/issues"
   },
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
+  "files": [
+    "cmd",
+    "dist"
+  ],
   "dependencies": {
     "globby": "^14.0.1",
     "is-unicode-supported": "^2.0.0",

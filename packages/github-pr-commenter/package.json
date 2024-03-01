@@ -29,6 +29,10 @@
     "url": "https://github.com/timotheeguerin/chronus/issues"
   },
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
+  "files": [
+    "cmd",
+    "dist"
+  ],
   "dependencies": {
     "@actions/github": "^6.0.0",
     "@chronus/chronus": "workspace:*",
