@@ -16,17 +16,14 @@ export interface PublishOptions {
 export async function publish({ reporter, pattern, ...others }: PublishOptions) {
   const host = NodeChronusHost;
   const filesOrFolders = await host.glob(pattern);
-  if (filesOrFolders.length === 0) {
-    throw new ChronusError(`Pattern ${pattern} match not files or workspaces.`);
-  }
-  if (filesOrFolders.length > 1 || filesOrFolders[0].endsWith(".tgz")) {
+  if (filesOrFolders.length > 1 || filesOrFolders[0]?.endsWith(".tgz")) {
     const tgzFiles = filesOrFolders.filter((file) => file.endsWith(".tgz"));
     if (tgzFiles.length !== filesOrFolders.length) {
       throw new ChronusError(`Can only bulk publish tarballs or a single workspace at a time.`);
     }
     await publishTarballs(host, tgzFiles, { reporter, ...others });
   } else {
-    await publishWorkspacePackages(host, filesOrFolders[0], { reporter, ...others });
+    await publishWorkspacePackages(host, pattern, { reporter, ...others });
   }
 }
 
