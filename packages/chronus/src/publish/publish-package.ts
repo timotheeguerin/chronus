@@ -1,7 +1,8 @@
 import { stat } from "fs/promises";
 import { isCI } from "std-env";
-import { execAsync } from "../utils/exec-async.js";
-import { getDirectoryPath, getLastJsonObject } from "../utils/index.js";
+import { execAsync, type ExecResult } from "../utils/exec-async.js";
+import { getDirectoryPath, getLastJsonObject, lookup, NodeChronusHost } from "../utils/index.js";
+import { createPnpmWorkspaceManager } from "../workspace-manager/pnpm.js";
 import type { PackageBase } from "../workspace-manager/types.js";
 
 export interface PublishPackageOptions {
@@ -52,12 +53,48 @@ export async function publishPackage(
   pkgDir: string,
   options: PublishPackageOptions = {},
 ): Promise<PublishPackageResult> {
+  if (await shouldUsePnpm(pkgDir)) {
+    return publishPackageWithPnpm(pkg, pkgDir, options);
+  } else {
+    return publishPackageWithNpm(pkg, pkgDir, options);
+  }
+}
+
+async function shouldUsePnpm(pkgDir: string): Promise<boolean> {
+  const pnpmWs = createPnpmWorkspaceManager(NodeChronusHost);
+  const root = await lookup(pkgDir, (current) => {
+    return pnpmWs.is(current);
+  });
+  return Boolean(root);
+}
+
+export async function publishPackageWithNpm(
+  pkg: PackageBase,
+  pkgDir: string,
+  options: PublishPackageOptions = {},
+): Promise<PublishPackageResult> {
   const command = getNpmCommand(pkgDir, options);
   const cwd = (await isDir(pkgDir)) ? pkgDir : getDirectoryPath(pkgDir);
-  console.log("Command", command, cwd);
   const result = await execAsync(command.command, command.args, {
     cwd,
   });
+  return processResult(pkg, result);
+}
+
+export async function publishPackageWithPnpm(
+  pkg: PackageBase,
+  pkgDir: string,
+  options: PublishPackageOptions = {},
+): Promise<PublishPackageResult> {
+  const command = getPnpmCommand(pkgDir, options);
+  const cwd = (await isDir(pkgDir)) ? pkgDir : getDirectoryPath(pkgDir);
+  const result = await execAsync(command.command, command.args, {
+    cwd,
+  });
+  return processResult(pkg, result);
+}
+
+function processResult(pkg: PackageBase, result: ExecResult): PublishPackageResult {
   if (result.code !== 0) {
     const json = getLastJsonObject(result.stderr.toString()) ?? getLastJsonObject(result.stdout.toString());
 
@@ -102,6 +139,20 @@ interface Command {
 
 function getNpmCommand(fileOrDir: string, options: PublishPackageOptions): Command {
   const args = ["publish", fileOrDir, "--json"];
+  if (options.access) {
+    args.push("--access", options.access);
+  }
+  if (options.otp) {
+    args.push("--otp", options.otp);
+  }
+  if (options.registry) {
+    args.push("--registry", options.registry);
+  }
+  return { command: "npm", args };
+}
+
+function getPnpmCommand(fileOrDir: string, options: PublishPackageOptions): Command {
+  const args = ["publish", fileOrDir, "--json", "--no-git-checks"];
   if (options.access) {
     args.push("--access", options.access);
   }

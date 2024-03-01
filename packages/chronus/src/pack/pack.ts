@@ -56,6 +56,7 @@ async function packPackageWithNpm(pkg: Package, pkgDir: string, packDestination:
     unpackedSize: parsedResult.unpackedSize,
   };
 }
+
 async function packPackageWithPnpm(pkg: Package, pkgDir: string, packDestination: string): Promise<PackPackageResult> {
   const command = getPnpmCommand(packDestination);
   const result = await execAsync(command.command, command.args, { cwd: pkgDir });
