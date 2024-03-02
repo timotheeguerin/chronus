@@ -34,8 +34,13 @@ afterAll(() => {
 let testDir: TestDir;
 beforeEach(async () => {
   testDir = await createTestDir();
-  await testDir.addFile(".npmrc", `//localhost:${REGISTRY_MOCK_PORT}/:_authToken="fake"`);
+  await writeCredentials();
+  await addPackageJson("package.json", "root", { private: true });
 });
+
+async function writeCredentials(dir: string = "") {
+  await testDir.addFile(resolvePath(dir, ".npmrc"), `//localhost:${REGISTRY_MOCK_PORT}/:_authToken="fake"`);
+}
 
 async function addPackageJson(
   path: string,
@@ -70,8 +75,9 @@ async function checkPackagePublished(name: string, extra: Partial<Manifest> = {}
 }
 
 describe("with npm", () => {
-  it("publish package directly from folder", { timeout: 20_000 }, async () => {
+  it("publish directly from folder", { timeout: 20_000 }, async () => {
     const pkg = await addPackageJson("packages/pkg-npm-a/package.json", "pkg-npm-a");
+    await writeCredentials(resolvePath("packages/pkg-npm-a/"));
     const result = await publishPackageWithNpm(pkg, resolvePath(testDir.path, "packages/pkg-npm-a/"), {
       registry: MOCK_REGISTRY,
     });
@@ -79,7 +85,6 @@ describe("with npm", () => {
       published: true,
       name: pkg.name,
       version: pkg.version,
-      filename: "pkg-npm-a-1.0.0.tgz",
       size: expect.any(Number),
       unpackedSize: expect.any(Number),
     });
@@ -89,9 +94,11 @@ describe("with npm", () => {
   it("publish tgz", { timeout: 20_000 }, async () => {
     const pkg = await addPackageJson("packages/pkg-npm-b/package.json", "pkg-npm-b");
     await mkdir(resolvePath(testDir.path, "artifacts"), { recursive: true });
+
     await runNpm(["pack", "--pack-destination", resolvePath(testDir.path, "artifacts")], {
       cwd: resolvePath(testDir.path, "packages/pkg-npm-b/"),
     });
+    await writeCredentials("artifacts");
     const result = await publishPackageWithNpm(pkg, resolvePath(testDir.path, "artifacts", "pkg-npm-b-1.0.0.tgz"), {
       registry: MOCK_REGISTRY,
     });
@@ -99,15 +106,16 @@ describe("with npm", () => {
       published: true,
       name: pkg.name,
       version: pkg.version,
-      filename: "pkg-npm-b-1.0.0.tgz",
       size: expect.any(Number),
       unpackedSize: expect.any(Number),
     });
-    await checkPackagePublished("pkg-npm-a");
+    await checkPackagePublished("pkg-npm-b");
   });
 });
+
 describe("with pnpm", () => {
-  it("publish package directly from folder", { timeout: 20_000 }, async () => {
+  it("publish directly from folder", { timeout: 20_000 }, async () => {
+    await writeCredentials("packages/pkg-pnpm-a/");
     const pkg = await addPackageJson("packages/pkg-pnpm-a/package.json", "pkg-pnpm-a");
     const result = await publishPackageWithPnpm(pkg, resolvePath(testDir.path, "packages/pkg-pnpm-a/"), {
       registry: MOCK_REGISTRY,
@@ -116,15 +124,15 @@ describe("with pnpm", () => {
       published: true,
       name: pkg.name,
       version: pkg.version,
-      filename: "pkg-pnpm-a-1.0.0.tgz",
       size: expect.any(Number),
       unpackedSize: expect.any(Number),
     });
-    await checkPackagePublished("pkg-npm-a");
+    await checkPackagePublished("pkg-pnpm-a");
   });
 
   it("publish tgz", { timeout: 20_000 }, async () => {
     const pkg = await addPackageJson("packages/pkg-pnpm-b/package.json", "pkg-pnpm-b");
+
     await mkdir(resolvePath(testDir.path, "artifacts"), { recursive: true });
     await runNpm(["pack", "--pack-destination", resolvePath(testDir.path, "artifacts")], {
       cwd: resolvePath(testDir.path, "packages/pkg-pnpm-b/"),
@@ -136,11 +144,10 @@ describe("with pnpm", () => {
       published: true,
       name: pkg.name,
       version: pkg.version,
-      filename: "pkg-pnpm-b-1.0.0.tgz",
       size: expect.any(Number),
       unpackedSize: expect.any(Number),
     });
-    await checkPackagePublished("pkg-npm-a");
+    await checkPackagePublished("pkg-pnpm-b");
   });
 
   it("replace workspace: annotation with real versions", { timeout: 20_000 }, async () => {
@@ -163,7 +170,6 @@ describe("with pnpm", () => {
       published: true,
       name: pkg.name,
       version: pkg.version,
-      filename: "pkg-pnpm-c-1.0.0.tgz",
       size: expect.any(Number),
       unpackedSize: expect.any(Number),
     });

@@ -36,7 +36,7 @@ jobs:
         name: Build
 
       - run: pnpm run test
-        name: Build
+        name: Test
 
       - run: pnpm run check-format
         name: Check formatting

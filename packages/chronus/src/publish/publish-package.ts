@@ -1,4 +1,5 @@
 import { stat } from "fs/promises";
+import pacote from "pacote";
 import { isCI } from "std-env";
 import { execAsync, type ExecResult } from "../utils/exec-async.js";
 import { getDirectoryPath, getLastJsonObject, lookup, NodeChronusHost } from "../utils/index.js";
@@ -17,7 +18,6 @@ export interface PublishedPackageSuccess {
   readonly published: true;
   readonly name: string;
   readonly version: string;
-  readonly filename: string;
   readonly size: number;
   readonly unpackedSize: number;
 }
@@ -31,7 +31,6 @@ interface NpmPublishResult {
   readonly id: string;
   readonly name: string;
   readonly version: string;
-  readonly filename: string;
   readonly size: number;
   readonly unpackedSize: number;
   readonly shasum: string;
@@ -78,7 +77,17 @@ export async function publishPackageWithNpm(
   const result = await execAsync(command.command, command.args, {
     cwd,
   });
-  return processResult(pkg, result);
+  if (result.code !== 0) {
+    return processError(pkg, result);
+  }
+  const parsedResult: NpmPublishResult = getLastJsonObject(result.stdout.toString());
+  return {
+    published: true,
+    name: parsedResult.name,
+    version: parsedResult.version,
+    size: parsedResult.size,
+    unpackedSize: parsedResult.unpackedSize,
+  };
 }
 
 export async function publishPackageWithPnpm(
@@ -90,45 +99,59 @@ export async function publishPackageWithPnpm(
   const cwd = (await isDir(pkgDir)) ? pkgDir : getDirectoryPath(pkgDir);
   const result = await execAsync(command.command, command.args, {
     cwd,
+    env: { ...process.env, ...(options.registry ? { NPM_CONFIG_REGISTRY: options.registry } : {}) },
   });
-  return processResult(pkg, result);
-}
-
-function processResult(pkg: PackageBase, result: ExecResult): PublishPackageResult {
   if (result.code !== 0) {
-    const json = getLastJsonObject(result.stderr.toString()) ?? getLastJsonObject(result.stdout.toString());
+    return processError(pkg, result);
+  }
+  const stdoutstring = result.stdout.toString();
 
-    if (json?.error) {
-      // The first case is no 2fa provided, the second is when the 2fa is wrong (timeout or wrong words)
-      if (
-        (json.error.code === "EOTP" || (json.error.code === "E401" && json.error.detail.includes("--otp=<code>"))) &&
-        !isCI
-      ) {
-        // eslint-disable-next-line no-console
-        console.error(
-          `\nAn error occurred while publishing ${pkg.name}: ${json.error.code}`,
-          json.error.summary,
-          json.error.detail ? "\n" + json.error.detail : "",
-        );
-      }
-    }
-    // eslint-disable-next-line no-console
-    console.error(result.stdall.toString());
+  const json = getLastJsonObject(stdoutstring);
+  if (json === null) {
+    const id = stdoutstring.trim().replace("+ ", "");
+    const tabballManifest = await pacote.manifest(id, { fullMetadata: true, registry: options.registry });
 
     return {
-      published: false,
+      published: true,
+      name: tabballManifest.name,
+      version: tabballManifest.version,
+      size: 0,
+      unpackedSize: tabballManifest.dist?.unpackedSize ?? 0,
+    };
+  } else {
+    const parsedResult: NpmPublishResult = json;
+    return {
+      published: true,
+      name: parsedResult.name,
+      version: parsedResult.version,
+      size: parsedResult.size,
+      unpackedSize: parsedResult.unpackedSize,
     };
   }
+}
 
-  const parsedResult: NpmPublishResult = getLastJsonObject(result.stdout.toString());
+function processError(pkg: PackageBase, result: ExecResult): PublishPackageResult {
+  const json = getLastJsonObject(result.stderr.toString()) ?? getLastJsonObject(result.stdout.toString());
+
+  if (json?.error) {
+    // The first case is no 2fa provided, the second is when the 2fa is wrong (timeout or wrong words)
+    if (
+      (json.error.code === "EOTP" || (json.error.code === "E401" && json.error.detail.includes("--otp=<code>"))) &&
+      !isCI
+    ) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `\nAn error occurred while publishing ${pkg.name}: ${json.error.code}`,
+        json.error.summary,
+        json.error.detail ? "\n" + json.error.detail : "",
+      );
+    }
+  }
   // eslint-disable-next-line no-console
+  console.error(result.stdall.toString());
+
   return {
-    published: true,
-    name: parsedResult.name,
-    version: parsedResult.version,
-    filename: parsedResult.filename,
-    size: parsedResult.size,
-    unpackedSize: parsedResult.unpackedSize,
+    published: false,
   };
 }
 
