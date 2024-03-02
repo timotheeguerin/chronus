@@ -7,7 +7,7 @@ export interface ExecResult {
   readonly stdout: Buffer;
   readonly stderr: Buffer;
 }
-export function execAsync(cmd: string, args: string[], opts: SpawnOptions): Promise<ExecResult> {
+export function execAsync(cmd: string, args: string[], opts: SpawnOptions = {}): Promise<ExecResult> {
   return new Promise((resolve, reject) => {
     const child = crosspawn(cmd, args, opts);
     let stdall = Buffer.from("");

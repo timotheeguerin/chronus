@@ -1,1 +1,1 @@
-export { findUnpublishedPackages } from "./find-unpublished-packages.js";
+export { findUnpublishedPackages, findUnpublishedWorkspacePackages } from "./find-unpublished-packages.js";

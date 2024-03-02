@@ -165,6 +165,7 @@ jspm_packages/
 
 # Common toolchain intermediate files
 .temp/
+temp/
 
 # Default Cadl output
 cadl-output/

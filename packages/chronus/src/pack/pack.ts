@@ -1,7 +1,9 @@
-import { mkdir } from "fs/promises";
+import { mkdir, stat } from "fs/promises";
+import pacote from "pacote";
 import { execAsync } from "../utils/exec-async.js";
+import { getLastJsonObject } from "../utils/misc-utils.js";
 import { resolvePath } from "../utils/path-utils.js";
-import type { Package, WorkspaceType } from "../workspace-manager/types.js";
+import type { Package } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 
 export interface PackPackageResult {
@@ -24,13 +26,26 @@ export async function packPackage(
   const pkgDir = resolvePath(workspace.path, pkg.relativePath);
   const packDestination = destination ?? pkgDir;
   await mkdir(packDestination, { recursive: true }); // Not using the ChronusHost here because it doesn't matter as we need to call npm after.
-  const command = getPackCommand(workspace.workspace.type, packDestination);
+
+  switch (workspace.workspace.type) {
+    // calling pnpm seperately because it will replace `workspace:` protocol with the actual version in the tarball
+    case "pnpm":
+      return packPackageWithPnpm(pkg, pkgDir, packDestination);
+    case "npm":
+    default:
+      return packPackageWithNpm(pkg, pkgDir, packDestination);
+  }
+}
+
+async function packPackageWithNpm(pkg: Package, pkgDir: string, packDestination: string): Promise<PackPackageResult> {
+  const command = getNpmCommand(packDestination);
   const result = await execAsync(command.command, command.args, { cwd: pkgDir });
   if (result.code !== 0) {
     throw new Error(`Failed to pack package ${pkg.name} at ${pkg.relativePath}. Log:\n${result.stdall}`);
   }
 
-  const parsedResult = JSON.parse(result.stdout.toString())[0];
+  const parsedResult = getLastJsonObject(result.stdout.toString());
+
   return {
     id: parsedResult.id,
     name: parsedResult.name,
@@ -42,14 +57,26 @@ export async function packPackage(
   };
 }
 
-function getPackCommand(type: WorkspaceType, destination: string): Command {
-  switch (type) {
-    // case "pnpm":
-    //   return getPnpmCommand(destination);
-    case "npm":
-    default:
-      return getNpmCommand(destination);
+async function packPackageWithPnpm(pkg: Package, pkgDir: string, packDestination: string): Promise<PackPackageResult> {
+  const command = getPnpmCommand(packDestination);
+  const result = await execAsync(command.command, command.args, { cwd: pkgDir });
+  if (result.code !== 0) {
+    throw new Error(`Failed to pack package ${pkg.name} at ${pkg.relativePath}. Log:\n${result.stdall}`);
   }
+
+  const filename = result.stdout.toString().trim();
+  const path = resolvePath(packDestination, filename);
+  const stats = await stat(path);
+  const tabballManifest = await pacote.manifest(path, { fullMetadata: true });
+  return {
+    id: tabballManifest._id,
+    name: tabballManifest.name,
+    version: tabballManifest.version,
+    filename: filename,
+    path,
+    size: stats.size,
+    unpackedSize: 0,
+  };
 }
 
 interface Command {
@@ -57,9 +84,9 @@ interface Command {
   readonly args: string[];
 }
 
-// function getPnpmCommand(destination: string): Command {
-//   return { command: "pnpm", args: ["pack", "--json", "--pack-destination", destination] };
-// }
+function getPnpmCommand(destination: string): Command {
+  return { command: "pnpm", args: ["pack", "--pack-destination", destination] };
+}
 function getNpmCommand(destination: string): Command {
   return { command: "npm", args: ["pack", "--json", "--pack-destination", destination] };
 }

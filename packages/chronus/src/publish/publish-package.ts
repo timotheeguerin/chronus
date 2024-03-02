@@ -1,13 +1,15 @@
+import { stat } from "fs/promises";
+import pacote from "pacote";
 import { isCI } from "std-env";
-import { execAsync } from "../utils/exec-async.js";
-import { getLastJsonObject } from "../utils/index.js";
-import { resolvePath } from "../utils/path-utils.js";
-import type { Package, WorkspaceType } from "../workspace-manager/types.js";
-import type { ChronusWorkspace } from "../workspace/index.js";
+import { execAsync, type ExecResult } from "../utils/exec-async.js";
+import { getDirectoryPath, getLastJsonObject, lookup, NodeChronusHost } from "../utils/index.js";
+import { createPnpmWorkspaceManager } from "../workspace-manager/pnpm.js";
+import type { PackageBase } from "../workspace-manager/types.js";
 
 export interface PublishPackageOptions {
   readonly otp?: string;
   readonly access?: string;
+  readonly registry?: string;
 }
 
 export type PublishPackageResult = PublishedPackageSuccess | PublishedPackageFailure;
@@ -16,7 +18,6 @@ export interface PublishedPackageSuccess {
   readonly published: true;
   readonly name: string;
   readonly version: string;
-  readonly filename: string;
   readonly size: number;
   readonly unpackedSize: number;
 }
@@ -30,66 +31,128 @@ interface NpmPublishResult {
   readonly id: string;
   readonly name: string;
   readonly version: string;
-  readonly filename: string;
   readonly size: number;
   readonly unpackedSize: number;
   readonly shasum: string;
   readonly integrity: string;
 }
 
+async function isDir(path: string) {
+  try {
+    const s = await stat(path);
+    return s.isDirectory();
+  } catch (e) {
+    // lstatSync throws an error if path doesn't exist
+    return false;
+  }
+}
+
 export async function publishPackage(
-  workspace: ChronusWorkspace,
-  pkg: Package,
+  pkg: PackageBase,
+  pkgDir: string,
   options: PublishPackageOptions = {},
 ): Promise<PublishPackageResult> {
-  const pkgDir = resolvePath(workspace.path, pkg.relativePath);
-  const command = getPublishCommand(workspace.workspace.type, options);
-  const result = await execAsync(command.command, command.args, { cwd: pkgDir });
-  if (result.code !== 0) {
-    const json = getLastJsonObject(result.stderr.toString()) ?? getLastJsonObject(result.stdout.toString());
-
-    if (json?.error) {
-      // The first case is no 2fa provided, the second is when the 2fa is wrong (timeout or wrong words)
-      if (
-        (json.error.code === "EOTP" || (json.error.code === "E401" && json.error.detail.includes("--otp=<code>"))) &&
-        !isCI
-      ) {
-        // eslint-disable-next-line no-console
-        console.error(
-          `\nAn error occurred while publishing ${pkg.name}: ${json.error.code}`,
-          json.error.summary,
-          json.error.detail ? "\n" + json.error.detail : "",
-        );
-      }
-    }
-    // eslint-disable-next-line no-console
-    console.error(result.stdall.toString());
-
-    return {
-      published: false,
-    };
+  if (await shouldUsePnpm(pkgDir)) {
+    return publishPackageWithPnpm(pkg, pkgDir, options);
+  } else {
+    return publishPackageWithNpm(pkg, pkgDir, options);
   }
+}
 
-  const json: Record<string, NpmPublishResult> = getLastJsonObject(result.stdout.toString());
-  const parsedResult = json[pkg.name];
+async function shouldUsePnpm(pkgDir: string): Promise<boolean> {
+  const pnpmWs = createPnpmWorkspaceManager(NodeChronusHost);
+  const root = await lookup(pkgDir, (current) => {
+    return pnpmWs.is(current);
+  });
+  return Boolean(root);
+}
+
+export async function publishPackageWithNpm(
+  pkg: PackageBase,
+  pkgDir: string,
+  options: PublishPackageOptions = {},
+): Promise<PublishPackageResult> {
+  const command = getNpmCommand(pkgDir, options);
+  const cwd = (await isDir(pkgDir)) ? pkgDir : getDirectoryPath(pkgDir);
+  const result = await execAsync(command.command, command.args, {
+    cwd,
+  });
+  if (result.code !== 0) {
+    return processError(pkg, result);
+  }
+  const parsedResult: NpmPublishResult = getLastJsonObject(result.stdout.toString());
   return {
     published: true,
     name: parsedResult.name,
     version: parsedResult.version,
-    filename: parsedResult.filename,
     size: parsedResult.size,
     unpackedSize: parsedResult.unpackedSize,
   };
 }
 
-function getPublishCommand(type: WorkspaceType, options: PublishPackageOptions): Command {
-  switch (type) {
-    // case "pnpm":
-    //   return getPnpmCommand();
-    case "npm":
-    default:
-      return getNpmCommand(options);
+export async function publishPackageWithPnpm(
+  pkg: PackageBase,
+  pkgDir: string,
+  options: PublishPackageOptions = {},
+): Promise<PublishPackageResult> {
+  const command = getPnpmCommand(pkgDir, options);
+  const cwd = (await isDir(pkgDir)) ? pkgDir : getDirectoryPath(pkgDir);
+  const result = await execAsync(command.command, command.args, {
+    cwd,
+    env: { ...process.env, ...(options.registry ? { npm_config_registry: options.registry } : {}) },
+  });
+  if (result.code !== 0) {
+    return processError(pkg, result);
   }
+  const stdoutstring = result.stdout.toString();
+
+  const json = getLastJsonObject(stdoutstring);
+  if (json === null) {
+    const id = stdoutstring.trim().replace("+ ", "");
+    const tabballManifest = await pacote.manifest(id, { fullMetadata: true, registry: options.registry });
+
+    return {
+      published: true,
+      name: tabballManifest.name,
+      version: tabballManifest.version,
+      size: 0,
+      unpackedSize: tabballManifest.dist?.unpackedSize ?? 0,
+    };
+  } else {
+    const parsedResult: NpmPublishResult = json;
+    return {
+      published: true,
+      name: parsedResult.name,
+      version: parsedResult.version,
+      size: parsedResult.size,
+      unpackedSize: parsedResult.unpackedSize,
+    };
+  }
+}
+
+function processError(pkg: PackageBase, result: ExecResult): PublishPackageResult {
+  const json = getLastJsonObject(result.stderr.toString()) ?? getLastJsonObject(result.stdout.toString());
+
+  if (json?.error) {
+    // The first case is no 2fa provided, the second is when the 2fa is wrong (timeout or wrong words)
+    if (
+      (json.error.code === "EOTP" || (json.error.code === "E401" && json.error.detail.includes("--otp=<code>"))) &&
+      !isCI
+    ) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `\nAn error occurred while publishing ${pkg.name}: ${json.error.code}`,
+        json.error.summary,
+        json.error.detail ? "\n" + json.error.detail : "",
+      );
+    }
+  }
+  // eslint-disable-next-line no-console
+  console.error(result.stdall.toString());
+
+  return {
+    published: false,
+  };
 }
 
 interface Command {
@@ -97,16 +160,30 @@ interface Command {
   readonly args: string[];
 }
 
-// function getPnpmCommand(destination: string): Command {
-//   return { command: "pnpm", args: ["publish", "--json", "--no-git-checks"] };
-// }
-function getNpmCommand(options: PublishPackageOptions): Command {
-  const args = ["publish", "--json", "--pack-destination"];
+function getNpmCommand(fileOrDir: string, options: PublishPackageOptions): Command {
+  const args = ["publish", fileOrDir, "--json"];
   if (options.access) {
     args.push("--access", options.access);
   }
   if (options.otp) {
     args.push("--otp", options.otp);
   }
+  if (options.registry) {
+    args.push("--registry", options.registry);
+  }
   return { command: "npm", args };
+}
+
+function getPnpmCommand(fileOrDir: string, options: PublishPackageOptions): Command {
+  const args = ["publish", fileOrDir, "--json", "--no-git-checks"];
+  if (options.access) {
+    args.push("--access", options.access);
+  }
+  if (options.otp) {
+    args.push("--otp", options.otp);
+  }
+  if (options.registry) {
+    args.push("--registry", options.registry);
+  }
+  return { command: "pnpm", args };
 }

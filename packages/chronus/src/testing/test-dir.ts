@@ -3,9 +3,8 @@ import { writeFile as fsWriteFile, mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 async function tempdir(): Promise<string> {
-  const date = new Date().toJSON().slice(0, -5);
   const uid = randomBytes(8).toString("hex");
-  const path = join(process.cwd(), `.temp/tests/${date}/${uid}`);
+  const path = join(process.cwd(), `.temp/tests/${uid}`);
   await mkdir(path, { recursive: true });
   return path;
 }

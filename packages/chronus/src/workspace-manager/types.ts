@@ -6,17 +6,19 @@ export interface Workspace {
   readonly packages: Package[];
 }
 
-export interface Package {
+export interface PackageBase {
   /** Package name */
   readonly name: string;
-
-  /** Relative path of the package to the workspace root */
-  readonly relativePath: string;
 
   /** Package version */
   readonly version: string;
 
   readonly manifest: PackageJson;
+}
+
+export interface Package extends PackageBase {
+  /** Relative path of the package to the workspace root */
+  readonly relativePath: string;
 }
 
 export interface PackageJson {
