@@ -14,7 +14,7 @@ export async function readChangeDescription(
   workspace: ChronusWorkspace,
   filename: string,
 ): Promise<ChangeDescription> {
-  const file = await host.readFile(filename);
+  const file = await host.readFile(resolvePath(workspace.path, filename));
   return parseChangeDescription(workspace.config, file);
 }
 

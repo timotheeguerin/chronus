@@ -157,6 +157,37 @@ importers:
 
   packages/dummy: {}
 
+  packages/github:
+    dependencies:
+      '@actions/github':
+        specifier: ^6.0.0
+        version: 6.0.0
+      '@chronus/chronus':
+        specifier: workspace:*
+        version: link:../chronus
+      '@octokit/auth-action':
+        specifier: ^4.0.1
+        version: 4.0.1
+      human-id:
+        specifier: ^4.1.1
+        version: 4.1.1
+      octokit:
+        specifier: ^3.1.2
+        version: 3.1.2
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.20
+        version: 20.11.20
+      rimraf:
+        specifier: ^5.0.5
+        version: 5.0.5
+      source-map-support:
+        specifier: ^0.5.21
+        version: 0.5.21
+      typescript:
+        specifier: ^5.3.3
+        version: 5.3.3
+
   packages/github-pr-commenter:
     dependencies:
       '@actions/github':

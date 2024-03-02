@@ -78,6 +78,11 @@ export interface GitRepository {
    * Get the name of the current local branch.
    */
   getCurrentBranch(): Promise<string>;
+
+  /**
+   * Return the commit ids that added the given files.
+   */
+  getCommitsThatAddFiles(files: string[]): Promise<Record<string, string>>;
 }
 
 export class GitError extends Error {
@@ -116,6 +121,7 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     listChangedFilesFromBase,
     listChangedFilesSince,
     getCurrentBranch,
+    getCommitsThatAddFiles,
   };
 
   async function getRepoRoot(): Promise<string> {
@@ -188,6 +194,15 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
 
   async function getCurrentBranch() {
     return trimSingleLine(await execGit(["rev-parse", "--abbrev-ref", "HEAD"], { repositoryPath }));
+  }
+
+  async function getCommitsThatAddFiles(files: string[]) {
+    const commits: Record<string, string> = {};
+    for (const file of files) {
+      const { stdout } = await execGit(["log", "--format=%H", "--", file], { repositoryPath });
+      commits[file] = stdout.toString().trim();
+    }
+    return commits;
   }
 }
 

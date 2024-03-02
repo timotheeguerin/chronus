@@ -10,7 +10,8 @@
   "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
-    "./change": "./dist/change/index.js"
+    "./change": "./dist/change/index.js",
+    "./source-control/git": "./dist/source-control/git.js"
   },
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
