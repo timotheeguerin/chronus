@@ -99,7 +99,7 @@ export async function publishPackageWithPnpm(
   const cwd = (await isDir(pkgDir)) ? pkgDir : getDirectoryPath(pkgDir);
   const result = await execAsync(command.command, command.args, {
     cwd,
-    env: { ...process.env, ...(options.registry ? { NPM_CONFIG_REGISTRY: options.registry } : {}) },
+    env: { ...process.env, ...(options.registry ? { npm_config_registry: options.registry } : {}) },
   });
   if (result.code !== 0) {
     return processError(pkg, result);
