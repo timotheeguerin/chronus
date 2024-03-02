@@ -11,7 +11,8 @@
   "exports": {
     ".": "./dist/index.js",
     "./change": "./dist/change/index.js",
-    "./source-control/git": "./dist/source-control/git.js"
+    "./source-control/git": "./dist/source-control/git.js",
+    "./utils": "./dist/utils/index.js"
   },
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
