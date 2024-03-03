@@ -1,5 +1,5 @@
 baseBranch: main
-
+changelog: ["@chronus/github/changelog", { repo: "timotheeguerin/chronus" }]
 changeKinds:
   breaking:
     versionType: major

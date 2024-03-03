@@ -13,6 +13,8 @@ export interface ChronusUserConfig {
    * For example breaking, deprecation, feature, fix, etc.
    */
   readonly changeKinds?: Record<string, ChangeKindUserConfig>;
+
+  readonly changelog?: string | [string, Record<string, unknown>];
 }
 
 export interface ChangeKindUserConfig {
