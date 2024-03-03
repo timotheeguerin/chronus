@@ -1,5 +1,12 @@
 # @chronus/github-pr-commenter
 
+## 0.3.1
+
+### Bug Fixes
+
+- [#96](https://github.com/timotheeguerin/chronus/pull/96) Only include necessary files in artifact
+
+
 ## 0.3.0
 
 ### Features
