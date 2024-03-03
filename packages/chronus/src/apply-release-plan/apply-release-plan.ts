@@ -10,12 +10,14 @@ export async function applyReleasePlan(
   host: ChronusHost,
   workspace: ChronusWorkspace,
   releasePlan: ReleasePlan,
+  interactive: boolean,
 ): Promise<void> {
   const actionForPackage = new Map<string, ReleaseAction>(releasePlan.actions.map((x) => [x.packageName, x]));
   // Load this first in case there is a failure so we don't have a partial update of files.
   const changelogGenerator = await resolveChangelogGenerator(
     workspace,
     releasePlan.changes.map((x) => x.change),
+    interactive,
   );
   for (const pkg of workspace.allPackages) {
     await updatePackageJson(host, workspace, pkg, actionForPackage);

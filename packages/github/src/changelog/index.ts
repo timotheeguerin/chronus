@@ -2,9 +2,10 @@ import { type ChronusWorkspace } from "@chronus/chronus";
 import { resolveChangeRelativePath, type ChangeDescription } from "@chronus/chronus/change";
 import { BasicChangelogGenerator, defineChangelogGenerator } from "@chronus/chronus/changelog";
 import { createGitSourceControl } from "@chronus/chronus/source-control/git";
-import { ChronusError, execAsync } from "@chronus/chronus/utils";
+import { ChronusError } from "@chronus/chronus/utils";
 import type { ChangelogGeneratorInit } from "../../../chronus/dist/changelog/types.js";
 import { getGithubInfoForChange, type GithubInfo } from "./fetch-pr-info.js";
+import { getGithubToken } from "./gh-token.js";
 
 async function getCommitsThatAddChangeDescriptions(
   workspace: ChronusWorkspace,
@@ -24,24 +25,11 @@ async function getCommitsThatAddChangeDescriptions(
   return result;
 }
 
-async function getGithubToken(): Promise<string> {
-  if (process.env.GITHUB_TOKEN) {
-    return process.env.GITHUB_TOKEN;
-  } else {
-    const result = await execAsync("gh", ["auth", "token"]);
-    if (result.code === 0) {
-      return result.stdout.toString().trim();
-    } else {
-      throw new ChronusError(`Failed to get github token:${result.stdall}`);
-    }
-  }
-}
-
 export interface GithubChangelogGeneratorOptions {
   readonly repo: string;
 }
 export default defineChangelogGenerator(
-  async ({ workspace, changes, options }: ChangelogGeneratorInit<GithubChangelogGeneratorOptions>) => {
+  async ({ workspace, changes, options, interactive }: ChangelogGeneratorInit<GithubChangelogGeneratorOptions>) => {
     if (!options?.repo) {
       throw new ChronusError("Missing repo option");
     }
@@ -51,7 +39,7 @@ export default defineChangelogGenerator(
       changes.map((c) => c.id),
     );
     const [owner, name] = options.repo.split("/", 2);
-    const data = await getGithubInfoForChange(owner, name, commits, await getGithubToken());
+    const data = await getGithubInfoForChange(owner, name, commits, await getGithubToken(interactive));
     return {
       async loadData(changes: ChangeDescription[]) {},
       renderPackageVersion(newVersion: string, changes: ChangeDescription[]) {

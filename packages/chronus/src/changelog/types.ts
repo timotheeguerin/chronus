@@ -11,6 +11,9 @@ export interface ChangelogGeneratorInit<T> {
   readonly options: T;
   /** All the changes(Across all packages) involved in the current operation. This is used if any data must be loaded. */
   readonly changes: ChangeDescription[];
+
+  /** If we are running in an interactive session where we could ask for the user input. */
+  readonly interactive: boolean;
 }
 export type ChangelogGeneratorFactory<T> = (
   init: ChangelogGeneratorInit<T>,
