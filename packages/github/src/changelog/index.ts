@@ -1,9 +1,9 @@
-import { NodeChronusHost, loadChronusWorkspace, type ChronusWorkspace } from "@chronus/chronus";
-import { readChangeDescriptions, resolveChangeRelativePath } from "@chronus/chronus/change";
+import { type ChronusWorkspace } from "@chronus/chronus";
+import { resolveChangeRelativePath, type ChangeDescription } from "@chronus/chronus/change";
+import { BasicChangelogGenerator, defineChangelogGenerator } from "@chronus/chronus/changelog";
 import { createGitSourceControl } from "@chronus/chronus/source-control/git";
 import { ChronusError, execAsync } from "@chronus/chronus/utils";
-import { resolve } from "path";
-import { getGithubInfoForChange } from "./fetch-pr-info.js";
+import { getGithubInfoForChange, type GithubInfo } from "./fetch-pr-info.js";
 
 async function getCommitsThatAddChangeDescriptions(
   workspace: ChronusWorkspace,
@@ -23,18 +23,6 @@ async function getCommitsThatAddChangeDescriptions(
   return result;
 }
 
-const workspace = await loadChronusWorkspace(NodeChronusHost, resolve(process.cwd(), "../.."));
-
-const changes = await readChangeDescriptions(NodeChronusHost, workspace);
-const commits = await getCommitsThatAddChangeDescriptions(
-  workspace,
-  changes.map((c) => c.id),
-);
-
-const result = await getGithubInfoForChange("timotheeguerin", "chronus", commits, await getGithubToken());
-
-console.log("Res", result);
-
 async function getGithubToken(): Promise<string> {
   if (process.env.GITHUB_TOKEN) {
     return process.env.GITHUB_TOKEN;
@@ -45,5 +33,47 @@ async function getGithubToken(): Promise<string> {
     } else {
       throw new ChronusError(`Failed to get github token:${result.stdall}`);
     }
+  }
+}
+
+export interface GithubChangelogGeneratorOptions {
+  readonly repo: string;
+}
+export default defineChangelogGenerator((workspace: ChronusWorkspace, options: GithubChangelogGeneratorOptions) => {
+  if (!options.repo) {
+    throw new ChronusError("Missing repo option");
+  }
+
+  let data: Record<string, GithubInfo> = {};
+  return {
+    async loadData(changes: ChangeDescription[]) {
+      const commits = await getCommitsThatAddChangeDescriptions(
+        workspace,
+        changes.map((c) => c.id),
+      );
+      const [owner, name] = options.repo.split("/", 2);
+      data = await getGithubInfoForChange(owner, name, commits, await getGithubToken());
+      console.log("Res", data);
+    },
+    renderPackageVersion(newVersion: string, changes: ChangeDescription[]) {
+      const renderer = new GithubChangelogGenerator(workspace, data);
+      return renderer.renderPackageVersion(newVersion, changes);
+    },
+  };
+});
+
+export class GithubChangelogGenerator extends BasicChangelogGenerator {
+  constructor(
+    workspace: ChronusWorkspace,
+    protected readonly data: Record<string, GithubInfo>,
+  ) {
+    super(workspace);
+  }
+
+  override renderEntry(change: ChangeDescription) {
+    const githubInfo = this.data[change.id];
+    const pr = githubInfo?.pullRequest ? `#${githubInfo.pullRequest.number} ` : "";
+    const commit = githubInfo?.commit ? `${githubInfo.commit} ` : "";
+    return `- ${pr}${commit}${change.content}`;
   }
 }

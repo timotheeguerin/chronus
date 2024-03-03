@@ -28,6 +28,7 @@ const schema = z.object({
   versionPolicies: z.array(versionPolicySchema).optional(),
   ignore: z.array(z.string()).optional(),
   changeKinds: z.record(changeKindsSchema).optional(),
+  changelog: z.union([z.string(), z.tuple([z.string(), z.record(z.unknown())])]).optional(),
 });
 
 export function parseConfig(content: string): ChronusUserConfig {

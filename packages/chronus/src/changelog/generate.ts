@@ -1,17 +1,63 @@
-import pluralize from "pluralize";
-import type { ChangeDescription } from "../change/types.js";
 import type { ChronusWorkspace } from "../index.js";
 import type { ReleaseAction } from "../release-plan/types.js";
+import { ChronusError } from "../utils/errors.js";
 import type { ChronusHost } from "../utils/host.js";
 import { resolvePath } from "../utils/path-utils.js";
 import type { ChronusPackage } from "../workspace/types.js";
+import { BasicChangelogGenerator } from "./basic.js";
+import type { ChangelogGenerator } from "./types.js";
+
+export async function resolveChangelogGenerator(workspace: ChronusWorkspace): Promise<ChangelogGenerator> {
+  const generatorConfig = workspace.config.changelog
+    ? typeof workspace.config.changelog === "string"
+      ? { name: workspace.config.changelog, options: undefined }
+      : { name: workspace.config.changelog[0], options: workspace.config.changelog[1] }
+    : { name: "basic", options: undefined };
+
+  switch (generatorConfig.name) {
+    case "basic":
+      return loadBasicChangelogGenerator(workspace);
+    default:
+      return loadChangelogGenerator(workspace, generatorConfig);
+  }
+}
+
+function loadBasicChangelogGenerator(workspace: ChronusWorkspace): ChangelogGenerator {
+  const generator = new BasicChangelogGenerator(workspace);
+  return {
+    renderPackageVersion: (newVersion, changes) => generator.renderPackageVersion(newVersion, changes),
+  };
+}
+
+async function loadChangelogGenerator(
+  workspace: ChronusWorkspace,
+  {
+    name,
+    options,
+  }: {
+    name: string;
+    options: Record<string, unknown> | undefined;
+  },
+) {
+  const data = await import(name);
+  if (data.default === undefined) {
+    throw new ChronusError(`Changelog generator "${name}" doesn't have a default export.`);
+  }
+  if (typeof data.default !== "function") {
+    throw new ChronusError(`Changelog generator "${name}" default export should be a function`);
+  }
+
+  const generator: ChangelogGenerator = data.default(workspace, options);
+  return generator;
+}
 
 export async function updateChangelog(
   host: ChronusHost,
   workspace: ChronusWorkspace,
   action: ReleaseAction,
 ): Promise<void> {
-  const newEntry = getChangelogEntry(workspace, action);
+  const generator = await resolveChangelogGenerator(workspace);
+  const newEntry = generator.renderPackageVersion(action.newVersion, action.changes);
   const wrapped = `\n\n${newEntry}\n`;
 
   const pkg = workspace.getPackage(action.packageName);
@@ -35,40 +81,4 @@ async function getExistingChangelog(host: ChronusHost, filename: string): Promis
   } catch {
     return undefined;
   }
-}
-
-export function getChangelogEntry(workspace: ChronusWorkspace, action: ReleaseAction): string {
-  const changesByKind = new Map<string, ChangeDescription[]>();
-
-  for (const change of action.changes) {
-    const kind = change.changeKind.name;
-    const existing = changesByKind.get(kind);
-    if (existing) {
-      existing.push(change);
-    } else {
-      changesByKind.set(kind, [change]);
-    }
-  }
-
-  const lines = [`## ${action.newVersion}`, ""];
-  let hasChange = false;
-  for (const changeKind of Object.values(workspace.config.changeKinds)) {
-    const changes = changesByKind.get(changeKind.name);
-    if (changes && changes.length > 0) {
-      hasChange = true;
-      lines.push(`### ${changeKind.title ? pluralize(changeKind.title) : capitalize(changeKind.name)}`);
-      lines.push(" ");
-      for (const change of changes) {
-        lines.push(`- ${change.content}`);
-      }
-    }
-  }
-  if (!hasChange) {
-    lines.push("No changes, version bump only.");
-  }
-  return lines.join("\n");
-}
-
-function capitalize(str: string): string {
-  return str[0].toUpperCase() + str.slice(1);
 }

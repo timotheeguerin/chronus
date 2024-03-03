@@ -11,6 +11,7 @@
   "exports": {
     ".": "./dist/index.js",
     "./change": "./dist/change/index.js",
+    "./changelog": "./dist/changelog/index.js",
     "./source-control/git": "./dist/source-control/git.js",
     "./utils": "./dist/utils/index.js"
   },
