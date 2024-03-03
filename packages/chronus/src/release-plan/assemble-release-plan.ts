@@ -58,7 +58,11 @@ export function assembleReleasePlan(
     return {
       ...incompleteRelease,
       newVersion: getNewVersion(incompleteRelease),
-      changes: changes.filter((change) => change.packages.some((pkgName) => pkgName === incompleteRelease.packageName)),
+      changes: changes.filter(
+        (change) =>
+          change.changeKind.versionType !== "none" &&
+          change.packages.some((pkgName) => pkgName === incompleteRelease.packageName),
+      ),
     };
   });
 
