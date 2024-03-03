@@ -1,6 +1,6 @@
 import type { ChangeDescription } from "../change/types.js";
 import { deleteChangeDescription, writeChangeDescription } from "../change/write.js";
-import { updateChangelog } from "../changelog/generate.js";
+import { resolveChangelogGenerator, updateChangelog } from "../changelog/generate.js";
 import type { ReleaseAction, ReleasePlan, ReleasePlanChangeApplication } from "../release-plan/types.js";
 import type { ChronusHost } from "../utils/host.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
@@ -12,12 +12,17 @@ export async function applyReleasePlan(
   releasePlan: ReleasePlan,
 ): Promise<void> {
   const actionForPackage = new Map<string, ReleaseAction>(releasePlan.actions.map((x) => [x.packageName, x]));
+  // Load this first in case there is a failure so we don't have a partial update of files.
+  const changelogGenerator = await resolveChangelogGenerator(
+    workspace,
+    releasePlan.changes.map((x) => x.change),
+  );
   for (const pkg of workspace.allPackages) {
     await updatePackageJson(host, workspace, pkg, actionForPackage);
   }
 
   for (const action of releasePlan.actions) {
-    await updateChangelog(host, workspace, action);
+    await updateChangelog(host, workspace, changelogGenerator, action);
   }
 
   for (const change of releasePlan.changes) {

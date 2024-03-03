@@ -1,3 +1,4 @@
+import type { ChangeDescription } from "../change/types.js";
 import type { ChronusWorkspace } from "../index.js";
 import type { ReleaseAction } from "../release-plan/types.js";
 import { ChronusError } from "../utils/errors.js";
@@ -7,7 +8,10 @@ import type { ChronusPackage } from "../workspace/types.js";
 import { BasicChangelogGenerator } from "./basic.js";
 import type { ChangelogGenerator } from "./types.js";
 
-export async function resolveChangelogGenerator(workspace: ChronusWorkspace): Promise<ChangelogGenerator> {
+export async function resolveChangelogGenerator(
+  workspace: ChronusWorkspace,
+  changes: ChangeDescription[],
+): Promise<ChangelogGenerator> {
   const generatorConfig = workspace.config.changelog
     ? typeof workspace.config.changelog === "string"
       ? { name: workspace.config.changelog, options: undefined }
@@ -18,7 +22,7 @@ export async function resolveChangelogGenerator(workspace: ChronusWorkspace): Pr
     case "basic":
       return loadBasicChangelogGenerator(workspace);
     default:
-      return loadChangelogGenerator(workspace, generatorConfig);
+      return loadChangelogGenerator(workspace, generatorConfig, changes);
   }
 }
 
@@ -38,6 +42,7 @@ async function loadChangelogGenerator(
     name: string;
     options: Record<string, unknown> | undefined;
   },
+  changes: ChangeDescription[],
 ) {
   const data = await import(name);
   if (data.default === undefined) {
@@ -48,15 +53,18 @@ async function loadChangelogGenerator(
   }
 
   const generator: ChangelogGenerator = data.default(workspace, options);
+  if (generator.loadData) {
+    await generator.loadData(changes);
+  }
   return generator;
 }
 
 export async function updateChangelog(
   host: ChronusHost,
   workspace: ChronusWorkspace,
+  generator: ChangelogGenerator,
   action: ReleaseAction,
 ): Promise<void> {
-  const generator = await resolveChangelogGenerator(workspace);
   const newEntry = generator.renderPackageVersion(action.newVersion, action.changes);
   const wrapped = `\n\n${newEntry}\n`;
 

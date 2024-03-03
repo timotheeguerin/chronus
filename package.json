@@ -44,6 +44,7 @@
     "@types/node": "^20.11.20",
     "@typescript-eslint/parser": "^7.0.1",
     "@typescript-eslint/utils": "^7.0.2",
+    "@chronus/github": "workspace:*",
     "cspell": "^8.4.1",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1",
