@@ -1,3 +1,4 @@
+import { isCI } from "std-env";
 import { applyReleasePlan } from "../../apply-release-plan/index.js";
 import { readChangeDescriptions } from "../../change/read.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
@@ -17,7 +18,8 @@ export async function applyChangesets(cwd: string, options?: ApplyChangesetsOpti
   const workspace = await loadChronusWorkspace(host, cwd);
   const releasePlan = await resolveReleasePlan(host, workspace, options);
 
-  await applyReleasePlan(host, workspace, releasePlan);
+  const interactive = process.stdout?.isTTY && !isCI;
+  await applyReleasePlan(host, workspace, releasePlan, interactive);
 }
 
 export async function resolveReleasePlan(

@@ -39,10 +39,12 @@
     "@chronus/chronus": "workspace:*",
     "@octokit/auth-action": "^4.0.1",
     "@octokit/graphql": "^8.0.1",
+    "cross-spawn": "^7.0.3",
     "human-id": "^4.1.1",
     "octokit": "^3.1.2"
   },
   "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
     "@types/node": "^20.11.20",
     "rimraf": "^5.0.5",
     "source-map-support": "^0.5.21",

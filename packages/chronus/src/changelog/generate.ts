@@ -11,6 +11,7 @@ import type { ChangelogGenerator, ChangelogGeneratorFactory } from "./types.js";
 export async function resolveChangelogGenerator(
   workspace: ChronusWorkspace,
   changes: ChangeDescription[],
+  interactive: boolean,
 ): Promise<ChangelogGenerator> {
   const generatorConfig = workspace.config.changelog
     ? typeof workspace.config.changelog === "string"
@@ -22,7 +23,7 @@ export async function resolveChangelogGenerator(
     case "basic":
       return loadBasicChangelogGenerator(workspace);
     default:
-      return loadChangelogGenerator(workspace, generatorConfig, changes);
+      return loadChangelogGenerator(workspace, generatorConfig, changes, interactive);
   }
 }
 
@@ -43,6 +44,7 @@ async function loadChangelogGenerator(
     options: Record<string, unknown> | undefined;
   },
   changes: ChangeDescription[],
+  interactive: boolean,
 ) {
   const data = await import(name);
   if (data.default === undefined) {
@@ -53,7 +55,7 @@ async function loadChangelogGenerator(
   }
   const factory = data.default as ChangelogGeneratorFactory<unknown>;
 
-  const generator: ChangelogGenerator = await factory({ workspace, options, changes });
+  const generator: ChangelogGenerator = await factory({ workspace, options, changes, interactive });
   if (generator.loadData) {
     await generator.loadData(changes);
   }
