@@ -3,6 +3,7 @@ import { resolveChangeRelativePath, type ChangeDescription } from "@chronus/chro
 import { BasicChangelogGenerator, defineChangelogGenerator } from "@chronus/chronus/changelog";
 import { createGitSourceControl } from "@chronus/chronus/source-control/git";
 import { ChronusError, execAsync } from "@chronus/chronus/utils";
+import type { ChangelogGeneratorInit } from "../../../chronus/dist/changelog/types.js";
 import { getGithubInfoForChange, type GithubInfo } from "./fetch-pr-info.js";
 
 async function getCommitsThatAddChangeDescriptions(
@@ -39,28 +40,27 @@ async function getGithubToken(): Promise<string> {
 export interface GithubChangelogGeneratorOptions {
   readonly repo: string;
 }
-export default defineChangelogGenerator((workspace: ChronusWorkspace, options: GithubChangelogGeneratorOptions) => {
-  if (!options.repo) {
-    throw new ChronusError("Missing repo option");
-  }
+export default defineChangelogGenerator(
+  async ({ workspace, changes, options }: ChangelogGeneratorInit<GithubChangelogGeneratorOptions>) => {
+    if (!options?.repo) {
+      throw new ChronusError("Missing repo option");
+    }
 
-  let data: Record<string, GithubInfo> = {};
-  return {
-    async loadData(changes: ChangeDescription[]) {
-      const commits = await getCommitsThatAddChangeDescriptions(
-        workspace,
-        changes.map((c) => c.id),
-      );
-      const [owner, name] = options.repo.split("/", 2);
-      data = await getGithubInfoForChange(owner, name, commits, await getGithubToken());
-      console.log("Res", data);
-    },
-    renderPackageVersion(newVersion: string, changes: ChangeDescription[]) {
-      const renderer = new GithubChangelogGenerator(workspace, data);
-      return renderer.renderPackageVersion(newVersion, changes);
-    },
-  };
-});
+    const commits = await getCommitsThatAddChangeDescriptions(
+      workspace,
+      changes.map((c) => c.id),
+    );
+    const [owner, name] = options.repo.split("/", 2);
+    const data = await getGithubInfoForChange(owner, name, commits, await getGithubToken());
+    return {
+      async loadData(changes: ChangeDescription[]) {},
+      renderPackageVersion(newVersion: string, changes: ChangeDescription[]) {
+        const renderer = new GithubChangelogGenerator(workspace, data);
+        return renderer.renderPackageVersion(newVersion, changes);
+      },
+    };
+  },
+);
 
 export class GithubChangelogGenerator extends BasicChangelogGenerator {
   constructor(

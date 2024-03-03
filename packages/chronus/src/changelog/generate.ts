@@ -6,7 +6,7 @@ import type { ChronusHost } from "../utils/host.js";
 import { resolvePath } from "../utils/path-utils.js";
 import type { ChronusPackage } from "../workspace/types.js";
 import { BasicChangelogGenerator } from "./basic.js";
-import type { ChangelogGenerator } from "./types.js";
+import type { ChangelogGenerator, ChangelogGeneratorFactory } from "./types.js";
 
 export async function resolveChangelogGenerator(
   workspace: ChronusWorkspace,
@@ -51,8 +51,9 @@ async function loadChangelogGenerator(
   if (typeof data.default !== "function") {
     throw new ChronusError(`Changelog generator "${name}" default export should be a function`);
   }
+  const factory = data.default as ChangelogGeneratorFactory<unknown>;
 
-  const generator: ChangelogGenerator = data.default(workspace, options);
+  const generator: ChangelogGenerator = await factory({ workspace, options, changes });
   if (generator.loadData) {
     await generator.loadData(changes);
   }
