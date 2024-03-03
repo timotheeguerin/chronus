@@ -9,8 +9,9 @@ export interface PublishOptions {
   readonly reporter: Reporter;
   readonly pattern: string;
   readonly otp?: string;
-  readonly access?: string;
+  readonly access?: "public" | "restricted";
   readonly registry?: string;
+  readonly engine?: "pnpm" | "npm";
 }
 
 export async function publish({ reporter, pattern, ...others }: PublishOptions) {

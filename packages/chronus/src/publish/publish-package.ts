@@ -10,6 +10,7 @@ export interface PublishPackageOptions {
   readonly otp?: string;
   readonly access?: string;
   readonly registry?: string;
+  readonly engine?: "npm" | "pnpm";
 }
 
 export type PublishPackageResult = PublishedPackageSuccess | PublishedPackageFailure;
@@ -52,14 +53,19 @@ export async function publishPackage(
   pkgDir: string,
   options: PublishPackageOptions = {},
 ): Promise<PublishPackageResult> {
-  if (await shouldUsePnpm(pkgDir)) {
+  if (await shouldUsePnpm(pkgDir, options.engine)) {
     return publishPackageWithPnpm(pkg, pkgDir, options);
   } else {
     return publishPackageWithNpm(pkg, pkgDir, options);
   }
 }
 
-async function shouldUsePnpm(pkgDir: string): Promise<boolean> {
+async function shouldUsePnpm(pkgDir: string, engine: "npm" | "pnpm" | undefined): Promise<boolean> {
+  if (engine === "pnpm") {
+    return true;
+  } else if (engine === "npm") {
+    return false;
+  }
   const pnpmWs = createPnpmWorkspaceManager(NodeChronusHost);
   const root = await lookup(pkgDir, (current) => {
     return pnpmWs.is(current);
