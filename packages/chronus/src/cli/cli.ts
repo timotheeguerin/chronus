@@ -101,12 +101,17 @@ async function main() {
           })
           .option("access", {
             type: "string",
-            choices: ["public", "restricted"],
+            choices: ["public", "restricted"] as const,
             description: "Tells the registry whether this package should be published as public or restricted",
           })
           .option("registry", {
             type: "string",
             description: "Npm registry to use for publishing",
+          })
+          .option("engine", {
+            type: "string",
+            choices: ["npm", "pnpm"] as const,
+            description: "Engine to use (npm or pnpm, default to use pnpm in a pnpm workspace and npm otherwise)",
           }),
       withReporter((args) =>
         publish({
@@ -114,6 +119,7 @@ async function main() {
           pattern: args.include ? resolvePath(process.cwd(), args.include) : process.cwd(),
           access: args.access,
           registry: args.registry,
+          engine: args.engine,
         }),
       ),
     )
