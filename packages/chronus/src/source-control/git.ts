@@ -221,6 +221,7 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
       const commitsWithMissingParents = [];
 
       for (const info of commitInfos) {
+        console.log("Got info", info);
         if (info.commitSha) {
           if (info.parentSha) {
             // We have found the parent of the commit that added the file.
