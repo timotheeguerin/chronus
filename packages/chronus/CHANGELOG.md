@@ -1,5 +1,24 @@
 # @chronus/chronus
 
+## 0.8.0
+
+### Features
+
+- [#78](https://github.com/timotheeguerin/chronus/pull/78) Auto-Select the undocumented packages when using `chronus add`
+- [#96](https://github.com/timotheeguerin/chronus/pull/96) `chronus publish` can take a wild card of tgz to publish instead of publishing the workspace
+- [#92](https://github.com/timotheeguerin/chronus/pull/92) Add `chronus pack` command that will pack all packages that need publishing
+- [#94](https://github.com/timotheeguerin/chronus/pull/94) Add new `chronus publish` command to publish all packages in the workspace
+- [#97](https://github.com/timotheeguerin/chronus/pull/97) Add ability to configure the changelog generator with a `changelog` entry
+
+### Bug Fixes
+
+- [#96](https://github.com/timotheeguerin/chronus/pull/96) Only include necessary files in artifact
+- [#80](https://github.com/timotheeguerin/chronus/pull/80) Partial Release using `--only` to bump version of select packages
+- [#99](https://github.com/timotheeguerin/chronus/pull/99) Allow to choose publish engine
+- [#97](https://github.com/timotheeguerin/chronus/pull/97) Fix issue where a change kind with version kind of `none` would still be included in the changelog
+- [#84](https://github.com/timotheeguerin/chronus/pull/84) Add new `list-pending-publish` command to list unpublished packages
+
+
 ## 0.7.0
 
 ### Features
