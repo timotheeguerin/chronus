@@ -25,10 +25,11 @@ export class BasicChangelogGenerator {
       if (changes && changes.length > 0) {
         hasChange = true;
         lines.push(`### ${changeKind.title ? pluralize(changeKind.title) : capitalize(changeKind.name)}`);
-        lines.push(" ");
+        lines.push("");
         for (const change of changes) {
           lines.push(this.renderEntry(change));
         }
+        lines.push("");
       }
     }
     if (!hasChange) {
