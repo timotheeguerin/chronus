@@ -2,6 +2,7 @@ import { graphql } from "@octokit/graphql";
 
 export interface GithubInfo {
   readonly commit: string;
+  readonly commitUrl: string;
   readonly author: {
     readonly login: string;
     readonly url: string;
@@ -23,6 +24,7 @@ export async function getGithubInfoForChange(
   const commitQueries = Object.values(commits).map((sha) => {
     return `_${sha}: object(expression: ${JSON.stringify(sha)}) {
       ... on Commit {
+        commitUrl
         associatedPullRequests(first: 1) {
           nodes {
             number
@@ -80,6 +82,7 @@ export async function getGithubInfoForChange(
     const info = result.repo[`_${commit}`];
     return {
       commit,
+      commitUrl: info.commitUrl,
       author: info.author.user,
       pullRequest: info.associatedPullRequests.nodes[0],
     };

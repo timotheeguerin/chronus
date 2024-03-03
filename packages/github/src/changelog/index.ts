@@ -60,8 +60,8 @@ export class GithubChangelogGenerator extends BasicChangelogGenerator {
 
   override renderEntry(change: ChangeDescription) {
     const githubInfo = this.data[change.id];
-    const pr = githubInfo?.pullRequest ? `#${githubInfo.pullRequest.number} ` : "";
-    const commit = githubInfo?.commit ? `${githubInfo.commit} ` : "";
+    const pr = githubInfo?.pullRequest ? `[#${githubInfo.pullRequest.number}](${githubInfo.pullRequest.url}) ` : "";
+    const commit = githubInfo?.commit ? `[${githubInfo.commit.slice(0, 7)}](${githubInfo.commitUrl}) ` : "";
     return `- ${pr}${commit}${change.content}`;
   }
 }
