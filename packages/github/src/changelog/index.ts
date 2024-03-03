@@ -4,7 +4,7 @@ import { BasicChangelogGenerator, defineChangelogGenerator } from "@chronus/chro
 import { createGitSourceControl } from "@chronus/chronus/source-control/git";
 import { ChronusError } from "@chronus/chronus/utils";
 import type { ChangelogGeneratorInit } from "../../../chronus/dist/changelog/types.js";
-import { getGithubInfoForChange, type GithubInfo } from "./fetch-pr-info.js";
+import { getGithubInfoForChange, type GithubInfo, type GithubPrRef } from "./fetch-pr-info.js";
 import { getGithubToken } from "./gh-token.js";
 
 async function getCommitsThatAddChangeDescriptions(
@@ -60,8 +60,19 @@ export class GithubChangelogGenerator extends BasicChangelogGenerator {
 
   override renderEntry(change: ChangeDescription) {
     const githubInfo = this.data[change.id];
-    const pr = githubInfo?.pullRequest ? `[#${githubInfo.pullRequest.number}](${githubInfo.pullRequest.url}) ` : "";
-    const commit = githubInfo?.commit ? `[${githubInfo.commit.slice(0, 7)}](${githubInfo.commitUrl}) ` : "";
-    return `- ${pr}${commit}${change.content}`;
+    const prefix = githubInfo?.pullRequest
+      ? `${this.renderPrLink(githubInfo.pullRequest)} `
+      : githubInfo?.commit
+        ? `${this.renderCommitLink(githubInfo)} `
+        : "";
+    return `- ${prefix}${change.content}`;
+  }
+
+  renderPrLink(pr: GithubPrRef) {
+    return `[#${pr.number}](${pr.url})`;
+  }
+
+  renderCommitLink(githubInfo: GithubInfo) {
+    return `[${githubInfo.commit.slice(0, 7)}](${githubInfo.commitUrl})`;
   }
 }
