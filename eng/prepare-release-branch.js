@@ -7,7 +7,7 @@ import { showStatusAsMarkdown } from "../packages/chronus/dist/cli/commands/show
 const branchName = "publish/auto-release";
 
 const changeStatus = await showStatusAsMarkdown(process.cwd());
-execSync(`pnpm change version`);
+execSync(`pnpm change version`, { stdio: "inherit" });
 const stdout = execSync(`git status --porcelain`).toString();
 
 if (stdout.trim() !== "") {
