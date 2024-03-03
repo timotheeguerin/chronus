@@ -207,11 +207,9 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
       // Fetch commit information for all paths we don't have yet
       const commitInfos = await Promise.all(
         remaining.map(async (gitPath: string) => {
-          const [commitSha, parentSha] = (
-            await execGit(["log", "--diff-filter=A", "--max-count=1", "--format=%H:%p", gitPath], { repositoryPath })
-          ).stdout
-            .toString()
-            .split(":");
+          const [commitSha, parentSha] = trimSingleLine(
+            await execGit(["log", "--diff-filter=A", "--max-count=1", "--format=%H:%p", gitPath], { repositoryPath }),
+          ).split(":");
           return { path: gitPath, commitSha, parentSha };
         }),
       );
