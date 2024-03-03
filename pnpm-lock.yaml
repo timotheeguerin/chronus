@@ -15,6 +15,9 @@ importers:
       '@actions/github':
         specifier: ^6.0.0
         version: 6.0.0
+      '@chronus/github':
+        specifier: workspace:*
+        version: link:packages/github
       '@eslint/js':
         specifier: ^8.57.0
         version: 8.57.0
