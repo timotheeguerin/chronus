@@ -1,5 +1,13 @@
 # @chronus/chronus
 
+## 0.8.1
+
+### Bug Fixes
+
+- [#106](https://github.com/timotheeguerin/chronus/pull/106) Export `readPublishSummary` function from `@chronus/chronus/publish`
+- [#104](https://github.com/timotheeguerin/chronus/pull/104) Add `--report-summary` to `publish` command to save a report summary
+
+
 ## 0.8.0
 
 ### Features
