@@ -10,11 +10,11 @@ export interface PolicyRelease {
   readonly version: string;
 }
 
-export async function createGithubRelease(octokit: any) {
-  await octokit.rest.repos.createRelease({
-    name: tagName,
-    tag_name: tagName,
-    body: changelogEntry.content,
-    ...github.context.repo,
-  });
-}
+// export async function createGithubRelease(octokit: any) {
+//   await octokit.rest.repos.createRelease({
+//     name: tagName,
+//     tag_name: tagName,
+//     body: changelogEntry.content,
+//     ...github.context.repo,
+//   });
+// }
