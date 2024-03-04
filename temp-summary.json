@@ -1,0 +1,26 @@
+{
+  "status": "success",
+  "packages": {
+    "@chronus/chronus": {
+      "published": true,
+      "name": "@chronus/chronus",
+      "version": "0.8.1",
+      "size": 69408,
+      "unpackedSize": 301015
+    },
+    "@chronus/github": {
+      "published": true,
+      "name": "@chronus/github",
+      "version": "0.1.2",
+      "size": 9530,
+      "unpackedSize": 31184
+    },
+    "@chronus/github-pr-commenter": {
+      "published": true,
+      "name": "@chronus/github-pr-commenter",
+      "version": "0.3.2",
+      "size": 4909,
+      "unpackedSize": 15769
+    }
+  }
+}
