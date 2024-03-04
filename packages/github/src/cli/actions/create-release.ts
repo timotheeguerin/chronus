@@ -108,7 +108,7 @@ async function createReleaseForPackage(
     log(pc.green(`Created release for package ${pkgName}@${version}: ${release.data.html_url}`));
     return { success: true };
   } catch (e) {
-    log(pc.red(`Error while creating release ${tag}:`));
+    log(pc.red(`Error while creating release '${tag}':`));
     log(e);
     return { success: false };
   }

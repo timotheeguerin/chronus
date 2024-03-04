@@ -37,7 +37,7 @@ async function main() {
             type: "string",
             description: "Name of the package",
           })
-          .option("version", {
+          .option("package-version", {
             type: "string",
             description: "Version to release",
           })
@@ -49,7 +49,7 @@ async function main() {
         createRelease({
           publishSummary: args.publishSummary && resolveCliPath(args.publishSummary),
           package: args.package,
-          version: args.version,
+          version: args["package-version"],
           commit: args.commit,
           repo: args.repo,
           workspaceDir: process.cwd(),

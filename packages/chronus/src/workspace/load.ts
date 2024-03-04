@@ -31,7 +31,7 @@ export function createChronusWorkspace(workspace: Workspace, config: ChronusReso
     getPackage: (packageName: string) => {
       const value = map.get(packageName);
       if (value === undefined) {
-        throw new ChronusError(`Could not find package ${packageName}`);
+        throw new ChronusError(`Could not find package '${packageName}'`);
       }
       return value;
     },
