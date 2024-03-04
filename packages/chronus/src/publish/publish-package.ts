@@ -5,26 +5,13 @@ import { execAsync, type ExecResult } from "../utils/exec-async.js";
 import { getDirectoryPath, getLastJsonObject, lookup, NodeChronusHost } from "../utils/index.js";
 import { createPnpmWorkspaceManager } from "../workspace-manager/pnpm.js";
 import type { PackageBase } from "../workspace-manager/types.js";
+import type { PublishPackageResult } from "./types.js";
 
 export interface PublishPackageOptions {
   readonly otp?: string;
   readonly access?: string;
   readonly registry?: string;
   readonly engine?: "npm" | "pnpm";
-}
-
-export type PublishPackageResult = PublishedPackageSuccess | PublishedPackageFailure;
-
-export interface PublishedPackageSuccess {
-  readonly published: true;
-  readonly name: string;
-  readonly version: string;
-  readonly size: number;
-  readonly unpackedSize: number;
-}
-
-export interface PublishedPackageFailure {
-  readonly published: false;
 }
 
 /** Npm publish json output. */
@@ -158,6 +145,8 @@ function processError(pkg: PackageBase, result: ExecResult): PublishPackageResul
 
   return {
     published: false,
+    name: pkg.name,
+    version: pkg.version,
   };
 }
 
