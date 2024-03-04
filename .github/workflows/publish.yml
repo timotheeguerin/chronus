@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: npm
     permissions:
-      packages: write
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
