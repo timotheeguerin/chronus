@@ -68,5 +68,5 @@ jobs:
           cat ./publish-summary.json
         name: Log publish summary
 
-      - run: node ./packages/chronus-github/cmd/cli.mjs --repo timotheeguerin/chronus --publish-summary ./publish-summary.json
+      - run: node ./packages/github/cmd/cli.mjs create-releases --repo timotheeguerin/chronus --publish-summary ./publish-summary.json
         name: Create github releases

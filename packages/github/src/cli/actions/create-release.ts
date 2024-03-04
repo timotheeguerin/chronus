@@ -25,16 +25,20 @@ export async function createRelease({ publishSummary: publishSummaryPath, repo, 
       log(pc.yellow(`Package ${result.name}@${result.version} failed to publish so skipping github release creation.`));
       continue;
     }
+    log(`Will create release for package ${result.name}@${result.version}.`);
+
     const changelog = await loadChangelogForVersion(host, workspace, result.name, result.version);
     const tag = `${result.name}@${result.version}`;
     try {
-      await octokit.rest.repos.createRelease({
+      const release = await octokit.rest.repos.createRelease({
         owner: owner,
         repo: repoName,
         tag_name: tag,
+        name: tag,
         body: changelog,
         prerelease: result.version.includes("-"),
       });
+      log(pc.green(`Created release for package ${result.name}@${result.version}: ${release.data.html_url}`));
     } catch (e) {
       log(pc.red(`Error while creating release ${tag}:`));
       log(e);
