@@ -5,6 +5,7 @@ dictionaries:
   - node
   - typescript
 words:
+  - commitish
   - EOTP
   - ETARGET
   - pacote

@@ -24,19 +24,33 @@ async function main() {
       "Create github releases from publish report",
       (cmd) =>
         cmd
-          .option("publish-summary", {
-            type: "string",
-            description: "Path to the report summary",
-          })
           .option("repo", {
             type: "string",
             description: "Github repository",
           })
-          .demandOption("publish-summary")
-          .demandOption("repo"),
+          .demandOption("repo")
+          .option("publish-summary", {
+            type: "string",
+            description: "Path to the report summary",
+          })
+          .option("package", {
+            type: "string",
+            description: "Name of the package",
+          })
+          .option("version", {
+            type: "string",
+            description: "Version to release",
+          })
+          .option("commit", {
+            type: "string",
+            description: "Sha of the commit to create the release. Default to latest.",
+          }),
       (args) =>
         createRelease({
-          publishSummary: resolveCliPath(args.publishSummary),
+          publishSummary: args.publishSummary && resolveCliPath(args.publishSummary),
+          package: args.package,
+          version: args.version,
+          commit: args.commit,
           repo: args.repo,
           workspaceDir: process.cwd(),
         }),
