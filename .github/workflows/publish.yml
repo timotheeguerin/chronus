@@ -71,7 +71,7 @@ jobs:
           cat ./publish-summary.json
         name: Log publish summary
 
-      - run: node ./packages/github/cmd/cli.mjs create-releases --repo timotheeguerin/chronus --publish-summary ./temp-summary.json
+      - run: node ./packages/github/cmd/cli.mjs create-releases --repo timotheeguerin/chronus --publish-summary ./publish-summary.json
         name: Create github releases
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
