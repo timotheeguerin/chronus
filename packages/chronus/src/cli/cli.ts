@@ -112,6 +112,10 @@ async function main() {
             type: "string",
             choices: ["npm", "pnpm"] as const,
             description: "Engine to use (npm or pnpm, default to use pnpm in a pnpm workspace and npm otherwise)",
+          })
+          .option("report-summary", {
+            type: "string",
+            description: "Save the list of published packages.",
           }),
       withReporter((args) =>
         publish({
@@ -120,6 +124,7 @@ async function main() {
           access: args.access,
           registry: args.registry,
           engine: args.engine,
+          reportSummary: args.reportSummary && resolvePath(process.cwd(), args.reportSummary),
         }),
       ),
     )
