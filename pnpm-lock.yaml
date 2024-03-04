@@ -183,6 +183,12 @@ importers:
       octokit:
         specifier: ^3.1.2
         version: 3.1.2
+      picocolors:
+        specifier: ^1.0.0
+        version: 1.0.0
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
     devDependencies:
       '@types/cross-spawn':
         specifier: ^6.0.6
@@ -190,6 +196,9 @@ importers:
       '@types/node':
         specifier: ^20.11.20
         version: 20.11.20
+      '@types/yargs':
+        specifier: ^17.0.32
+        version: 17.0.32
       rimraf:
         specifier: ^5.0.5
         version: 5.0.5
