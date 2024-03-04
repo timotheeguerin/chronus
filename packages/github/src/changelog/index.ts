@@ -4,8 +4,8 @@ import { BasicChangelogGenerator, defineChangelogGenerator } from "@chronus/chro
 import { createGitSourceControl } from "@chronus/chronus/source-control/git";
 import { ChronusError } from "@chronus/chronus/utils";
 import type { ChangelogGeneratorInit } from "../../../chronus/dist/changelog/types.js";
+import { getGithubToken } from "../utils/gh-token.js";
 import { getGithubInfoForChange, type GithubInfo, type GithubPrRef } from "./fetch-pr-info.js";
-import { getGithubToken } from "./gh-token.js";
 
 async function getCommitsThatAddChangeDescriptions(
   workspace: ChronusWorkspace,
