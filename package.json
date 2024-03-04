@@ -41,7 +41,7 @@
   "devDependencies": {
     "@actions/github": "^6.0.0",
     "@eslint/js": "^8.57.0",
-    "@types/node": "^20.11.20",
+    "@types/node": "^20.11.24",
     "@typescript-eslint/parser": "^7.0.1",
     "@typescript-eslint/utils": "^7.1.0",
     "@chronus/github": "workspace:*",
