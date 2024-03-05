@@ -45,7 +45,7 @@ export interface VersionPolicyBase {
 
 export interface LockstepVersionPolicy extends VersionPolicyBase {
   readonly type: "lockstep";
-  readonly step: VersionType;
+  readonly step: Omit<VersionType, "none">;
 }
 export interface IndependentVersionPolicy extends VersionPolicyBase {
   readonly type: "independent";

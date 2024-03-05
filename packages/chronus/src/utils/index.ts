@@ -6,3 +6,4 @@ export * from "./misc-utils.js";
 export * from "./node-host.js";
 export * from "./path-utils.js";
 export type * from "./types.js";
+export { resolveCurrentLockStepVersion, resolveLatestVersion } from "./version-utils.js";

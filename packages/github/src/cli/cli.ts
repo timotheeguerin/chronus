@@ -37,21 +37,31 @@ async function main() {
             type: "string",
             description: "Name of the package",
           })
-          .option("package-version", {
+          .option("policy", {
+            type: "string",
+            description: "Name of the policy to publish",
+          })
+          .option("release-version", {
             type: "string",
             description: "Version to release",
           })
           .option("commit", {
             type: "string",
             description: "Sha of the commit to create the release. Default to latest.",
+          })
+          .option("dry-run", {
+            type: "boolean",
+            description: "Dry run",
           }),
       (args) =>
         createRelease({
           publishSummary: args.publishSummary && resolveCliPath(args.publishSummary),
           package: args.package,
-          version: args["package-version"],
+          policy: args.policy,
+          version: args["release-version"],
           commit: args.commit,
           repo: args.repo,
+          dryRun: args["dry-run"],
           workspaceDir: process.cwd(),
         }),
     )
