@@ -53,6 +53,7 @@ async function main() {
         createRelease({
           publishSummary: args.publishSummary && resolveCliPath(args.publishSummary),
           package: args.package,
+          policy: args.policy,
           version: args["release-version"],
           commit: args.commit,
           repo: args.repo,
