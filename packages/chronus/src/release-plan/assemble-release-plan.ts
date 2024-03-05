@@ -30,7 +30,7 @@ export function assembleReleasePlan(
           if (!pkg) throw new Error(`Could not find package ${pkgName}`);
           internalActions.set(pkgName, {
             packageName: pkgName,
-            type: policy.step,
+            type: policy.step as any,
             oldVersion: pkg.version,
             policy: policy,
           });

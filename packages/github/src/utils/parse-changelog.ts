@@ -1,5 +1,5 @@
 import type { ChronusWorkspace } from "@chronus/chronus";
-import { resolvePath, type ChronusHost } from "@chronus/chronus/utils";
+import { isDefined, resolvePath, type ChronusHost } from "@chronus/chronus/utils";
 
 const versionHeadingRegex = /^## (\d\.\d\.\d[^ ]*)$/;
 
@@ -15,6 +15,18 @@ export async function loadChangelogForVersion(
   }
 
   return extractVersionChangelog(packageChangelog, version);
+}
+
+export async function loadAndMergeMultiplePackageChangelog(
+  host: ChronusHost,
+  workspace: ChronusWorkspace,
+  packages: { name: string; version: string }[],
+) {
+  const changelogs = await Promise.all(
+    packages.map((x) => loadChangelogForVersion(host, workspace, x.name, x.version)),
+  );
+
+  return changelogs.filter(isDefined).join("\n\n");
 }
 
 export function extractVersionChangelog(changelog: string, version: string): string | undefined {

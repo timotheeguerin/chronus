@@ -1,11 +1,12 @@
 import { NodeChronusHost, loadChronusWorkspace, type ChronusWorkspace } from "@chronus/chronus";
 import { readPublishSummary } from "@chronus/chronus/publish";
-import { ChronusError, type ChronusHost } from "@chronus/chronus/utils";
+import { ChronusError, resolveCurrentLockStepVersion, type ChronusHost } from "@chronus/chronus/utils";
 import { Octokit } from "octokit";
 import pc from "picocolors";
+import type { LockstepVersionPolicy } from "../../../../chronus/dist/config/types.js";
 import type { GithubRepo } from "../../types.js";
 import { getGithubToken } from "../../utils/gh-token.js";
-import { loadChangelogForVersion } from "../../utils/parse-changelog.js";
+import { loadAndMergeMultiplePackageChangelog, loadChangelogForVersion } from "../../utils/parse-changelog.js";
 
 export interface CreateReleaseOptions {
   readonly workspaceDir: string;
@@ -62,14 +63,48 @@ async function createReleaseFromPublishSummary(
   ref: ReleaseRef,
 ) {
   const publishSummary = await readPublishSummary(host, publishSummaryPath);
+  const packagesNeedingARelease = new Map(Object.entries(publishSummary.packages));
+  const policiesNeedingARelease: { policy: LockstepVersionPolicy; version: string }[] = [];
+  const policies = workspace.config.versionPolicies;
+  if (policies) {
+    for (const policy of policies) {
+      switch (policy.type) {
+        case "lockstep":
+          {
+            const latestVersion = resolveCurrentLockStepVersion(workspace, policy);
+            let allMatch = true;
+            for (const name of policy.packages) {
+              if (workspace.getPackage(name).version !== latestVersion) {
+                allMatch = false;
+              } else {
+                packagesNeedingARelease.delete(name);
+              }
+            }
 
+            if (allMatch) {
+              policiesNeedingARelease.push({ policy, version: latestVersion });
+            }
+          }
+          break;
+        case "independent":
+        default:
+          continue;
+      }
+    }
+  }
   let hasError = false;
-  for (const result of Object.values(publishSummary.packages)) {
+  for (const result of Object.values(packagesNeedingARelease)) {
     if (!result.published) {
       log(pc.yellow(`Package ${result.name}@${result.version} failed to publish so skipping github release creation.`));
       continue;
     }
     const createResult = await createReleaseForPackage(host, workspace, octokit, result.name, result.version, ref);
+    if (!createResult.success) {
+      hasError = true;
+    }
+  }
+  for (const result of Object.values(policiesNeedingARelease)) {
+    const createResult = await createReleaseForPolicy(host, workspace, octokit, result.policy, result.version, ref);
     if (!createResult.success) {
       hasError = true;
     }
@@ -106,6 +141,41 @@ async function createReleaseForPackage(
       prerelease: version.includes("-"),
     });
     log(pc.green(`Created release for package ${pkgName}@${version}: ${release.data.html_url}`));
+    return { success: true };
+  } catch (e) {
+    log(pc.red(`Error while creating release '${tag}':`));
+    log(e);
+    return { success: false };
+  }
+}
+
+async function createReleaseForPolicy(
+  host: ChronusHost,
+  workspace: ChronusWorkspace,
+  octokit: Octokit,
+  policy: LockstepVersionPolicy,
+  version: string,
+  ref: ReleaseRef,
+): Promise<{ success: boolean }> {
+  log(`Will create release for version policy ${policy.name}@${version}.`);
+
+  const changelog = await loadAndMergeMultiplePackageChangelog(
+    host,
+    workspace,
+    policy.packages.map((x) => ({ name: x, version })),
+  );
+  const tag = `${policy.name}@${version}`;
+  try {
+    const release = await octokit.rest.repos.createRelease({
+      owner: ref.owner,
+      repo: ref.repo,
+      target_commitish: ref.commit,
+      tag_name: tag,
+      name: tag,
+      body: changelog,
+      prerelease: version.includes("-"),
+    });
+    log(pc.green(`Created release for package ${tag}: ${release.data.html_url}`));
     return { success: true };
   } catch (e) {
     log(pc.red(`Error while creating release '${tag}':`));
