@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.8.2
+
+### Bug Fixes
+
+- [#115](https://github.com/timotheeguerin/chronus/pull/115) [API] More accurate type for lockstep version policy step
+
+
 ## 0.8.1
 
 ### Bug Fixes

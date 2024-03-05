@@ -1,6 +1,6 @@
 {
   "name": "@chronus/github",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "chronus",
   "main": "dist/index.js",
   "exports": {
