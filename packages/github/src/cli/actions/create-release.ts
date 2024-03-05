@@ -13,6 +13,7 @@ export interface CreateReleaseOptions {
   readonly repo: string;
   readonly publishSummary?: string;
   readonly package?: string;
+  readonly policy?: string;
   readonly version?: string;
   readonly commit?: string;
 }
@@ -22,6 +23,7 @@ export async function createRelease({
   repo,
   workspaceDir,
   package: pkgName,
+  policy,
   version,
   commit,
 }: CreateReleaseOptions) {
@@ -29,6 +31,14 @@ export async function createRelease({
     throw new ChronusError(
       `Both 'publishSummary' and 'package' option have been provided but they are mutually exclusive.`,
     );
+  }
+  if (publishSummaryPath && policy) {
+    throw new ChronusError(
+      `Both 'publishSummary' and 'policy' option have been provided but they are mutually exclusive.`,
+    );
+  }
+  if (pkgName && policy) {
+    throw new ChronusError(`Both 'package' and 'policy' option have been provided but they are mutually exclusive.`);
   }
   if (publishSummaryPath && version) {
     throw new ChronusError(`'version' option must be used with package and will have no effect with a publishSummary`);
@@ -45,12 +55,19 @@ export async function createRelease({
   if (publishSummaryPath) {
     return createReleaseFromPublishSummary(host, workspace, octokit, publishSummaryPath, releaseRef);
   } else {
-    if (pkgName === undefined || version === undefined) {
-      throw new ChronusError("Both 'package' and 'version' options should be specified");
+    if (version === undefined) {
+      throw new ChronusError("Both 'version' option must be provided when using 'package' or 'policy'");
     }
-    const createResult = await createReleaseForPackage(host, workspace, octokit, pkgName, version, releaseRef);
-    if (!createResult.success) {
-      process.exit(1);
+    if (pkgName !== undefined) {
+      const createResult = await createReleaseForPackage(host, workspace, octokit, pkgName, version, releaseRef);
+      if (!createResult.success) {
+        process.exit(1);
+      }
+    } else if (policy) {
+      const createResult = await createReleaseForPackage(host, workspace, octokit, policy, version, releaseRef);
+      if (!createResult.success) {
+        process.exit(1);
+      }
     }
   }
 }

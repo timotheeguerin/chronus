@@ -37,7 +37,11 @@ async function main() {
             type: "string",
             description: "Name of the package",
           })
-          .option("package-version", {
+          .option("policy", {
+            type: "string",
+            description: "Name of the policy to publish",
+          })
+          .option("release-version", {
             type: "string",
             description: "Version to release",
           })
@@ -49,7 +53,7 @@ async function main() {
         createRelease({
           publishSummary: args.publishSummary && resolveCliPath(args.publishSummary),
           package: args.package,
-          version: args["package-version"],
+          version: args["release-version"],
           commit: args.commit,
           repo: args.repo,
           workspaceDir: process.cwd(),
