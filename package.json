@@ -41,11 +41,11 @@
   "devDependencies": {
     "@actions/github": "^6.0.0",
     "@eslint/js": "^8.57.0",
-    "@types/node": "^20.11.20",
-    "@typescript-eslint/parser": "^7.0.1",
-    "@typescript-eslint/utils": "^7.0.2",
+    "@types/node": "^20.11.24",
+    "@typescript-eslint/parser": "^7.1.0",
+    "@typescript-eslint/utils": "^7.1.0",
     "@chronus/github": "workspace:*",
-    "cspell": "^8.4.1",
+    "cspell": "^8.5.0",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-unicorn": "^51.0.1",
@@ -55,7 +55,7 @@
     "rimraf": "^5.0.5",
     "syncpack": "^12.3.0",
     "typescript": "^5.3.3",
-    "typescript-eslint": "^7.0.2"
+    "typescript-eslint": "^7.1.0"
   },
   "syncpack": {
     "dependencyTypes": [
