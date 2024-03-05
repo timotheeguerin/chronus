@@ -1,7 +1,7 @@
 import type { ChronusWorkspace } from "@chronus/chronus";
 import { resolvePath, type ChronusHost } from "@chronus/chronus/utils";
 
-const versionHeadingRegex = /^## (\d\.\d\.\d[^ ]*)$/;
+const versionHeadingRegex = /^## (\d+\.\d+\.\d+[^ ]*)$/;
 
 export async function loadChangelogForVersion(
   host: ChronusHost,

@@ -42,6 +42,12 @@ it("extract only version", () => {
   );
 });
 
+it("extract multi digit version", () => {
+  expect(extractVersionChangelog(["## 42.54.0", makeChangelog("42.54.0")].join("\n"), "42.54.0")).toEqual(
+    makeChangelog("42.54.0"),
+  );
+});
+
 it("extract prerelease version", () => {
   expect(
     extractVersionChangelog(["## 1.0.0-alpha.1", makeChangelog("1.0.0-alpha.1")].join("\n"), "1.0.0-alpha.1"),

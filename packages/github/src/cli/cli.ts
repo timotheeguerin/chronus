@@ -48,6 +48,10 @@ async function main() {
           .option("commit", {
             type: "string",
             description: "Sha of the commit to create the release. Default to latest.",
+          })
+          .option("dry-run", {
+            type: "boolean",
+            description: "Dry run",
           }),
       (args) =>
         createRelease({
@@ -57,6 +61,7 @@ async function main() {
           version: args["release-version"],
           commit: args.commit,
           repo: args.repo,
+          dryRun: args["dry-run"],
           workspaceDir: process.cwd(),
         }),
     )

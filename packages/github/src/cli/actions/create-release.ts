@@ -16,6 +16,7 @@ export interface CreateReleaseOptions {
   readonly policy?: string;
   readonly version?: string;
   readonly commit?: string;
+  readonly dryRun?: boolean;
 }
 
 export async function createRelease({
@@ -26,6 +27,7 @@ export async function createRelease({
   policy: policyName,
   version,
   commit,
+  dryRun,
 }: CreateReleaseOptions) {
   if (publishSummaryPath && pkgName) {
     throw new ChronusError(
@@ -53,13 +55,21 @@ export async function createRelease({
   const [owner, repoName] = repo.split("/", 2);
   const releaseRef: ReleaseRef = { owner, repo: repoName, commit };
   if (publishSummaryPath) {
-    return createReleaseFromPublishSummary(host, workspace, octokit, publishSummaryPath, releaseRef);
+    return createReleaseFromPublishSummary(host, workspace, octokit, publishSummaryPath, releaseRef, dryRun);
   } else {
     if (version === undefined) {
       throw new ChronusError("Both 'version' option must be provided when using 'package' or 'policy'");
     }
     if (pkgName !== undefined) {
-      const createResult = await createReleaseForPackage(host, workspace, octokit, pkgName, version, releaseRef);
+      const createResult = await createReleaseForPackage(
+        host,
+        workspace,
+        octokit,
+        pkgName,
+        version,
+        releaseRef,
+        dryRun,
+      );
       if (!createResult.success) {
         process.exit(1);
       }
@@ -71,7 +81,7 @@ export async function createRelease({
       if (policy.type !== "lockstep") {
         throw new ChronusError(`Can only create release for lockstep policies`);
       }
-      const createResult = await createReleaseForPolicy(host, workspace, octokit, policy, version, releaseRef);
+      const createResult = await createReleaseForPolicy(host, workspace, octokit, policy, version, releaseRef, dryRun);
       if (!createResult.success) {
         process.exit(1);
       }
@@ -85,6 +95,7 @@ async function createReleaseFromPublishSummary(
   octokit: Octokit,
   publishSummaryPath: string,
   ref: ReleaseRef,
+  dryRun: boolean | undefined,
 ) {
   const publishSummary = await readPublishSummary(host, publishSummaryPath);
   const packagesNeedingARelease = new Map(Object.entries(publishSummary.packages));
@@ -122,13 +133,29 @@ async function createReleaseFromPublishSummary(
       log(pc.yellow(`Package ${result.name}@${result.version} failed to publish so skipping github release creation.`));
       continue;
     }
-    const createResult = await createReleaseForPackage(host, workspace, octokit, result.name, result.version, ref);
+    const createResult = await createReleaseForPackage(
+      host,
+      workspace,
+      octokit,
+      result.name,
+      result.version,
+      ref,
+      dryRun,
+    );
     if (!createResult.success) {
       hasError = true;
     }
   }
   for (const result of Object.values(policiesNeedingARelease)) {
-    const createResult = await createReleaseForPolicy(host, workspace, octokit, result.policy, result.version, ref);
+    const createResult = await createReleaseForPolicy(
+      host,
+      workspace,
+      octokit,
+      result.policy,
+      result.version,
+      ref,
+      dryRun,
+    );
     if (!createResult.success) {
       hasError = true;
     }
@@ -142,6 +169,7 @@ async function createReleaseFromPublishSummary(
 export interface ReleaseRef extends GithubRepo {
   readonly commit?: string;
 }
+
 async function createReleaseForPackage(
   host: ChronusHost,
   workspace: ChronusWorkspace,
@@ -149,22 +177,20 @@ async function createReleaseForPackage(
   pkgName: string,
   version: string,
   ref: ReleaseRef,
+  dryRun: boolean | undefined,
 ): Promise<{ success: boolean }> {
   log(`Will create release for package ${pkgName}@${version}.`);
 
   const changelog = await loadChangelogForVersion(host, workspace, pkgName, version);
   const tag = `${pkgName}@${version}`;
   try {
-    const release = await octokit.rest.repos.createRelease({
-      owner: ref.owner,
-      repo: ref.repo,
-      target_commitish: ref.commit,
-      tag_name: tag,
-      name: tag,
-      body: changelog,
-      prerelease: version.includes("-"),
+    await createGithubRelease(octokit, {
+      tag,
+      version,
+      content: changelog ?? "",
+      ref,
+      dryRun,
     });
-    log(pc.green(`Created release for package ${pkgName}@${version}: ${release.data.html_url}`));
     return { success: true };
   } catch (e) {
     log(pc.red(`Error while creating release '${tag}':`));
@@ -180,6 +206,7 @@ async function createReleaseForPolicy(
   policy: LockstepVersionPolicy,
   version: string,
   ref: ReleaseRef,
+  dryRun: boolean | undefined,
 ): Promise<{ success: boolean }> {
   log(`Will create release for version policy ${policy.name}@${version}.`);
 
@@ -190,21 +217,51 @@ async function createReleaseForPolicy(
   );
   const tag = `${policy.name}@${version}`;
   try {
+    await createGithubRelease(octokit, {
+      tag,
+      version,
+      content: changelog,
+      ref,
+      dryRun,
+    });
+    return { success: true };
+  } catch (e) {
+    log(pc.red(`Error while creating release '${tag}':`));
+    log(e);
+    return { success: false };
+  }
+}
+
+interface CreateGithubReleaseOptions {
+  readonly version: string;
+  readonly tag: string;
+  readonly content: string;
+  readonly ref: ReleaseRef;
+  readonly dryRun?: boolean;
+}
+
+async function createGithubRelease(
+  octokit: Octokit,
+  { version, tag, ref, content, dryRun }: CreateGithubReleaseOptions,
+) {
+  if (dryRun) {
+    log("-".repeat(60));
+    log(`Creating release: ${tag}`);
+    log("-".repeat(60));
+    log("");
+    log(content);
+    log("-".repeat(60));
+  } else {
     const release = await octokit.rest.repos.createRelease({
       owner: ref.owner,
       repo: ref.repo,
       target_commitish: ref.commit,
       tag_name: tag,
       name: tag,
-      body: changelog,
+      body: content,
       prerelease: version.includes("-"),
     });
     log(pc.green(`Created release for package ${tag}: ${release.data.html_url}`));
-    return { success: true };
-  } catch (e) {
-    log(pc.red(`Error while creating release '${tag}':`));
-    log(e);
-    return { success: false };
   }
 }
 
