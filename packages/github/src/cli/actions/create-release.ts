@@ -23,7 +23,7 @@ export async function createRelease({
   repo,
   workspaceDir,
   package: pkgName,
-  policy,
+  policy: policyName,
   version,
   commit,
 }: CreateReleaseOptions) {
@@ -32,19 +32,19 @@ export async function createRelease({
       `Both 'publishSummary' and 'package' option have been provided but they are mutually exclusive.`,
     );
   }
-  if (publishSummaryPath && policy) {
+  if (publishSummaryPath && policyName) {
     throw new ChronusError(
       `Both 'publishSummary' and 'policy' option have been provided but they are mutually exclusive.`,
     );
   }
-  if (pkgName && policy) {
+  if (pkgName && policyName) {
     throw new ChronusError(`Both 'package' and 'policy' option have been provided but they are mutually exclusive.`);
   }
   if (publishSummaryPath && version) {
     throw new ChronusError(`'version' option must be used with package and will have no effect with a publishSummary`);
   }
-  if (publishSummaryPath === undefined && pkgName === undefined) {
-    throw new ChronusError(`Either 'publishSummary' or 'package' option must be specified.`);
+  if (publishSummaryPath === undefined && pkgName === undefined && policyName === undefined) {
+    throw new ChronusError(`Either 'publishSummary', 'package' or 'policy' option must be specified.`);
   }
   const host = NodeChronusHost;
   const octokit = new Octokit({ auth: await getGithubToken() });
@@ -63,8 +63,15 @@ export async function createRelease({
       if (!createResult.success) {
         process.exit(1);
       }
-    } else if (policy) {
-      const createResult = await createReleaseForPackage(host, workspace, octokit, policy, version, releaseRef);
+    } else if (policyName) {
+      const policy = workspace.config.versionPolicies?.find((x) => x.name);
+      if (policy === undefined) {
+        throw new ChronusError(`Unknown policy '${policyName}'`);
+      }
+      if (policy.type !== "lockstep") {
+        throw new ChronusError(`Can only create release for lockstep policies`);
+      }
+      const createResult = await createReleaseForPolicy(host, workspace, octokit, policy, version, releaseRef);
       if (!createResult.success) {
         process.exit(1);
       }
