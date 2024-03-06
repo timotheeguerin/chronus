@@ -106,17 +106,20 @@ async function createReleaseFromPublishSummary(
       switch (policy.type) {
         case "lockstep":
           {
+            let releasedAtLeastOnePackage = false;
             const latestVersion = resolveCurrentLockStepVersion(workspace, policy);
             let allMatch = true;
             for (const name of policy.packages) {
               if (workspace.getPackage(name).version !== latestVersion) {
                 allMatch = false;
               } else {
-                packagesNeedingARelease.delete(name);
+                if (packagesNeedingARelease.delete(name)) {
+                  releasedAtLeastOnePackage = true;
+                }
               }
             }
 
-            if (allMatch) {
+            if (allMatch && releasedAtLeastOnePackage) {
               policiesNeedingARelease.push({ policy, version: latestVersion });
             }
           }
@@ -252,16 +255,24 @@ async function createGithubRelease(
     log(content);
     log("-".repeat(60));
   } else {
-    const release = await octokit.rest.repos.createRelease({
-      owner: ref.owner,
-      repo: ref.repo,
-      target_commitish: ref.commit,
-      tag_name: tag,
-      name: tag,
-      body: content,
-      prerelease: version.includes("-"),
-    });
-    log(pc.green(`Created release for package ${tag}: ${release.data.html_url}`));
+    try {
+      const release = await octokit.rest.repos.createRelease({
+        owner: ref.owner,
+        repo: ref.repo,
+        target_commitish: ref.commit,
+        tag_name: tag,
+        name: tag,
+        body: content,
+        prerelease: version.includes("-"),
+      });
+      log(pc.green(`Created release ${tag}: ${release.data.html_url}`));
+    } catch (e: any) {
+      if (e.code === "already_exists") {
+        log(pc.yellow(`Release ${tag} already exists, skipping.`));
+        return;
+      }
+      throw e;
+    }
   }
 }
 
