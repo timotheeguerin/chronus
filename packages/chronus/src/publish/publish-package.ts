@@ -12,6 +12,7 @@ export interface PublishPackageOptions {
   readonly access?: string;
   readonly registry?: string;
   readonly engine?: "npm" | "pnpm";
+  readonly tag?: string;
 }
 
 /** Npm publish json output. */
@@ -163,6 +164,9 @@ function getNpmCommand(fileOrDir: string, options: PublishPackageOptions): Comma
   if (options.otp) {
     args.push("--otp", options.otp);
   }
+  if (options.tag) {
+    args.push("--tag", options.tag);
+  }
   if (options.registry) {
     args.push("--registry", options.registry);
   }
@@ -176,6 +180,9 @@ function getPnpmCommand(fileOrDir: string, options: PublishPackageOptions): Comm
   }
   if (options.otp) {
     args.push("--otp", options.otp);
+  }
+  if (options.tag) {
+    args.push("--tag", options.tag);
   }
   if (options.registry) {
     args.push("--registry", options.registry);
