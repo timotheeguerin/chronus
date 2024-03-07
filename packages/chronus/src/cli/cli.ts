@@ -113,6 +113,10 @@ async function main() {
             choices: ["npm", "pnpm"] as const,
             description: "Engine to use (npm or pnpm, default to use pnpm in a pnpm workspace and npm otherwise)",
           })
+          .option("tag", {
+            type: "string",
+            description: "Npm dist-tag to use when publishing the package.",
+          })
           .option("report-summary", {
             type: "string",
             description: "Save the list of published packages.",
