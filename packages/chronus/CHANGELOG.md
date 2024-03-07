@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.8.3
+
+### Bug Fixes
+
+- [#119](https://github.com/timotheeguerin/chronus/pull/119) Add support for `--tag` when publishing
+
+
 ## 0.8.2
 
 ### Bug Fixes
