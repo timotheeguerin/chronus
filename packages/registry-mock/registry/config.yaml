@@ -1,0 +1,66 @@
+# path to a directory with all packages
+storage: ./storage
+
+auth:
+  htpasswd:
+    file: ./htpasswd
+    # Maximum amount of users allowed to register, defaults to "+inf".
+    # You can set this to -1 to disable registration.
+    #max_users: 1000
+
+middlewares:
+  audit:
+    enabled: true
+
+# a list of other known repositories we can talk to
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+
+packages:
+  "@private/*":
+    access: $authenticated
+    publish: $authenticated
+
+  "@*/*":
+    access: $all
+    publish: $all
+    proxy: npmjs
+
+  "needs-auth":
+    access: $authenticated
+    publish: $authenticated
+
+  "plugin-example":
+    access: $all
+    publish: $all
+
+  "pkg-with-1-dep":
+    access: $all
+    publish: $all
+
+  "dep-of-pkg-with-1-dep":
+    access: $all
+    publish: $all
+
+  "foobar":
+    access: $all
+    publish: $all
+
+  "alpha":
+    access: $all
+    publish: $all
+
+  "deprecated":
+    access: $all
+    publish: $all
+
+  "**":
+    access: $all
+    publish: $all
+    proxy: npmjs
+
+# log settings
+logs:
+  - { type: stdout, format: pretty, level: error }
+  #- {type: file, path: verdaccio.log, level: info}

@@ -2,6 +2,7 @@
   "references": [
     { "path": "packages/chronus/tsconfig.build.json" },
     { "path": "packages/github/tsconfig.build.json" },
+    { "path": "packages/registry-mock/tsconfig.build.json" },
     { "path": "packages/github-pr-commenter/tsconfig.build.json" }
   ],
   "files": []
