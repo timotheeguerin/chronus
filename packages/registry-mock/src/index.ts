@@ -3,7 +3,7 @@ import { randomBytes } from "crypto";
 import { readFileSync } from "fs";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dump, load } from "js-yaml";
-import path, { join } from "path";
+import { dirname, join } from "path";
 import * as locations from "./locations.js";
 
 const REGISTRY_MOCK_PORT = locations.REGISTRY_MOCK_PORT;
@@ -14,8 +14,8 @@ export function start(opts: SpawnOptions) {
 }
 
 export const getIntegrity = (pkgName: string, pkgVersion: string): string => {
-  return JSON.parse(readFileSync(path.join(locations.storage(), pkgName, "package.json"), "utf8")).versions[pkgVersion]
-    .dist.integrity;
+  return JSON.parse(readFileSync(join(locations.storage(), pkgName, "package.json"), "utf8")).versions[pkgVersion].dist
+    .integrity;
 };
 
 export { REGISTRY_MOCK_PORT };
@@ -29,8 +29,9 @@ async function tempdir(): Promise<string> {
 
 export async function prepare() {
   const storage = await tempdir();
-  const content = await readFile(path.join(__dirname, "../registry/config.yaml"));
+  const content = await readFile(join(locations.registry(), "config.yaml"));
   const config: any = load(content.toString());
+  await mkdir(dirname(locations.configPath()), { recursive: true });
   await writeFile(
     locations.configPath(),
     dump({
