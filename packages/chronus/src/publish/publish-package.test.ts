@@ -1,4 +1,4 @@
-import { REGISTRY_MOCK_PORT, prepare, start } from "@pnpm/registry-mock";
+import { REGISTRY_MOCK_PORT, prepare, start } from "@chronus/registry-mock";
 import type { ChildProcess } from "child_process";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dump } from "js-yaml";
@@ -17,8 +17,8 @@ let server: ChildProcess;
 interface TestPackage extends Package {
   readonly absolutePath: string;
 }
-beforeAll(() => {
-  prepare();
+beforeAll(async () => {
+  await prepare();
   server = start({
     stdio: "ignore",
   });

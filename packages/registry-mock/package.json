@@ -1,14 +1,12 @@
 {
-  "name": "@chronus/github",
-  "version": "0.2.2",
-  "description": "chronus",
+  "name": "@chronus/registry-mock",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Package implementing some functions to start and run a veradiccio registry for integration tests",
   "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
     "./changelog": "./dist/changelog/index.js"
-  },
-  "bin": {
-    "chronus-github": "./cmd/cli.mjs"
   },
   "type": "module",
   "scripts": {
@@ -38,18 +36,14 @@
     "dist"
   ],
   "dependencies": {
-    "@actions/github": "^6.0.0",
-    "@chronus/chronus": "workspace:*",
-    "@octokit/graphql": "^8.0.1",
     "cross-spawn": "^7.0.3",
-    "octokit": "^3.1.2",
-    "picocolors": "^1.0.0",
-    "yargs": "^17.7.2"
+    "js-yaml": "^4.1.0",
+    "verdaccio": "^5.29.2"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.6",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.11.24",
-    "@types/yargs": "^17.0.32",
     "rimraf": "^5.0.5",
     "source-map-support": "^0.5.21",
     "typescript": "^5.3.3"
