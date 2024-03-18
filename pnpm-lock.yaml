@@ -43,8 +43,8 @@ importers:
         specifier: ^51.0.1
         version: 51.0.1(eslint@8.57.0)
       eslint-plugin-vitest:
-        specifier: ^0.3.25
-        version: 0.3.25(eslint@8.57.0)(typescript@5.3.3)(vitest@1.4.0)
+        specifier: ^0.3.26
+        version: 0.3.26(eslint@8.57.0)(typescript@5.3.3)(vitest@1.4.0)
       prettier:
         specifier: ^3.2.5
         version: 3.2.5
@@ -3261,8 +3261,8 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-plugin-vitest@0.3.25(eslint@8.57.0)(typescript@5.3.3)(vitest@1.4.0):
-    resolution: {integrity: sha512-18iXBQmSeLSkFYlzPDACodtJb1AlyuLkCi+zweBotdeKeALY3TC7dEmPuU8zKuySihHURbIojhJwGevcFC8ojw==}
+  /eslint-plugin-vitest@0.3.26(eslint@8.57.0)(typescript@5.3.3)(vitest@1.4.0):
+    resolution: {integrity: sha512-oxe5JSPgRjco8caVLTh7Ti8PxpwJdhSV0hTQAmkFcNcmy/9DnqLB/oNVRA11RmVRP//2+jIIT6JuBEcpW3obYg==}
     engines: {node: ^18.0.0 || >= 20.0.0}
     peerDependencies:
       '@typescript-eslint/eslint-plugin': '*'
