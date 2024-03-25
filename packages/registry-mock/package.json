@@ -38,7 +38,7 @@
   "dependencies": {
     "cross-spawn": "^7.0.3",
     "js-yaml": "^4.1.0",
-    "verdaccio": "^5.29.2"
+    "verdaccio": "^5.30.2"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.6",
