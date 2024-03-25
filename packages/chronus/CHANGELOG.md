@@ -2,6 +2,10 @@
 
 ## 0.8.3
 
+No changes, version bump only.
+
+## 0.8.3
+
 ### Bug Fixes
 
 - [#119](https://github.com/timotheeguerin/chronus/pull/119) Add support for `--tag` when publishing
