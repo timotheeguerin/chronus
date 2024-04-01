@@ -55,7 +55,7 @@
     "rimraf": "^5.0.5",
     "syncpack": "^12.3.0",
     "typescript": "^5.3.3",
-    "typescript-eslint": "^7.1.0"
+    "typescript-eslint": "^7.4.0"
   },
   "syncpack": {
     "dependencyTypes": [
