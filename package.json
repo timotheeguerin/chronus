@@ -40,22 +40,23 @@
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "devDependencies": {
     "@actions/github": "^6.0.0",
+    "@chronus/github": "workspace:*",
     "@eslint/js": "^8.57.0",
     "@types/node": "^20.12.2",
     "@typescript-eslint/parser": "^7.4.0",
     "@typescript-eslint/utils": "^7.4.0",
-    "@chronus/github": "workspace:*",
     "cspell": "^8.6.1",
-    "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-unicorn": "^51.0.1",
     "eslint-plugin-vitest": "^0.4.1",
-    "prettier": "^3.2.5",
+    "eslint": "^8.57.0",
     "prettier-plugin-organize-imports": "^3.2.4",
+    "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "syncpack": "^12.3.0",
+    "typescript-eslint": "^7.4.0",
     "typescript": "^5.3.3",
-    "typescript-eslint": "^7.4.0"
+    "vitest": "^1.4.0"
   },
   "syncpack": {
     "dependencyTypes": [
@@ -66,8 +67,5 @@
       "prod",
       "resolutions"
     ]
-  },
-  "dependencies": {
-    "vitest": "^1.4.0"
   }
 }

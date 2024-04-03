@@ -14,7 +14,8 @@
     "./changelog": "./dist/changelog/index.js",
     "./source-control/git": "./dist/source-control/git.js",
     "./publish": "./dist/publish/index.js",
-    "./utils": "./dist/utils/index.js"
+    "./utils": "./dist/utils/index.js",
+    "./testing": "./dist/testing/index.js"
   },
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",

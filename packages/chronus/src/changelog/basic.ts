@@ -74,8 +74,6 @@ export class BasicChangelogGenerator {
           }
           lines.push("");
         }
-
-        lines.push("");
       }
     }
     if (!hasChange) {
