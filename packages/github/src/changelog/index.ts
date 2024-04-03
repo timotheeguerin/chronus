@@ -46,6 +46,10 @@ export default defineChangelogGenerator(
         const renderer = new GithubChangelogGenerator(workspace, data);
         return renderer.renderPackageVersion(newVersion, changes);
       },
+      renderAggregatedChangelog(newVersion: string, changes: Record<string, ChangeDescription[]>) {
+        const renderer = new GithubChangelogGenerator(workspace, data);
+        return renderer.renderAggregatedChangelog(newVersion, changes);
+      },
     };
   },
 );

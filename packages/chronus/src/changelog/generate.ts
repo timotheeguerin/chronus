@@ -31,6 +31,7 @@ function loadBasicChangelogGenerator(workspace: ChronusWorkspace): ChangelogGene
   const generator = new BasicChangelogGenerator(workspace);
   return {
     renderPackageVersion: (newVersion, changes) => generator.renderPackageVersion(newVersion, changes),
+    renderAggregatedChangelog: (newVersion, changes) => generator.renderAggregatedChangelog(newVersion, changes),
   };
 }
 

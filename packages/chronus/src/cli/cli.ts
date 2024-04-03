@@ -4,6 +4,7 @@ import { DynamicReporter, type Reporter } from "../reporters/index.js";
 import { resolvePath } from "../utils/path-utils.js";
 import { addChangeset } from "./commands/add-changeset.js";
 import { applyChangesets } from "./commands/apply-changesets.js";
+import { changelog } from "./commands/changelog.js";
 import { listPendingPublish } from "./commands/list-pending-publish.js";
 import { pack } from "./commands/pack.js";
 import { publish } from "./commands/publish.js";
@@ -72,6 +73,28 @@ async function main() {
           default: false,
         }),
       (args) => listPendingPublish(process.cwd(), { json: args.json }),
+    )
+    .command(
+      "changelog",
+      "Generate change logs for the current change descriptions",
+      (cmd) =>
+        cmd
+          .option("package", {
+            type: "string",
+            description: "Generate a change log for a specific package",
+          })
+          .option("policy", {
+            type: "string",
+            description: "Generate a change log for a specific policy",
+          }),
+      withReporter((args) =>
+        changelog({
+          reporter: args.reporter,
+          dir: process.cwd(),
+          package: args.package,
+          policy: args.policy,
+        }),
+      ),
     )
     .command(
       ["pack"],
