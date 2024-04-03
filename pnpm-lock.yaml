@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      vitest:
-        specifier: ^1.4.0
-        version: 1.4.0(@types/node@20.12.2)
     devDependencies:
       '@actions/github':
         specifier: ^6.0.0
@@ -63,6 +59,9 @@ importers:
       typescript-eslint:
         specifier: ^7.4.0
         version: 7.4.0(eslint@8.57.0)(typescript@5.3.3)
+      vitest:
+        specifier: ^1.4.0
+        version: 1.4.0(@types/node@20.12.2)
 
   packages/chronus:
     dependencies:

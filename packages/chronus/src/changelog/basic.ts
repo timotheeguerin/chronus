@@ -38,6 +38,50 @@ export class BasicChangelogGenerator {
     return lines.join("\n");
   }
 
+  renderAggregatedChangelog(newVersion: string, allPackagesChanges: Record<string, ChangeDescription[]>) {
+    const changesByKindAndPackages = new Map<string, Map<string, ChangeDescription[]>>();
+
+    for (const [pkg, changes] of Object.entries(allPackagesChanges)) {
+      for (const change of changes) {
+        const kind = change.changeKind.name;
+        let existingKind = changesByKindAndPackages.get(kind);
+        if (!existingKind) {
+          existingKind = new Map();
+          changesByKindAndPackages.set(kind, existingKind);
+        }
+        const existing = existingKind.get(pkg);
+        if (existing) {
+          existing.push(change);
+        } else {
+          existingKind.set(pkg, [change]);
+        }
+      }
+    }
+
+    const lines = [`# ${newVersion}`, ""];
+    let hasChange = false;
+    for (const changeKind of Object.values(this.workspace.config.changeKinds)) {
+      const changes = changesByKindAndPackages.get(changeKind.name);
+      if (changes && changes.size > 0) {
+        hasChange = true;
+        lines.push(`## ${changeKind.title ? pluralize(changeKind.title) : capitalize(changeKind.name)}`);
+        lines.push("");
+        for (const [pkg, packageChanges] of changes.entries()) {
+          lines.push(`### ${pkg}`);
+          lines.push("");
+          for (const change of packageChanges) {
+            lines.push(this.renderEntry(change));
+          }
+          lines.push("");
+        }
+      }
+    }
+    if (!hasChange) {
+      lines.push("No changes, version bump only.");
+    }
+    return lines.join("\n");
+  }
+
   renderEntry(change: ChangeDescription) {
     return `- ${change.content}`;
   }
