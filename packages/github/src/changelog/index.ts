@@ -1,5 +1,5 @@
 import { type ChronusWorkspace } from "@chronus/chronus";
-import { resolveChangeRelativePath, type ChangeDescription } from "@chronus/chronus/change";
+import { resolveChangeRelativePath } from "@chronus/chronus/change";
 import { defineChangelogGenerator } from "@chronus/chronus/changelog";
 import { createGitSourceControl } from "@chronus/chronus/source-control/git";
 import { ChronusError } from "@chronus/chronus/utils";
@@ -41,15 +41,6 @@ export default defineChangelogGenerator(
     );
     const [owner, name] = options.repo.split("/", 2);
     const data = await getGithubInfoForChange(owner, name, commits, await getGithubToken(interactive));
-    return {
-      renderPackageVersion(newVersion: string, changes: ChangeDescription[]) {
-        const renderer = new GithubChangelogGenerator(workspace, data);
-        return renderer.renderPackageVersion(newVersion, changes);
-      },
-      renderAggregatedChangelog(newVersion: string, changes: Record<string, ChangeDescription[]>) {
-        const renderer = new GithubChangelogGenerator(workspace, data);
-        return renderer.renderAggregatedChangelog(newVersion, changes);
-      },
-    };
+    return new GithubChangelogGenerator(workspace, data);
   },
 );
