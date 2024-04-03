@@ -1,6 +1,6 @@
 import type { ChronusWorkspace } from "@chronus/chronus";
-import { createTestChronusWorkspace, TestingChangeKinds } from "@chronus/chronus/testing";
 import { beforeEach, describe, expect, it } from "vitest";
+import { TestingChangeKinds, createTestChronusWorkspace } from "../testing/test-chronus-workspace.js";
 import { BasicChangelogGenerator } from "./basic.js";
 
 let workspace: ChronusWorkspace;
