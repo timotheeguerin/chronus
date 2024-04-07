@@ -17,6 +17,7 @@ chronus goal is to provide changelog management. It was heavily inspired by [cha
 Chronus functionalities:
 
 - [Configure change kinds](change-kinds.md) _Use a different set of change kinds from `major`, `minor`, `patch`_
+- [Filter files needing changelogs](changed-files-filter.md) _Ignore certain files from needing a changelog entry_
 
 ## Develop
 
