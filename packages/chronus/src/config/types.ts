@@ -14,7 +14,14 @@ export interface ChronusUserConfig {
    */
   readonly changeKinds?: Record<string, ChangeKindUserConfig>;
 
+  /** Changelog configuration. Either the name of the changelog generator or a tuple with the name and its optins.   */
   readonly changelog?: string | [string, Record<string, unknown>];
+
+  /**
+   * Pattern of files that should trigger change detection. By default any files under an included package will trigger it.
+   * Using `!` will exclude that pattern.
+   */
+  readonly changedFiles?: readonly string[];
 }
 
 export interface ChangeKindUserConfig {

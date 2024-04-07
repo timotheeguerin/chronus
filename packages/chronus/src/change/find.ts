@@ -1,3 +1,4 @@
+import micromatch from "micromatch";
 import type { GitRepository } from "../source-control/git.js";
 import type { ChronusHost } from "../utils/host.js";
 import type { Package } from "../workspace-manager/types.js";
@@ -26,6 +27,7 @@ export interface ChangeStatus {
   readonly all: AreaStatus;
 }
 
+/** Find what package have currently been changed */
 export async function findChangeStatus(
   host: ChronusHost,
   sourceControl: GitRepository,
@@ -88,10 +90,13 @@ async function findAreaStatus(
   workspace: ChronusWorkspace,
   filesChanged: string[],
 ): Promise<AreaStatus> {
+  const fileChangedThatMatter = workspace.config.changedFiles
+    ? micromatch(filesChanged, workspace.config.changedFiles)
+    : filesChanged;
   return {
-    filesChanged,
-    packageChanged: findPackageChanges(workspace.packages, filesChanged),
-    packagesDocumented: await findAlreadyDocumentedChanges(host, workspace, filesChanged),
+    filesChanged: fileChangedThatMatter,
+    packageChanged: findPackageChanges(workspace.packages, fileChangedThatMatter),
+    packagesDocumented: await findAlreadyDocumentedChanges(host, workspace, fileChangedThatMatter),
   };
 }
 

@@ -28,7 +28,7 @@ const baseConfig: ChronusResolvedConfig = {
 
 export interface TestChronusWorkspaceOptions {
   readonly packages: Record<string, Partial<PackageJson>>;
-  readonly config?: ChronusResolvedConfig;
+  readonly config?: Partial<ChronusResolvedConfig>;
 }
 
 /**
@@ -36,5 +36,5 @@ export interface TestChronusWorkspaceOptions {
  */
 export function createTestChronusWorkspace(options: TestChronusWorkspaceOptions): ChronusWorkspace {
   const pnpmWorkspace = mkWorkspace(Object.entries(options.packages).map(([name, manifest]) => mkPkg(name, manifest)));
-  return createChronusWorkspace(pnpmWorkspace, options.config ?? baseConfig);
+  return createChronusWorkspace(pnpmWorkspace, options.config ? { ...baseConfig, ...options.config } : baseConfig);
 }
