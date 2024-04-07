@@ -27,6 +27,7 @@ export interface ChangeStatus {
   readonly all: AreaStatus;
 }
 
+/** Find what package have currently been changed */
 export async function findChangeStatus(
   host: ChronusHost,
   sourceControl: GitRepository,
@@ -93,7 +94,7 @@ async function findAreaStatus(
     ? micromatch(filesChanged, workspace.config.changedFiles)
     : filesChanged;
   return {
-    filesChanged,
+    filesChanged: fileChangedThatMatter,
     packageChanged: findPackageChanges(workspace.packages, fileChangedThatMatter),
     packagesDocumented: await findAlreadyDocumentedChanges(host, workspace, fileChangedThatMatter),
   };
