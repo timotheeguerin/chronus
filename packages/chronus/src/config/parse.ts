@@ -29,6 +29,7 @@ const schema = z.object({
   ignore: z.array(z.string()).optional(),
   changeKinds: z.record(changeKindsSchema).optional(),
   changelog: z.union([z.string(), z.tuple([z.string(), z.record(z.unknown())])]).optional(),
+  changedFiles: z.array(z.string()).optional(),
 });
 
 export function parseConfig(content: string): ChronusUserConfig {

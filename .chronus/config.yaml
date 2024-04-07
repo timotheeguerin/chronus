@@ -20,3 +20,4 @@ changeKinds:
     versionType: none
     title: Internal
     description: Internal changes that are not user facing
+changedFiles: ["!**/*.md"]

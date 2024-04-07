@@ -9,7 +9,7 @@ npm install -g @chronus/chronus
 Add a change
 
 ```bash
-chronus change add
+chronus add
 ```
 
 Apply the changes and bump versions
