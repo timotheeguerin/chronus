@@ -66,7 +66,7 @@
     "@types/cross-spawn": "^6.0.6",
     "@types/js-yaml": "^4.0.9",
     "@types/micromatch": "^4.0.6",
-    "@types/node": "^20.12.2",
+    "@types/node": "^20.12.5",
     "@types/node-fetch": "^2.6.11",
     "@types/pacote": "^11.1.8",
     "@types/pluralize": "^0.0.33",
@@ -75,6 +75,6 @@
     "@types/xml2js": "^0.4.14",
     "@types/yargs": "^17.0.32",
     "rimraf": "^5.0.5",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.4"
   }
 }
