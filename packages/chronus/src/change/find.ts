@@ -6,6 +6,10 @@ import type { ChronusWorkspace } from "../workspace/types.js";
 import { changesRelativeDir } from "./common.js";
 import { parseChangeDescription } from "./parse.js";
 
+export interface FindChangeStatusOptions {
+  /** Compare from this branch instead of the configured base  */
+  readonly since?: string;
+}
 export type ChangeArea = "committed" | "untrackedOrModified" | "staged";
 
 export interface PackageStatus {
@@ -32,8 +36,9 @@ export async function findChangeStatus(
   host: ChronusHost,
   sourceControl: GitRepository,
   workspace: ChronusWorkspace,
+  options?: FindChangeStatusOptions,
 ): Promise<ChangeStatus> {
-  const filesChanged = await sourceControl.listChangedFilesFromBase(workspace.config.baseBranch);
+  const filesChanged = await sourceControl.listChangedFilesFromBase(options?.since ?? workspace.config.baseBranch);
   const untrackedOrModifiedFiles = await sourceControl.listUntrackedOrModifiedFiles();
   const stagedFiles = await sourceControl.listUntrackedOrModifiedFiles();
   const publicPackages = workspace.packages;

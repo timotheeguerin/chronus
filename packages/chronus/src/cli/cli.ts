@@ -27,8 +27,28 @@ async function main() {
       description: "Output debug log messages.",
       default: false,
     })
-    .command("add", "Add a new change description", () => addChangeset(process.cwd()))
-    .command("verify", "Verify all packages changes have been documented", () => verifyChangeset(process.cwd()))
+    .command(
+      "add",
+      "Add a new change description",
+      (cmd) =>
+        cmd.option("since", {
+          type: "string",
+          description:
+            "Verify since the the given branch. Default to the baseBranch configured in .chronus/config.yaml",
+        }),
+      (args) => addChangeset({ cwd: process.cwd(), since: args.since }),
+    )
+    .command(
+      "verify",
+      "Verify all packages changes have been documented",
+      (cmd) =>
+        cmd.option("since", {
+          type: "string",
+          description:
+            "Verify since the the given branch. Default to the baseBranch configured in .chronus/config.yaml",
+        }),
+      (args) => verifyChangeset({ cwd: process.cwd(), since: args.since }),
+    )
     .command(
       "version",
       "Apply change changeset and bump the versions",
