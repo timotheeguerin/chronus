@@ -13,11 +13,17 @@ function log(...args: any[]) {
   // eslint-disable-next-line no-console
   console.log(...args);
 }
-export async function addChangeset(cwd: string): Promise<void> {
+
+export interface AddChangesetOptions {
+  readonly cwd: string;
+  readonly since?: string;
+}
+
+export async function addChangeset({ cwd, since }: AddChangesetOptions): Promise<void> {
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
   const sourceControl = createGitSourceControl(workspace.path);
-  const status = await findChangeStatus(host, sourceControl, workspace);
+  const status = await findChangeStatus(host, sourceControl, workspace, { since });
   if (status.committed.packageChanged.length === 0) {
     log("No package changed. Exiting.\n");
     return;

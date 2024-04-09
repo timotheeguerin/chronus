@@ -4,9 +4,17 @@
 
 Add a new change description
 
+Options:
+
+- `--since` Only compute changes since the specified branch.
+
 ## `chronus verify`
 
 Verify that the packages with changes from the `baseBranch` have all been described.
+
+Options:
+
+- `--since` Only compute changes since the specified branch.
 
 ## `chronus status`
 
@@ -17,6 +25,15 @@ This command takes the same options as [`chronus version`](#chronus-version).
 ## `chronus version`
 
 Apply the change description and bump version of packages. By default this will respect the version policies configured(see [version policies](version-policies.md)).
+
+## `chronus changelog`
+
+Generate the changelog to stdout without bumping the version of the packages.
+
+Options:
+
+- `--package` to generate the changelog for a specific package.
+- `--policy` to generate an aggregated changelog for a specific policy.
 
 ### Options
 

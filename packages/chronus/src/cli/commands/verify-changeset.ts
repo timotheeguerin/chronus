@@ -5,10 +5,15 @@ function log(...args: any[]) {
   // eslint-disable-next-line no-console
   console.log(...args);
 }
-export async function verifyChangeset(cwd: string): Promise<void> {
+
+export interface VerifyChangesetOptions {
+  readonly cwd: string;
+  readonly since?: string;
+}
+export async function verifyChangeset({ cwd, since }: VerifyChangesetOptions): Promise<void> {
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
-  const status = await getWorkspaceStatus(host, workspace);
+  const status = await getWorkspaceStatus(host, workspace, { since });
   const undocummentedPackages = [...status.packages.values()].filter((x) => x.changed && !x.documented);
   const documentedPackages = [...status.packages.values()].filter((x) => x.changed && x.documented);
   if (undocummentedPackages.length > 0) {
