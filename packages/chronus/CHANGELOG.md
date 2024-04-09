@@ -1,5 +1,14 @@
 # @chronus/chronus
 
+## 0.9.0
+
+### Features
+
+- [#150](https://github.com/timotheeguerin/chronus/pull/150) Add `--since` option to add and verify command to be able to use against a different branch
+- [#144](https://github.com/timotheeguerin/chronus/pull/144) Add new `changelog` command to generate the changelog entry for a package or policy without bumping versions
+- [#147](https://github.com/timotheeguerin/chronus/pull/147) Feature: Add new configuration `changedFiles` to filter which files can trigger change
+
+
 ## 0.8.3
 
 ### Bug Fixes
