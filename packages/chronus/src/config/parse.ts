@@ -1,6 +1,7 @@
-import z from "zod";
+import z, { ZodError, type ZodIssue } from "zod";
 import type { File } from "../file/types.js";
-import { parseYaml } from "../yaml/parse.js";
+import { ChronusDiagnosticError, type Diagnostic } from "../utils/errors.js";
+import { getLocationInYamlScript, parseYaml, type YamlFile } from "../yaml/index.js";
 import type { ChronusUserConfig } from "./types.js";
 
 const versionPolicySchema = z.union([
@@ -34,6 +35,22 @@ const schema = z.object({
 });
 
 export function parseConfig(content: string | File): ChronusUserConfig {
-  const doc = parseYaml(content);
-  return schema.parse(doc);
+  const parsed = parseYaml(content);
+  try {
+    return schema.parse(parsed.data);
+  } catch (e) {
+    if (e instanceof ZodError) {
+      throw new ChronusDiagnosticError(e.errors.map((issue) => convertZodIssueToDiagnostic(issue, parsed)));
+    }
+    throw e;
+  }
+}
+
+function convertZodIssueToDiagnostic(issue: ZodIssue, file: YamlFile): Diagnostic {
+  return {
+    code: `yaml-${issue.code.toLowerCase().replace(/_/g, "-")}`,
+    message: issue.message,
+    severity: "error",
+    target: getLocationInYamlScript(file, issue.path),
+  };
 }

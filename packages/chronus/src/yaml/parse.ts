@@ -2,8 +2,9 @@ import { YAMLError, parseDocument } from "yaml";
 import { createFile } from "../file/create-file.js";
 import type { File } from "../file/index.js";
 import { ChronusDiagnosticError, type Diagnostic, type DiagnosticSeverity } from "../utils/errors.js";
+import type { YamlFile } from "./types.js";
 
-export function parseYaml(source: string | File): unknown {
+export function parseYaml(source: string | File): YamlFile {
   const diagnostics = [];
 
   const file = typeof source === "string" ? createFile(source, "<anonymous file>") : source;
@@ -20,7 +21,11 @@ export function parseYaml(source: string | File): unknown {
   if (diagnostics.length > 0) {
     throw new ChronusDiagnosticError(diagnostics);
   }
-  return doc.toJSON();
+  return {
+    file,
+    doc,
+    data: doc.toJSON(),
+  };
 }
 
 function convertYamlErrorToDiagnostic(severity: DiagnosticSeverity, error: YAMLError, file: File): Diagnostic {

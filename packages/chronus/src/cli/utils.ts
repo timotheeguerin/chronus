@@ -6,7 +6,7 @@ import {
   ChronusDiagnosticError,
   type Diagnostic,
   type DiagnosticSeverity,
-  type DiagnosticTarget,
+  type FileLocation,
 } from "../utils/errors.js";
 
 function withReporter<T>(fn: (reporter: T & { reporter: Reporter }) => Promise<void>): (args: T) => Promise<void> {
@@ -86,7 +86,7 @@ function formatSeverity(options: FormatLogOptions, severity: DiagnosticSeverity)
   }
 }
 
-function formatSourceLocation(options: FormatLogOptions, location: DiagnosticTarget) {
+function formatSourceLocation(options: FormatLogOptions, location: FileLocation) {
   const postition = getLineAndColumn(location);
   const path = color(options, location.file.path, pc.cyan);
 
@@ -100,7 +100,7 @@ interface RealLocation {
   end?: { line: number; column: number };
 }
 
-function getLineAndColumn(location: DiagnosticTarget): RealLocation {
+function getLineAndColumn(location: FileLocation): RealLocation {
   const pos = location.file.getLineAndCharacterOfPosition(location.pos ?? 0);
   const end = location.end ? location.file.getLineAndCharacterOfPosition(location.end) : undefined;
   const result: RealLocation = {

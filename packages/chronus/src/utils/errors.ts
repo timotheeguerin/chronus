@@ -4,7 +4,7 @@ export class ChronusError extends Error {}
 
 export type DiagnosticSeverity = "error" | "warning";
 
-export interface DiagnosticTarget {
+export interface FileLocation {
   readonly file: File;
   readonly pos: number;
   readonly end: number;
@@ -14,7 +14,7 @@ export interface Diagnostic {
   readonly code: string;
   readonly message: string;
   readonly severity: DiagnosticSeverity;
-  readonly target: DiagnosticTarget;
+  readonly target: FileLocation;
 }
 
 export class ChronusDiagnosticError extends Error {
