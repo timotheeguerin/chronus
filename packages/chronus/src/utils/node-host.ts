@@ -1,6 +1,8 @@
 import { access, mkdir, readFile, rm, writeFile } from "fs/promises";
 import { globby } from "globby";
-import type { ChronusHost, File, GlobOptions, MkdirOptions, RmOptions } from "./host.js";
+import { createFile } from "../file/create-file.js";
+import type { File } from "../file/index.js";
+import type { ChronusHost, GlobOptions, MkdirOptions, RmOptions } from "./host.js";
 import { normalizePath } from "./path-utils.js";
 
 /**
@@ -10,10 +12,7 @@ export const NodeChronusHost: ChronusHost = {
   async readFile(path): Promise<File> {
     const normalizedPath = normalizePath(path);
     const buffer = await doIO(() => readFile(normalizedPath));
-    return {
-      content: buffer.toString(),
-      path: normalizedPath,
-    };
+    return createFile(buffer.toString(), normalizedPath);
   },
 
   async writeFile(path: string, content: string): Promise<void> {

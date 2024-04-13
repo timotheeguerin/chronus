@@ -1,8 +1,8 @@
 import { parse } from "yaml";
 import z from "zod";
 import type { ChronusResolvedConfig } from "../config/types.js";
+import type { File } from "../file/index.js";
 import { ChronusError } from "../utils/errors.js";
-import type { File } from "../utils/host.js";
 import { getBaseFileName } from "../utils/path-utils.js";
 import type { ChangeDescription, ChangeDescriptionFrontMatter } from "./types.js";
 

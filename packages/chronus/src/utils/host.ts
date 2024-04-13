@@ -1,6 +1,5 @@
-/**
- *
- */
+import type { File } from "../file/types.js";
+
 export interface ChronusHost {
   /**
    * Read a file.
@@ -42,9 +41,4 @@ export interface GlobOptions {
   baseDir: string;
   onlyDirectories?: boolean;
   ignore?: string[];
-}
-
-export interface File {
-  readonly content: string;
-  readonly path: string;
 }
