@@ -36,7 +36,7 @@ async function main() {
           description:
             "Verify since the the given branch. Default to the baseBranch configured in .chronus/config.yaml",
         }),
-      (args) => addChangeset({ cwd: process.cwd(), since: args.since }),
+      withErrors((args) => addChangeset({ cwd: process.cwd(), since: args.since })),
     )
     .command(
       "verify",
@@ -47,7 +47,7 @@ async function main() {
           description:
             "Verify since the the given branch. Default to the baseBranch configured in .chronus/config.yaml",
         }),
-      (args) => verifyChangeset({ cwd: process.cwd(), since: args.since }),
+      withErrors((args) => verifyChangeset({ cwd: process.cwd(), since: args.since })),
     )
     .command(
       "version",
@@ -64,7 +64,7 @@ async function main() {
             array: true,
             description: "Only bump the specified package(s)",
           }),
-      (args) => applyChangesets(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only }),
+      withErrors((args) => applyChangesets(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only })),
     )
     .command(
       "status",
@@ -81,7 +81,7 @@ async function main() {
             array: true,
             description: "Only bump the specified package(s)",
           }),
-      (args) => showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only }),
+      withErrors((args) => showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only })),
     )
     .command(
       ["ls-pending-publish", "list-pending-publish"],
@@ -188,6 +188,24 @@ function withReporter<T>(fn: (reporter: T & { reporter: Reporter }) => Promise<v
     const reporter = new DynamicReporter();
     return fn({ reporter, ...args });
   };
+}
+
+function withErrors<T>(fn: (args: T) => Promise<void>): (args: T) => Promise<void> {
+  return async (args: T) => {
+    try {
+      await fn(args);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error", error);
+      process.exit(1);
+    }
+  };
+}
+
+function withErrorsAndReporter<T>(
+  fn: (reporter: T & { reporter: Reporter }) => Promise<void>,
+): (args: T) => Promise<void> {
+  return withErrors(withReporter(fn));
 }
 
 main().catch((error) => {
