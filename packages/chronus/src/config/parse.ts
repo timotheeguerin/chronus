@@ -1,4 +1,4 @@
-import { load } from "js-yaml";
+import { parseDocument } from "yaml";
 import z from "zod";
 import type { ChronusUserConfig } from "./types.js";
 
@@ -33,6 +33,6 @@ const schema = z.object({
 });
 
 export function parseConfig(content: string): ChronusUserConfig {
-  const yaml = load(content);
-  return schema.parse(yaml);
+  const doc = parseDocument(content);
+  return schema.parse(doc.toJSON());
 }

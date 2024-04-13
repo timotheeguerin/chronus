@@ -1,4 +1,4 @@
-import { load } from "js-yaml";
+import { parse } from "yaml";
 import z from "zod";
 import type { ChronusResolvedConfig } from "../config/types.js";
 import { ChronusError } from "../utils/errors.js";
@@ -15,7 +15,7 @@ const changeFrontMatterSchema = z.object({
 
 function parseChangeFrontMatter(frontMatter: string, file: File): ChangeDescriptionFrontMatter {
   try {
-    const yaml = load(frontMatter);
+    const yaml = parse(frontMatter);
     return changeFrontMatterSchema.parse(yaml);
   } catch (error) {
     throw new ChronusError(`Invalid Frontmatter for ${file}. Error: ${error}`);

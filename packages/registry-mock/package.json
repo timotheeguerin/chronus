@@ -37,12 +37,11 @@
   ],
   "dependencies": {
     "cross-spawn": "^7.0.3",
-    "js-yaml": "^4.1.0",
+    "yaml": "^2.4.1",
     "verdaccio": "^5.30.3"
   },
   "devDependencies": {
     "@types/cross-spawn": "^6.0.6",
-    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.12.7",
     "rimraf": "^5.0.5",
     "source-map-support": "^0.5.21",

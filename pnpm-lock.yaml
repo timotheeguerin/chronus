@@ -74,9 +74,6 @@ importers:
       is-unicode-supported:
         specifier: ^2.0.0
         version: 2.0.0
-      js-yaml:
-        specifier: ^4.1.0
-        version: 4.1.0
       micromatch:
         specifier: ^4.0.5
         version: 4.0.5
@@ -107,6 +104,9 @@ importers:
       vitest:
         specifier: ^1.5.0
         version: 1.5.0(@types/node@20.12.7)
+      yaml:
+        specifier: ^2.4.1
+        version: 2.4.1
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -120,9 +120,6 @@ importers:
       '@types/cross-spawn':
         specifier: ^6.0.6
         version: 6.0.6
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
       '@types/micromatch':
         specifier: ^4.0.7
         version: 4.0.7
@@ -238,19 +235,16 @@ importers:
       cross-spawn:
         specifier: ^7.0.3
         version: 7.0.3
-      js-yaml:
-        specifier: ^4.1.0
-        version: 4.1.0
       verdaccio:
         specifier: ^5.30.3
         version: 5.30.3(typanion@3.14.0)
+      yaml:
+        specifier: ^2.4.1
+        version: 2.4.1
     devDependencies:
       '@types/cross-spawn':
         specifier: ^6.0.6
         version: 6.0.6
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
       '@types/node':
         specifier: ^20.12.7
         version: 20.12.7
@@ -1529,10 +1523,6 @@ packages:
 
   /@types/estree@1.0.5:
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
-
-  /@types/js-yaml@4.0.9:
-    resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
-    dev: true
 
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -6740,7 +6730,6 @@ packages:
     resolution: {integrity: sha512-pIXzoImaqmfOrL7teGUBt/T7ZDnyeGBWyXQBvOVhLkWLN37GXv8NMLK406UY6dS51JfcQHsmcW5cJ441bHg6Lg==}
     engines: {node: '>= 14'}
     hasBin: true
-    dev: true
 
   /yargs-parser@21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}

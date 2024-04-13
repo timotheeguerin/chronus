@@ -1,4 +1,4 @@
-import { load } from "js-yaml";
+import { parse } from "yaml";
 import { ChronusError, isPathAccessible, joinPaths, type ChronusHost } from "../utils/index.js";
 import type { Package, Workspace, WorkspaceManager } from "./types.js";
 import { findPackagesFromPattern } from "./utils.js";
@@ -18,7 +18,7 @@ export function createPnpmWorkspaceManager(host: ChronusHost): WorkspaceManager 
       const workspaceFilePath = joinPaths(root, workspaceFileName);
 
       const file = await host.readFile(workspaceFilePath);
-      const config: PnpmWorkspaceConfig = load(file.content) as any;
+      const config: PnpmWorkspaceConfig = parse(file.content) as any;
 
       if (config.packages === undefined) {
         throw new ChronusError(`packages entry missing in ${workspaceFileName}`);

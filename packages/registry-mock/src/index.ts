@@ -2,8 +2,8 @@ import { spawn, type SpawnOptions } from "child_process";
 import { randomBytes } from "crypto";
 import { readFileSync } from "fs";
 import { mkdir, readFile, writeFile } from "fs/promises";
-import { dump, load } from "js-yaml";
 import { dirname, join } from "path";
+import { load, stringify } from "yaml";
 import * as locations from "./locations.js";
 
 const REGISTRY_MOCK_PORT = locations.REGISTRY_MOCK_PORT;
@@ -34,7 +34,7 @@ export async function prepare() {
   await mkdir(dirname(locations.configPath()), { recursive: true });
   await writeFile(
     locations.configPath(),
-    dump({
+    stringify({
       ...config,
       storage,
       uplinks: {
