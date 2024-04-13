@@ -1,7 +1,7 @@
 import { YAMLError, parseDocument } from "yaml";
 import { createFile } from "../file/create-file.js";
 import type { File } from "../file/index.js";
-import { ChronusError, type Diagnostic, type DiagnosticSeverity } from "../utils/errors.js";
+import { ChronusDiagnosticError, type Diagnostic, type DiagnosticSeverity } from "../utils/errors.js";
 
 export function parseYaml(source: string | File): unknown {
   const diagnostics = [];
@@ -18,7 +18,7 @@ export function parseYaml(source: string | File): unknown {
     diagnostics.push(convertYamlErrorToDiagnostic("warning", warning, file));
   }
   if (diagnostics.length > 0) {
-    throw new ChronusError();
+    throw new ChronusDiagnosticError(diagnostics);
   }
   return doc.toJSON();
 }

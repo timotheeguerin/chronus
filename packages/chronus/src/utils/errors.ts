@@ -18,7 +18,7 @@ export interface Diagnostic {
 }
 
 export class ChronusDiagnosticError extends Error {
-  constructor(public readonly diagnostics: string[]) {
+  constructor(public readonly diagnostics: readonly Diagnostic[]) {
     super();
   }
 }
