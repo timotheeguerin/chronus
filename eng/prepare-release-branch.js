@@ -13,6 +13,7 @@ const stdout = execSync(`git status --porcelain`).toString();
 if (stdout.trim() !== "") {
   console.log("Commiting the following changes:\n", stdout);
 
+  execSync(`git add -A`);
   execSync(`git -c user.email=chronus@github.com -c user.name="Auto Chronus Bot" commit -am "Bump versions"`);
   execSync(`git push origin HEAD:${branchName} --force`);
 
