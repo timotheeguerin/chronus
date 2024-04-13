@@ -101,6 +101,7 @@ async function createReleaseFromPublishSummary(
   const packagesNeedingARelease = new Map(Object.entries(publishSummary.packages));
   const policiesNeedingARelease: { policy: LockstepVersionPolicy; version: string }[] = [];
   const policies = workspace.config.versionPolicies;
+
   if (policies) {
     for (const policy of policies) {
       switch (policy.type) {
@@ -130,8 +131,9 @@ async function createReleaseFromPublishSummary(
       }
     }
   }
+
   let hasError = false;
-  for (const result of Object.values(packagesNeedingARelease)) {
+  for (const result of packagesNeedingARelease.values()) {
     if (!result.published) {
       log(pc.yellow(`Package ${result.name}@${result.version} failed to publish so skipping github release creation.`));
       continue;
@@ -149,6 +151,7 @@ async function createReleaseFromPublishSummary(
       hasError = true;
     }
   }
+
   for (const result of Object.values(policiesNeedingARelease)) {
     const createResult = await createReleaseForPolicy(
       host,
