@@ -22,3 +22,9 @@ export class ChronusDiagnosticError extends Error {
     super();
   }
 }
+
+export function throwIfDiagnostic(diagnostics: readonly Diagnostic[]): void {
+  if (diagnostics.length > 0) {
+    throw new ChronusDiagnosticError(diagnostics);
+  }
+}

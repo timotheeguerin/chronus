@@ -30,11 +30,11 @@ export async function resolveConfig(host: ChronusHost, dir: string): Promise<Chr
   } catch (e) {
     throw new ChronusError(`Could not find ${configFileName}`);
   }
-  const useConfig = parseConfig(file);
+  const userConfig = parseConfig(file);
   return {
     workspaceRoot: root,
-    ...useConfig,
-    changeKinds: addNameToChangeKinds(useConfig.changeKinds ?? defaultChangeKinds),
+    ...userConfig,
+    changeKinds: addNameToChangeKinds(userConfig.changeKinds ?? defaultChangeKinds),
   };
 }
 

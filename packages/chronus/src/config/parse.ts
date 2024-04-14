@@ -35,5 +35,5 @@ const schema = z.object({
 
 export function parseConfig(content: string | TextFile): ChronusUserConfig {
   const parsed = parseYaml(content);
-  return validateYamlFile(parsed, schema);
+  return { ...validateYamlFile(parsed, schema), source: parsed };
 }

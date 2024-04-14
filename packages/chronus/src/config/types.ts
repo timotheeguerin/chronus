@@ -1,7 +1,9 @@
 import type { VersionType } from "../types.js";
 import type { WorkspaceType } from "../workspace-manager/types.js";
+import type { YamlFile } from "../yaml/types.js";
 
 export interface ChronusUserConfig {
+  readonly source?: YamlFile;
   readonly baseBranch: string;
   readonly workspaceType?: WorkspaceType | "auto";
   readonly versionPolicies?: VersionPolicy[];
