@@ -22,6 +22,5 @@ changeKinds:
     description: Internal changes that are not user facing
 
 changedFiles:
-  - 123
   - "!**/*.md"
   - "!**/*.test.ts"

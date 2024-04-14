@@ -8,6 +8,7 @@ import {
   type DiagnosticSeverity,
   type FileLocation,
 } from "../utils/errors.js";
+import { normalizePath } from "../utils/path-utils.js";
 
 function withReporter<T>(fn: (reporter: T & { reporter: Reporter }) => Promise<void>): (args: T) => Promise<void> {
   return (args: T) => {
@@ -88,11 +89,16 @@ function formatSeverity(options: FormatLogOptions, severity: DiagnosticSeverity)
 
 function formatSourceLocation(options: FormatLogOptions, location: FileLocation) {
   const postition = getLineAndColumn(location);
-  const path = color(options, location.file.path, pc.cyan);
+  const path = color(options, simplifyPath(location.file.path), pc.cyan);
 
   const line = color(options, postition.start.line.toString(), pc.yellow);
   const column = color(options, postition.start.column.toString(), pc.yellow);
   return `${path}:${line}:${column}`;
+}
+
+function simplifyPath(path: string) {
+  const cwd = normalizePath(process.cwd()) + "/";
+  return path.startsWith(cwd) ? path.slice(cwd.length) : path;
 }
 
 interface RealLocation {
