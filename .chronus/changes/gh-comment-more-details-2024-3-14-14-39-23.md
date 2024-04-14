@@ -5,4 +5,3 @@ packages:
 ---
 
 Add a collapsible section rendering all the change descriptions in the PR
-
