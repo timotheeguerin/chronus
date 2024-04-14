@@ -19,6 +19,7 @@ export interface PackageStatus {
   readonly documented?: ChangeArea;
 }
 export interface AreaStatus {
+  readonly changeDescriptions: ChangeDescription[];
   readonly filesChanged: string[];
   readonly packageChanged: Package[];
   readonly packagesDocumented: Package[];
@@ -75,6 +76,13 @@ export async function findChangeStatus(
     untrackedOrModified,
     staged,
     all: {
+      changeDescriptions: [
+        ...new Set([
+          ...committed.changeDescriptions,
+          ...untrackedOrModified.changeDescriptions,
+          ...staged.changeDescriptions,
+        ]),
+      ],
       filesChanged: [
         ...new Set([...committed.filesChanged, ...untrackedOrModified.filesChanged, ...staged.filesChanged]),
       ],
@@ -100,10 +108,15 @@ async function findAreaStatus(
   const fileChangedThatMatter = workspace.config.changedFiles
     ? micromatch(filesChanged, workspace.config.changedFiles)
     : filesChanged;
+
+  const changeDescriptions = allChangeDescriptions.filter((x) =>
+    fileChangedThatMatter.includes(changesRelativeDir + "/" + x.id + ".md"),
+  );
   return {
     filesChanged: fileChangedThatMatter,
+    changeDescriptions,
     packageChanged: findPackageChanges(workspace.packages, fileChangedThatMatter),
-    packagesDocumented: await findAlreadyDocumentedChanges(workspace, allChangeDescriptions, fileChangedThatMatter),
+    packagesDocumented: await findAlreadyDocumentedChanges(workspace, changeDescriptions),
   };
 }
 
@@ -123,13 +136,9 @@ function findPackageChanges(packages: Package[], fileChanged: string[]): Package
 /** Find which packages changed from the file changed. */
 async function findAlreadyDocumentedChanges(
   workspace: ChronusWorkspace,
-  allChangeDescriptions: ChangeDescription[],
-  fileChanged: string[],
+  changeDescriptionsModified: ChangeDescription[],
 ): Promise<Package[]> {
   const packagesWithChangelog = new Set<Package>();
-  const changeDescriptionsModified = allChangeDescriptions.filter((x) =>
-    fileChanged.includes(changesRelativeDir + "/" + x.id + ".md"),
-  );
   for (const changeDescription of changeDescriptionsModified) {
     for (const pkgName of changeDescription.packages) {
       const pkg = workspace.packages.find((x) => x.name === pkgName);
