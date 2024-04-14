@@ -4,6 +4,7 @@ import { createEmbeddedFile, type EmbeddedFile, type TextFile } from "../file/in
 import { ChronusError } from "../utils/errors.js";
 import { getBaseFileName } from "../utils/path-utils.js";
 import { parseYaml } from "../yaml/parse.js";
+import { validateYamlFile } from "../yaml/schema-validator.js";
 import type { ChangeDescription, ChangeDescriptionFrontMatter } from "./types.js";
 
 const mdRegex = /\s*---([^]*?)\n\s*---(\s*(?:\n|$)[^]*)/;
@@ -14,12 +15,8 @@ const changeFrontMatterSchema = z.object({
 });
 
 function parseChangeFrontMatter(content: EmbeddedFile | string): ChangeDescriptionFrontMatter {
-  // try {
   const yaml = parseYaml(content);
-  return changeFrontMatterSchema.parse(yaml.data);
-  // } catch (error) {
-  //   throw new ChronusError(`Invalid Frontmatter for ${file}. Error: ${error}`);
-  // }
+  return validateYamlFile(yaml, changeFrontMatterSchema);
 }
 
 export function parseChangeDescription(config: ChronusResolvedConfig, file: TextFile): ChangeDescription {
