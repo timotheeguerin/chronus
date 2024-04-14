@@ -1,10 +1,11 @@
 import micromatch from "micromatch";
 import { resolveConfig } from "../config/index.js";
 import type { ChronusResolvedConfig } from "../config/types.js";
-import { ChronusError } from "../utils/errors.js";
+import { ChronusError, throwIfDiagnostic, type Diagnostic } from "../utils/errors.js";
 import type { ChronusHost } from "../utils/host.js";
 import { loadWorkspace } from "../workspace-manager/auto-discover.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
+import { getLocationInYamlScript } from "../yaml/location.js";
 import type { ChronusPackage, ChronusWorkspace } from "./types.js";
 
 function isPackageIgnored(config: ChronusResolvedConfig, pkg: Package): boolean {
@@ -14,7 +15,30 @@ function isPackageIgnored(config: ChronusResolvedConfig, pkg: Package): boolean 
 export async function loadChronusWorkspace(host: ChronusHost, dir: string): Promise<ChronusWorkspace> {
   const config = await resolveConfig(host, dir);
   const workspace = await loadWorkspace(host, config.workspaceRoot, config.workspaceType);
+  validateConfigWithWorkspace(config, workspace);
   return createChronusWorkspace(workspace, config);
+}
+
+function validateConfigWithWorkspace(config: ChronusResolvedConfig, workspace: Workspace): void {
+  const diagnostics: Diagnostic[] = [];
+  if (config.versionPolicies) {
+    for (const [policyIndex, policy] of config.versionPolicies.entries()) {
+      for (const [pkgIndex, pkgName] of policy.packages.entries()) {
+        if (!workspace.packages.some((pkg) => pkg.name === pkgName)) {
+          diagnostics.push({
+            code: "package-not-found",
+            message: `Package '${pkgName}' is not found in workspace`,
+            severity: "error",
+            target: config.source
+              ? getLocationInYamlScript(config.source, ["versionPolicies", policyIndex, "packages", pkgIndex])
+              : null,
+          });
+        }
+      }
+    }
+  }
+
+  throwIfDiagnostic(diagnostics);
 }
 
 export function createChronusWorkspace(workspace: Workspace, config: ChronusResolvedConfig): ChronusWorkspace {

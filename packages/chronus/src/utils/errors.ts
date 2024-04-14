@@ -18,7 +18,21 @@ export interface Diagnostic {
 }
 
 export class ChronusDiagnosticError extends Error {
-  constructor(public readonly diagnostics: readonly Diagnostic[]) {
+  public readonly diagnostics: readonly Diagnostic[];
+  constructor(diagnostics: Diagnostic | readonly Diagnostic[]) {
     super();
+    if (Array.isArray(diagnostics)) {
+      this.diagnostics = diagnostics;
+    } else {
+      this.diagnostics = [diagnostics as any];
+    }
   }
 }
+
+export function throwIfDiagnostic(diagnostics: readonly Diagnostic[]): void {
+  if (diagnostics.length > 0) {
+    throw new ChronusDiagnosticError(diagnostics);
+  }
+}
+
+export class ChronusUserError extends ChronusError {}

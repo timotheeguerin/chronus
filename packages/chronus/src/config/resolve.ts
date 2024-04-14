@@ -1,4 +1,4 @@
-import { ChronusError } from "../utils/errors.js";
+import { ChronusDiagnosticError } from "../utils/errors.js";
 import type { ChronusHost } from "../utils/host.js";
 import { isPathAccessible, lookup } from "../utils/index.js";
 import { joinPaths, resolvePath } from "../utils/path-utils.js";
@@ -16,25 +16,24 @@ export const defaultChangeKinds: Record<string, ChangeKindUserConfig> = Object.f
 
 export async function resolveConfig(host: ChronusHost, dir: string): Promise<ChronusResolvedConfig> {
   const root = await lookup(dir, (current) => {
-    const path = joinPaths(current, configFileName);
-    return isPathAccessible(host, path);
+    return isPathAccessible(host, joinPaths(current, configFileName));
   });
   if (root === undefined) {
-    throw new ChronusError(`Cannot find ${configFileName} in a parent folder to ${dir}`);
+    throw new ChronusDiagnosticError({
+      code: "config-not-found",
+      severity: "error",
+      message: `Cannot find ${configFileName} in a parent folder to ${dir}`,
+      target: null,
+    });
   }
 
   const configPath = resolvePath(root, configFileName);
-  let file;
-  try {
-    file = await host.readFile(configPath);
-  } catch (e) {
-    throw new ChronusError(`Could not find ${configFileName}`);
-  }
-  const useConfig = parseConfig(file);
+  const file = await host.readFile(configPath);
+  const userConfig = parseConfig(file);
   return {
     workspaceRoot: root,
-    ...useConfig,
-    changeKinds: addNameToChangeKinds(useConfig.changeKinds ?? defaultChangeKinds),
+    ...userConfig,
+    changeKinds: addNameToChangeKinds(userConfig.changeKinds ?? defaultChangeKinds),
   };
 }
 

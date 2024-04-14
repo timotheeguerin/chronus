@@ -3,7 +3,7 @@ import { publishPackage } from "../../publish/publish-package.js";
 import type { PublishPackageResult, PublishSummary } from "../../publish/types.js";
 import type { Reporter } from "../../reporters/index.js";
 import { findUnpublishedPackages, findUnpublishedWorkspacePackages } from "../../unpublished-packages/index.js";
-import { ChronusError, NodeChronusHost, prettyBytes, resolvePath, type ChronusHost } from "../../utils/index.js";
+import { ChronusUserError, NodeChronusHost, prettyBytes, resolvePath, type ChronusHost } from "../../utils/index.js";
 import { loadChronusWorkspace, type ChronusWorkspace } from "../../workspace/index.js";
 
 export interface PublishOptions {
@@ -24,7 +24,7 @@ export async function publish({ reporter, pattern, reportSummary, ...others }: P
   if (filesOrFolders.length > 1 || filesOrFolders[0]?.endsWith(".tgz")) {
     const tgzFiles = filesOrFolders.filter((file) => file.endsWith(".tgz"));
     if (tgzFiles.length !== filesOrFolders.length) {
-      throw new ChronusError(`Can only bulk publish tarballs or a single workspace at a time.`);
+      throw new ChronusUserError(`Can only bulk publish tarballs or a single workspace at a time.`);
     }
     try {
       workspace = await loadChronusWorkspace(host, process.cwd());

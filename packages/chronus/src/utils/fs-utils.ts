@@ -20,7 +20,7 @@ export async function lookup(
   let last = undefined;
   let current = startDir;
   while (last !== current) {
-    if (callback(current)) {
+    if (await callback(current)) {
       return current;
     }
     last = current;
