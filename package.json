@@ -1,10 +1,18 @@
 {
   "name": "@chronus/monorepo",
-  "private": true,
   "version": "0.1.0",
-  "packageManager": "pnpm@8.15.1",
-  "description": "Monorepo for chronus",
   "type": "module",
+  "description": "Monorepo for chronus",
+  "homepage": "https://github.com/timotheeguerin/chronus#readme",
+  "packageManager": "pnpm@8.15.1",
+  "license": "MIT",
+  "private": true,
+  "author": "Microsoft",
+  "repository": "timotheeguerin/chronus.git",
+  "engines": {
+    "node": ">=16.0.0",
+    "pnpm": ">=7.6.0"
+  },
   "workspaces": [
     "packages/*"
   ],
@@ -17,27 +25,14 @@
     "build": "pnpm -r run build",
     "clean": "pnpm -r run clean && rimraf **/.temp/",
     "lint": "eslint .",
-    "format": "npm run -s prettier -- --write",
-    "check-format": "npm run -s prettier -- --check",
+    "lint:sp": "syncpack lint",
+    "format": "npm run -s prettier -- --write && syncpack format",
+    "format:check": "npm run -s prettier -- --check",
     "check-version-mismatch": "syncpack list-mismatches",
     "fix-version-mismatch": "syncpack fix-mismatches",
-    "prettier": "prettier --config ./.prettierrc.yaml **/*.{ts,js,cjs,mjs,json,yml,yaml,md}",
+    "prettier": "prettier --config ./.prettierrc.yaml **/*.{ts,js,mjs,json,yml,yaml,md}",
     "cspell": "cspell --no-progress ."
   },
-  "engines": {
-    "node": ">=16.0.0",
-    "pnpm": ">=7.6.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/timotheeguerin/chronus.git"
-  },
-  "author": "Microsoft",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/timotheeguerin/chronus/issues"
-  },
-  "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "devDependencies": {
     "@actions/github": "^6.0.0",
     "@chronus/github": "workspace:*",
@@ -50,7 +45,7 @@
     "eslint": "^9.0.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-unicorn": "^52.0.0",
-    "eslint-plugin-vitest": "0.5.2",
+    "eslint-plugin-vitest": "^0.5.2",
     "prettier": "^3.2.5",
     "prettier-plugin-organize-imports": "^3.2.4",
     "rimraf": "^5.0.5",
@@ -59,14 +54,5 @@
     "typescript-eslint": "^7.6.0",
     "vitest": "^1.5.0"
   },
-  "syncpack": {
-    "dependencyTypes": [
-      "dev",
-      "overrides",
-      "peer",
-      "pnpmOverrides",
-      "prod",
-      "resolutions"
-    ]
-  }
+  "bugs": "https://github.com/timotheeguerin/chronus/issues"
 }

@@ -1,0 +1,43 @@
+dependencyTypes:
+  - "dev"
+  - "overrides"
+  - "peer"
+  - "pnpmOverrides"
+  - "prod"
+  - "resolutions"
+
+sortFirst:
+  - "name"
+  - "version"
+  - "type"
+  - "description"
+  - "homepage"
+  - "packageManager"
+  - "license"
+  - "private"
+  - "author"
+  - "keywords"
+  - "sideEffects"
+  - "main"
+  - "module"
+  - "types"
+  - "exports"
+  - "bin"
+  - "files"
+  - "repository"
+  - "engines"
+  - "workspaces"
+  - "scripts"
+  - "peerDependencies"
+  - "dependencies"
+  - "devDependencies"
+
+sortAz:
+  - "contributors"
+  - "dependencies"
+  - "devDependencies"
+  - "keywords"
+  - "peerDependencies"
+  - "resolutions"
+
+semverGroups: [{ "range": "^", "dependencyTypes": ["dev"], "dependencies": ["**"], "packages": ["**"] }]
