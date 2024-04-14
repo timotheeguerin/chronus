@@ -1,11 +1,22 @@
 {
   "name": "@chronus/github-pr-commenter",
   "version": "0.3.5",
-  "description": "chronus",
-  "main": "dist/index.js",
   "type": "module",
+  "description": "chronus",
+  "homepage": "https://github.com/timotheeguerin/chronus#readme",
+  "license": "MIT",
+  "author": "Microsoft",
+  "main": "dist/index.js",
   "bin": {
     "chronus-github-pr-commenter": "./cmd/cli.mjs"
+  },
+  "files": [
+    "cmd",
+    "dist"
+  ],
+  "repository": "timotheeguerin/chronus.git",
+  "engines": {
+    "node": ">=16.0.0"
   },
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
@@ -16,23 +27,6 @@
     "test": "vitest run",
     "test:watch": "vitest -w"
   },
-  "engines": {
-    "node": ">=16.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/timotheeguerin/chronus.git"
-  },
-  "author": "Microsoft",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/timotheeguerin/chronus/issues"
-  },
-  "homepage": "https://github.com/timotheeguerin/chronus#readme",
-  "files": [
-    "cmd",
-    "dist"
-  ],
   "dependencies": {
     "@actions/github": "^6.0.0",
     "@chronus/chronus": "workspace:*",
@@ -45,5 +39,6 @@
     "rimraf": "^5.0.5",
     "source-map-support": "^0.5.21",
     "typescript": "^5.4.5"
-  }
+  },
+  "bugs": "https://github.com/timotheeguerin/chronus/issues"
 }

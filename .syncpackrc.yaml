@@ -9,6 +9,7 @@ dependencyTypes:
 sortFirst:
   - "name"
   - "version"
+  - "type"
   - "description"
   - "homepage"
   - "packageManager"
@@ -21,6 +22,8 @@ sortFirst:
   - "module"
   - "types"
   - "exports"
+  - "bin"
+  - "files"
   - "repository"
   - "engines"
   - "workspaces"
@@ -36,3 +39,5 @@ sortAz:
   - "keywords"
   - "peerDependencies"
   - "resolutions"
+
+semverGroups: [{ "range": "^", "dependencyTypes": ["dev"], "dependencies": ["**"], "packages": ["**"] }]
