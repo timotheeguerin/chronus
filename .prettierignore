@@ -298,7 +298,7 @@ core/test/regression
 # Rush files
 common/changes/
 common/scripts/
-CHANGELOG.*
+CHANGELOG.md
 
 # Package manager files
 pnpm-lock.yaml

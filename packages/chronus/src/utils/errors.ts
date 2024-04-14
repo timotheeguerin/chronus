@@ -34,3 +34,5 @@ export function throwIfDiagnostic(diagnostics: readonly Diagnostic[]): void {
     throw new ChronusDiagnosticError(diagnostics);
   }
 }
+
+export class ChronusUserError extends ChronusError {}

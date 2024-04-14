@@ -5,6 +5,7 @@ import { DynamicReporter } from "../reporters/dynamic.js";
 import type { Reporter } from "../reporters/types.js";
 import {
   ChronusDiagnosticError,
+  ChronusUserError,
   type Diagnostic,
   type DiagnosticSeverity,
   type FileLocation,
@@ -46,6 +47,9 @@ function logError(options: FormatLogOptions, error: unknown) {
     printDiagnostics(options, error.diagnostics);
     log("");
     log(`Found ${error.diagnostics.length} errors.`);
+    process.exit(1);
+  } else if (error instanceof ChronusUserError) {
+    printDiagnostics(options, [{ code: "", severity: "error", message: error.message, target: null }]);
     process.exit(1);
   } else {
     console.error(error);
