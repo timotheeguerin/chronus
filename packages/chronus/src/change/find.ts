@@ -45,9 +45,9 @@ export async function findChangeStatus(
   const publicPackages = workspace.packages;
 
   const allChangeDescriptions = await readChangeDescriptions(host, workspace);
-  const committed = await findAreaStatus(host, workspace, allChangeDescriptions, filesChanged);
-  const untrackedOrModified = await findAreaStatus(host, workspace, allChangeDescriptions, untrackedOrModifiedFiles);
-  const staged = await findAreaStatus(host, workspace, allChangeDescriptions, stagedFiles);
+  const committed = await findAreaStatus(workspace, allChangeDescriptions, filesChanged);
+  const untrackedOrModified = await findAreaStatus(workspace, allChangeDescriptions, untrackedOrModifiedFiles);
+  const staged = await findAreaStatus(workspace, allChangeDescriptions, stagedFiles);
   const packages = new Map<string, PackageStatus>();
 
   function track(tracking: Package[], data: { readonly changed?: ChangeArea; readonly documented?: ChangeArea }) {
@@ -93,7 +93,6 @@ export async function findChangeStatus(
 }
 
 async function findAreaStatus(
-  host: ChronusHost,
   workspace: ChronusWorkspace,
   allChangeDescriptions: ChangeDescription[],
   filesChanged: string[],
@@ -104,12 +103,7 @@ async function findAreaStatus(
   return {
     filesChanged: fileChangedThatMatter,
     packageChanged: findPackageChanges(workspace.packages, fileChangedThatMatter),
-    packagesDocumented: await findAlreadyDocumentedChanges(
-      host,
-      workspace,
-      allChangeDescriptions,
-      fileChangedThatMatter,
-    ),
+    packagesDocumented: await findAlreadyDocumentedChanges(workspace, allChangeDescriptions, fileChangedThatMatter),
   };
 }
 
@@ -128,7 +122,6 @@ function findPackageChanges(packages: Package[], fileChanged: string[]): Package
 
 /** Find which packages changed from the file changed. */
 async function findAlreadyDocumentedChanges(
-  host: ChronusHost,
   workspace: ChronusWorkspace,
   allChangeDescriptions: ChangeDescription[],
   fileChanged: string[],
