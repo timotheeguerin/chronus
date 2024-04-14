@@ -162,8 +162,10 @@ function resolveComment(
       }
     }
     content.push("");
+  } else if (documentedPackages.length > 0) {
+    content.push(`:white_check_mark: All changed packages have been documented.`);
   } else {
-    content.push(`All changed packages have been documented.`);
+    content.push(`No changes needing a change description found.`);
   }
   return content.join("\n");
 }
