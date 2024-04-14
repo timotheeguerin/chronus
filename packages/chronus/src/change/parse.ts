@@ -1,8 +1,9 @@
 import z from "zod";
 import type { ChronusResolvedConfig } from "../config/types.js";
 import { createEmbeddedFile, type EmbeddedFile, type TextFile } from "../file/index.js";
-import { ChronusError } from "../utils/errors.js";
+import { ChronusDiagnosticError } from "../utils/errors.js";
 import { getBaseFileName } from "../utils/path-utils.js";
+import { getLocationInYamlScript } from "../yaml/location.js";
 import { parseYaml } from "../yaml/parse.js";
 import { validateYamlFile } from "../yaml/schema-validator.js";
 import type { ChangeDescription, ChangeDescriptionFrontMatter } from "./types.js";
@@ -16,13 +17,20 @@ const changeFrontMatterSchema = z.object({
 
 function parseChangeFrontMatter(content: EmbeddedFile | string): ChangeDescriptionFrontMatter {
   const yaml = parseYaml(content);
-  return validateYamlFile(yaml, changeFrontMatterSchema);
+  return { ...validateYamlFile(yaml, changeFrontMatterSchema), source: yaml };
 }
 
 export function parseChangeDescription(config: ChronusResolvedConfig, file: TextFile): ChangeDescription {
   const execResult = mdRegex.exec(file.content);
   if (!execResult) {
-    throw new ChronusError(`Couldn't parse ${file.path}. Front matter is missing.`);
+    throw new ChronusDiagnosticError([
+      {
+        code: "missing-front-matter",
+        severity: "error",
+        message: `Couldn't parse ${file.path}. Front matter is missing.`,
+        target: { file, pos: 0, end: 0 },
+      },
+    ]);
   }
   const [, frontMatterRaw, contentRaw] = execResult;
   const pos = file.content.indexOf(frontMatterRaw);
@@ -31,9 +39,14 @@ export function parseChangeDescription(config: ChronusResolvedConfig, file: Text
 
   const changeKind = config.changeKinds[frontMatter.changeKind];
   if (changeKind === undefined) {
-    throw new ChronusError(
-      `Change ${file.path} is using a changeKind ${frontMatter.changeKind} which is defined in the config. Available ones are:\n${Object.keys(config.changeKinds).join(", ")}`,
-    );
+    throw new ChronusDiagnosticError([
+      {
+        code: "invalid-change-kind",
+        severity: "error",
+        message: `Change ${file.path} is using a changeKind ${frontMatter.changeKind} which is defined in the config. Available ones are:\n${Object.keys(config.changeKinds).join(", ")}`,
+        target: frontMatter.source ? getLocationInYamlScript(frontMatter.source, ["changeKind"]) : null,
+      },
+    ]);
   }
 
   const id = getBaseFileName(file.path).replace(/.md$/, "");

@@ -14,7 +14,7 @@ export interface Diagnostic {
   readonly code: string;
   readonly message: string;
   readonly severity: DiagnosticSeverity;
-  readonly target: FileLocation;
+  readonly target: FileLocation | null;
 }
 
 export class ChronusDiagnosticError extends Error {
