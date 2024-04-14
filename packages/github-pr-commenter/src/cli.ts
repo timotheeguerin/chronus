@@ -11,10 +11,10 @@ import { NodeChronusHost, getWorkspaceStatus, loadChronusWorkspace } from "@chro
 import { printChangeDescription, resolveChangeRelativePath } from "@chronus/chronus/change";
 
 interface Context {
-  repoName: string;
-  repoOwner: string;
-  prNumber: number;
-  headRef: string;
+  repoName?: string;
+  repoOwner?: string;
+  prNumber?: number;
+  headRef?: string;
   prTitle?: string;
 }
 
@@ -58,14 +58,14 @@ function getAzureDevopsContext(): Context | undefined {
 
 function getGenericContext(): Context | undefined {
   const values = {
-    prNumber: process.env["GH_PR_NUMBER"],
-    repoName: process.env["GH_REPO_OWNER"],
-    repoOwner: process.env["GH_REPO_REPO"],
+    prNumber: process.env["GH_PR_NUMBER"] ? Number(process.env["GH_PR_NUMBER"]) : undefined,
+    repoOwner: process.env["GH_REPO_OWNER"],
+    repoName: process.env["GH_REPO_NAME"],
     headRef: process.env["GH_PR_HEAD_REF"],
     prTitle: process.env["GH_PR_TITLE"],
   };
 
-  return values.prNumber && values.repoName && values.repoOwner && values.headRef ? (values as any) : undefined;
+  return values;
 }
 
 const magicString = "<!--chronus-github-change-commenter-->";
@@ -82,13 +82,13 @@ async function main() {
   }
 
   if (context?.repoOwner === undefined) {
-    throw new Error("PR number not found. Set $GH_REPO_OWNER");
+    throw new Error("Repo owner not found. Set $GH_REPO_OWNER");
   }
   if (!context?.repoName) {
-    throw new Error("PR number not found. Set $GH_REPO_REPO");
+    throw new Error("Repo name not found. Set $GH_REPO_NAME");
   }
   if (!context?.headRef) {
-    throw new Error("PR number not found. Set $GH_PR_HEAD_REF");
+    throw new Error("Head ref not found. Set $GH_PR_HEAD_REF");
   }
 
   const github = getOctokit(token);
