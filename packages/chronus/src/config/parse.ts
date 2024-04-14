@@ -1,5 +1,5 @@
 import z, { ZodError, type ZodIssue } from "zod";
-import type { File } from "../file/types.js";
+import type { TextFile } from "../file/types.js";
 import { ChronusDiagnosticError, type Diagnostic } from "../utils/errors.js";
 import { getLocationInYamlScript, parseYaml, type YamlFile } from "../yaml/index.js";
 import type { ChronusUserConfig } from "./types.js";
@@ -34,7 +34,7 @@ const schema = z.object({
   changedFiles: z.array(z.string()).optional(),
 });
 
-export function parseConfig(content: string | File): ChronusUserConfig {
+export function parseConfig(content: string | TextFile): ChronusUserConfig {
   const parsed = parseYaml(content);
   try {
     return schema.parse(parsed.data);

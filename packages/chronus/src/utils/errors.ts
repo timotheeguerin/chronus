@@ -1,11 +1,11 @@
-import type { File } from "../file/types.js";
+import type { EmbeddedFile, TextFile } from "../file/types.js";
 
 export class ChronusError extends Error {}
 
 export type DiagnosticSeverity = "error" | "warning";
 
 export interface FileLocation {
-  readonly file: File;
+  readonly file: TextFile | EmbeddedFile;
   readonly pos: number;
   readonly end: number;
 }

@@ -1,10 +1,10 @@
-import type { File } from "./types.js";
+import type { EmbeddedFile, TextFile } from "./types.js";
 
 /**
  * Create a file Type.
  * This does NOT write to the file system.
  */
-export function createFile(content: string, path: string): File {
+export function createTextFile(content: string, path: string): TextFile {
   let lineStarts: number[] | undefined = undefined;
 
   return {
@@ -38,6 +38,10 @@ export function createFile(content: string, path: string): File {
       character: position - starts[line],
     };
   }
+}
+
+export function createEmbeddedFile(args: EmbeddedFile): EmbeddedFile {
+  return args;
 }
 
 function scanLineStarts(text: string): number[] {

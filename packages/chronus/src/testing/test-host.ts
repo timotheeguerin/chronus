@@ -1,5 +1,5 @@
 import micromatch from "micromatch";
-import { createFile } from "../file/create-file.js";
+import { createTextFile } from "../file/create-file.js";
 import type { ChronusHost, GlobOptions, MkdirOptions, RmOptions } from "../utils/host.js";
 import { getDirectoryPath } from "../utils/path-utils.js";
 
@@ -14,7 +14,7 @@ export function createTestHost(files: Record<string, string> = {}): TestHost {
   const host: ChronusHost = {
     readFile: (path: string) => {
       const content = fs[path];
-      return Promise.resolve(createFile(content, path));
+      return Promise.resolve(createTextFile(content, path));
     },
     writeFile: (path: string, content: string) => {
       fs[path] = content;

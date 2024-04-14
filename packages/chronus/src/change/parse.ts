@@ -1,9 +1,9 @@
-import { parse } from "yaml";
 import z from "zod";
 import type { ChronusResolvedConfig } from "../config/types.js";
-import type { File } from "../file/index.js";
+import { createEmbeddedFile, type EmbeddedFile, type TextFile } from "../file/index.js";
 import { ChronusError } from "../utils/errors.js";
 import { getBaseFileName } from "../utils/path-utils.js";
+import { parseYaml } from "../yaml/parse.js";
 import type { ChangeDescription, ChangeDescriptionFrontMatter } from "./types.js";
 
 const mdRegex = /\s*---([^]*?)\n\s*---(\s*(?:\n|$)[^]*)/;
@@ -13,22 +13,24 @@ const changeFrontMatterSchema = z.object({
   packages: z.array(z.string()),
 });
 
-function parseChangeFrontMatter(frontMatter: string, file: File): ChangeDescriptionFrontMatter {
-  try {
-    const yaml = parse(frontMatter);
-    return changeFrontMatterSchema.parse(yaml);
-  } catch (error) {
-    throw new ChronusError(`Invalid Frontmatter for ${file}. Error: ${error}`);
-  }
+function parseChangeFrontMatter(content: EmbeddedFile | string): ChangeDescriptionFrontMatter {
+  // try {
+  const yaml = parseYaml(content);
+  return changeFrontMatterSchema.parse(yaml.data);
+  // } catch (error) {
+  //   throw new ChronusError(`Invalid Frontmatter for ${file}. Error: ${error}`);
+  // }
 }
 
-export function parseChangeDescription(config: ChronusResolvedConfig, file: File): ChangeDescription {
+export function parseChangeDescription(config: ChronusResolvedConfig, file: TextFile): ChangeDescription {
   const execResult = mdRegex.exec(file.content);
   if (!execResult) {
     throw new ChronusError(`Couldn't parse ${file.path}. Front matter is missing.`);
   }
   const [, frontMatterRaw, contentRaw] = execResult;
-  const frontMatter = parseChangeFrontMatter(frontMatterRaw, file);
+  const pos = file.content.indexOf(frontMatterRaw);
+  const frontMattterFile = createEmbeddedFile({ content: frontMatterRaw, file, pos, end: pos + frontMatterRaw.length });
+  const frontMatter = parseChangeFrontMatter(frontMattterFile);
 
   const changeKind = config.changeKinds[frontMatter.changeKind];
   if (changeKind === undefined) {

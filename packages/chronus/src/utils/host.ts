@@ -1,11 +1,11 @@
-import type { File } from "../file/types.js";
+import type { TextFile } from "../file/types.js";
 
 export interface ChronusHost {
   /**
    * Read a file.
    * @param path Path to the file.
    */
-  readFile(path: string): Promise<File>;
+  readFile(path: string): Promise<TextFile>;
 
   /**
    * Write the file.

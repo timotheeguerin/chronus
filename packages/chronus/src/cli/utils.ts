@@ -1,5 +1,6 @@
 import pc from "picocolors";
 import type { Formatter } from "picocolors/types.js";
+import type { TextFile } from "../file/types.js";
 import { DynamicReporter } from "../reporters/dynamic.js";
 import type { Reporter } from "../reporters/types.js";
 import {
@@ -89,14 +90,15 @@ function formatSeverity(options: FormatLogOptions, severity: DiagnosticSeverity)
 
 function formatSourceLocation(options: FormatLogOptions, location: FileLocation) {
   const postition = getLineAndColumn(location);
-  const path = color(options, simplifyPath(location.file.path), pc.cyan);
+  const path = color(options, getPath(location), pc.cyan);
 
   const line = color(options, postition.start.line.toString(), pc.yellow);
   const column = color(options, postition.start.column.toString(), pc.yellow);
   return `${path}:${line}:${column}`;
 }
 
-function simplifyPath(path: string) {
+function getPath(location: FileLocation) {
+  const path = "file" in location.file ? location.file.file.path : location.file.path;
   const cwd = normalizePath(process.cwd()) + "/";
   return path.startsWith(cwd) ? path.slice(cwd.length) : path;
 }
@@ -107,13 +109,22 @@ interface RealLocation {
 }
 
 function getLineAndColumn(location: FileLocation): RealLocation {
-  const pos = location.file.getLineAndCharacterOfPosition(location.pos ?? 0);
-  const end = location.end ? location.file.getLineAndCharacterOfPosition(location.end) : undefined;
+  let pos = location.pos;
+  let end = location.end;
+  const file: TextFile = "file" in location.file ? location.file.file : location.file;
+  if ("file" in location.file) {
+    pos = Math.min(pos + location.file.pos, location.file.end);
+    if (end !== undefined) {
+      end += Math.min(end + location.file.pos, location.file.end);
+    }
+  }
+  const startLC = file.getLineAndCharacterOfPosition(pos);
+  const endLC = end ? file.getLineAndCharacterOfPosition(end) : undefined;
   const result: RealLocation = {
-    start: { line: pos.line + 1, column: pos.character + 1 },
+    start: { line: startLC.line + 1, column: startLC.character + 1 },
   };
-  if (end) {
-    result.end = { line: end.line + 1, column: end.character + 1 };
+  if (endLC) {
+    result.end = { line: endLC.line + 1, column: endLC.character + 1 };
   }
   return result;
 }
