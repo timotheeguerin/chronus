@@ -164,6 +164,9 @@ function resolveComment(
     content.push("");
   } else if (documentedPackages.length > 0) {
     content.push(`:white_check_mark: All changed packages have been documented.`);
+    for (const pkg of documentedPackages) {
+      content.push(` - :white_check_mark: \`${pkg.package.name}\``);
+    }
   } else {
     content.push(`No changes needing a change description found.`);
   }
