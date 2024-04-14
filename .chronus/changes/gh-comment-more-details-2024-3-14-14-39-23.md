@@ -4,4 +4,4 @@ packages:
   - "@chronus/github-pr-commenter"
 ---
 
-Include the generated changelog in collapsible section
+Add a collapsible section rendering all the change descriptions in the PR
