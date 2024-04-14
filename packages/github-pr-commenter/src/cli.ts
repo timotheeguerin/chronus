@@ -9,7 +9,6 @@ import { getOctokit, context as githubActionContext } from "@actions/github";
 import type { ChangeStatus, ChronusWorkspace, PackageStatus } from "@chronus/chronus";
 import { NodeChronusHost, getWorkspaceStatus, loadChronusWorkspace } from "@chronus/chronus";
 import { printChangeDescription, resolveChangeRelativePath } from "@chronus/chronus/change";
-import type { ChangeKindResolvedConfig } from "../../chronus/dist/config/types.js";
 
 interface Context {
   repoName: string;
@@ -199,7 +198,7 @@ function addChangeSetUrl(
   return `${repoUrl}/new/${context.headRef}?filename=${filename}&value=${encodeURIComponent(content)}`;
 }
 
-function getDefaultChangeKind(workspace: ChronusWorkspace): ChangeKindResolvedConfig {
+function getDefaultChangeKind(workspace: ChronusWorkspace): any {
   const changeKinds = Object.values(workspace.config.changeKinds);
   const patch = changeKinds.find((x) => x.versionType === "patch");
   if (patch) return patch;

@@ -15,7 +15,7 @@ export async function readChangeDescription(
   filename: string,
 ): Promise<ChangeDescription> {
   const file = await host.readFile(resolvePath(workspace.path, filename));
-  return parseChangeDescription(workspace.config, file);
+  return parseChangeDescription(workspace, file);
 }
 
 /** Read all change descriptions */

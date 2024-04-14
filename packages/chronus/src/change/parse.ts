@@ -1,8 +1,8 @@
 import z from "zod";
-import type { ChronusResolvedConfig } from "../config/types.js";
 import { createEmbeddedFile, type EmbeddedFile, type TextFile } from "../file/index.js";
-import { ChronusDiagnosticError } from "../utils/errors.js";
+import { ChronusDiagnosticError, type Diagnostic } from "../utils/errors.js";
 import { getBaseFileName } from "../utils/path-utils.js";
+import type { ChronusWorkspace } from "../workspace/types.js";
 import { getLocationInYamlScript } from "../yaml/location.js";
 import { parseYaml } from "../yaml/parse.js";
 import { validateYamlFile } from "../yaml/schema-validator.js";
@@ -20,7 +20,7 @@ function parseChangeFrontMatter(content: EmbeddedFile | string): ChangeDescripti
   return { ...validateYamlFile(yaml, changeFrontMatterSchema), source: yaml };
 }
 
-export function parseChangeDescription(config: ChronusResolvedConfig, file: TextFile): ChangeDescription {
+export function parseChangeDescription(workspace: ChronusWorkspace, file: TextFile): ChangeDescription {
   const execResult = mdRegex.exec(file.content);
   if (!execResult) {
     throw new ChronusDiagnosticError([
@@ -37,18 +37,32 @@ export function parseChangeDescription(config: ChronusResolvedConfig, file: Text
   const frontMattterFile = createEmbeddedFile({ content: frontMatterRaw, file, pos, end: pos + frontMatterRaw.length });
   const frontMatter = parseChangeFrontMatter(frontMattterFile);
 
-  const changeKind = config.changeKinds[frontMatter.changeKind];
+  const changeKind = workspace.config.changeKinds[frontMatter.changeKind];
+  const diagnostics: Diagnostic[] = [];
   if (changeKind === undefined) {
-    throw new ChronusDiagnosticError([
-      {
-        code: "invalid-change-kind",
-        severity: "error",
-        message: `Change ${file.path} is using a changeKind ${frontMatter.changeKind} which is defined in the config. Available ones are:\n${Object.keys(config.changeKinds).join(", ")}`,
-        target: frontMatter.source ? getLocationInYamlScript(frontMatter.source, ["changeKind"]) : null,
-      },
-    ]);
+    diagnostics.push({
+      code: "invalid-change-kind",
+      severity: "error",
+      message: `Change is using a changeKind ${frontMatter.changeKind} which is defined in the config. Available ones are:\n${Object.keys(workspace.config.changeKinds).join(", ")}`,
+      target: frontMatter.source ? getLocationInYamlScript(frontMatter.source, ["changeKind"]) : null,
+    });
   }
 
+  for (const packageName of frontMatter.packages) {
+    try {
+      workspace.getPackage(packageName);
+    } catch (e) {
+      diagnostics.push({
+        code: "invalid-package-name",
+        severity: "error",
+        message: `Change is referencing package '${packageName}' but it is not found in the workspace.`,
+        target: frontMatter.source ? getLocationInYamlScript(frontMatter.source, ["packages"]) : null,
+      });
+    }
+  }
+  if (diagnostics.length > 0) {
+    throw new ChronusDiagnosticError(diagnostics);
+  }
   const id = getBaseFileName(file.path).replace(/.md$/, "");
   return {
     ...frontMatter,
