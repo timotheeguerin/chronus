@@ -1,5 +1,5 @@
-import { dump } from "js-yaml";
 import { beforeEach, describe, expect, it } from "vitest";
+import { stringify } from "yaml";
 import { createTestHost, type TestHost } from "../testing/test-host.js";
 import { loadWorkspace } from "./auto-discover.js";
 
@@ -12,7 +12,7 @@ describe("getWorkspaceManager", () => {
   function makePnpmWorkspace() {
     host.addFile(
       "proj/pnpm-workspace.yaml",
-      dump({
+      stringify({
         packages: ["packages/*"],
       }),
     );

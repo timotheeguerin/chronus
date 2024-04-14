@@ -1,5 +1,5 @@
-import { dump } from "js-yaml";
 import { beforeEach, describe, expect, it } from "vitest";
+import { stringify } from "yaml";
 import { createTestHost, type TestHost } from "../testing/test-host.js";
 import { createPnpmWorkspaceManager } from "./pnpm.js";
 import type { WorkspaceManager } from "./types.js";
@@ -9,7 +9,7 @@ describe("pnpm", () => {
   let pnpm: WorkspaceManager;
   beforeEach(async () => {
     host = createTestHost({
-      "proj/pnpm-workspace.yaml": dump({
+      "proj/pnpm-workspace.yaml": stringify({
         packages: ["packages/*"],
       }),
     });

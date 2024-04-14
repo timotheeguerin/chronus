@@ -1,6 +1,5 @@
 import "source-map-support/register.js";
 import yargs from "yargs";
-import { DynamicReporter, type Reporter } from "../reporters/index.js";
 import { resolvePath } from "../utils/path-utils.js";
 import { addChangeset } from "./commands/add-changeset.js";
 import { applyChangesets } from "./commands/apply-changesets.js";
@@ -10,6 +9,7 @@ import { pack } from "./commands/pack.js";
 import { publish } from "./commands/publish.js";
 import { showStatus } from "./commands/show-status.js";
 import { verifyChangeset } from "./commands/verify-changeset.js";
+import { withErrors, withErrorsAndReporter } from "./utils.js";
 
 export const DEFAULT_PORT = 3000;
 
@@ -36,7 +36,7 @@ async function main() {
           description:
             "Verify since the the given branch. Default to the baseBranch configured in .chronus/config.yaml",
         }),
-      (args) => addChangeset({ cwd: process.cwd(), since: args.since }),
+      withErrors((args) => addChangeset({ cwd: process.cwd(), since: args.since })),
     )
     .command(
       "verify",
@@ -47,7 +47,7 @@ async function main() {
           description:
             "Verify since the the given branch. Default to the baseBranch configured in .chronus/config.yaml",
         }),
-      (args) => verifyChangeset({ cwd: process.cwd(), since: args.since }),
+      withErrors((args) => verifyChangeset({ cwd: process.cwd(), since: args.since })),
     )
     .command(
       "version",
@@ -64,7 +64,7 @@ async function main() {
             array: true,
             description: "Only bump the specified package(s)",
           }),
-      (args) => applyChangesets(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only }),
+      withErrors((args) => applyChangesets(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only })),
     )
     .command(
       "status",
@@ -81,7 +81,7 @@ async function main() {
             array: true,
             description: "Only bump the specified package(s)",
           }),
-      (args) => showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only }),
+      withErrors((args) => showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only })),
     )
     .command(
       ["ls-pending-publish", "list-pending-publish"],
@@ -107,7 +107,7 @@ async function main() {
             type: "string",
             description: "Generate a change log for a specific policy",
           }),
-      withReporter((args) =>
+      withErrorsAndReporter((args) =>
         changelog({
           reporter: args.reporter,
           dir: process.cwd(),
@@ -124,7 +124,7 @@ async function main() {
           type: "string",
           description: "Containing directory for the packed packages. Default to each package own directory.",
         }),
-      withReporter((args) =>
+      withErrorsAndReporter((args) =>
         pack({
           reporter: args.reporter,
           dir: process.cwd(),
@@ -164,7 +164,7 @@ async function main() {
             type: "string",
             description: "Save the list of published packages.",
           }),
-      withReporter((args) =>
+      withErrorsAndReporter((args) =>
         publish({
           reporter: args.reporter,
           pattern: args.include ? resolvePath(process.cwd(), args.include) : process.cwd(),
@@ -181,13 +181,6 @@ async function main() {
 
 function resolveCliPath(path: string) {
   return resolvePath(process.cwd(), path);
-}
-
-function withReporter<T>(fn: (reporter: T & { reporter: Reporter }) => Promise<void>): (args: T) => Promise<void> {
-  return (args: T) => {
-    const reporter = new DynamicReporter();
-    return fn({ reporter, ...args });
-  };
 }
 
 main().catch((error) => {

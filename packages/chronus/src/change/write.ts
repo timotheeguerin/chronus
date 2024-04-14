@@ -1,4 +1,4 @@
-import { dump } from "js-yaml";
+import { stringify } from "yaml";
 import type { ChronusHost } from "../utils/host.js";
 import { isDefined } from "../utils/misc-utils.js";
 import { getDirectoryPath } from "../utils/path-utils.js";
@@ -16,7 +16,7 @@ export function printChangeDescription(change: Omit<ChangeDescription, "id">, op
     packages: change.packages,
   };
   const frontMatterComment = options?.frontMatterComment && `# ${options?.frontMatterComment}`;
-  return ["---", frontMatterComment, dump(frontMatter, { quotingType: '"' }).trimEnd(), "---", "", change.content]
+  return ["---", frontMatterComment, stringify(frontMatter).trimEnd(), "---", "", change.content]
     .filter(isDefined)
     .join("\n");
 }

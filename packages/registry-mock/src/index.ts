@@ -2,8 +2,8 @@ import { spawn, type SpawnOptions } from "child_process";
 import { randomBytes } from "crypto";
 import { readFileSync } from "fs";
 import { mkdir, readFile, writeFile } from "fs/promises";
-import { dump, load } from "js-yaml";
 import { dirname, join } from "path";
+import { parse, stringify } from "yaml";
 import * as locations from "./locations.js";
 
 const REGISTRY_MOCK_PORT = locations.REGISTRY_MOCK_PORT;
@@ -30,11 +30,11 @@ async function tempdir(): Promise<string> {
 export async function prepare() {
   const storage = await tempdir();
   const content = await readFile(join(locations.registry(), "config.yaml"));
-  const config: any = load(content.toString());
+  const config: any = parse(content.toString());
   await mkdir(dirname(locations.configPath()), { recursive: true });
   await writeFile(
     locations.configPath(),
-    dump({
+    stringify({
       ...config,
       storage,
       uplinks: {

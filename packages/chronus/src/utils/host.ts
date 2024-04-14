@@ -1,12 +1,11 @@
-/**
- *
- */
+import type { TextFile } from "../file/types.js";
+
 export interface ChronusHost {
   /**
    * Read a file.
    * @param path Path to the file.
    */
-  readFile(path: string): Promise<File>;
+  readFile(path: string): Promise<TextFile>;
 
   /**
    * Write the file.
@@ -42,9 +41,4 @@ export interface GlobOptions {
   baseDir: string;
   onlyDirectories?: boolean;
   ignore?: string[];
-}
-
-export interface File {
-  readonly content: string;
-  readonly path: string;
 }

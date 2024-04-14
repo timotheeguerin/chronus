@@ -1,4 +1,4 @@
-import { load } from "js-yaml";
+import { parse } from "yaml";
 import { ChronusError, isDefined, isPathAccessible, joinPaths, lookup, type ChronusHost } from "../utils/index.js";
 import type { Package, Workspace, WorkspaceManager } from "./types.js";
 import { tryLoadNodePackage } from "./utils.js";
@@ -32,7 +32,7 @@ export function createRushWorkspaceManager(host: ChronusHost): WorkspaceManager 
       const workspaceFilePath = joinPaths(root, workspaceFileName);
 
       const file = await host.readFile(workspaceFilePath);
-      const config: RushJson = load(file.content) as any;
+      const config: RushJson = parse(file.content) as any;
 
       if (config.projects === undefined) {
         throw new ChronusError(`projects entry missing in ${workspaceFileName}`);

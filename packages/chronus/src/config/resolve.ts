@@ -30,7 +30,7 @@ export async function resolveConfig(host: ChronusHost, dir: string): Promise<Chr
   } catch (e) {
     throw new ChronusError(`Could not find ${configFileName}`);
   }
-  const useConfig = parseConfig(file.content);
+  const useConfig = parseConfig(file);
   return {
     workspaceRoot: root,
     ...useConfig,

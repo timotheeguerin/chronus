@@ -1,9 +1,9 @@
 import { REGISTRY_MOCK_PORT, prepare, start } from "@chronus/registry-mock";
 import type { ChildProcess } from "child_process";
 import { mkdir, readFile, writeFile } from "fs/promises";
-import { dump } from "js-yaml";
 import pacote, { type Manifest } from "pacote";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { stringify } from "yaml";
 import { createTestDir, type TestDir } from "../testing/test-dir.js";
 import { execAsync } from "../utils/exec-async.js";
 import { resolvePath } from "../utils/path-utils.js";
@@ -201,7 +201,7 @@ describe("with pnpm", () => {
   it("replace workspace: annotation with real versions", { timeout: 20_000 }, async () => {
     await testDir.addFile(
       "pnpm-workspace.yaml",
-      dump({
+      stringify({
         packages: ["packages/*"],
       }),
     );

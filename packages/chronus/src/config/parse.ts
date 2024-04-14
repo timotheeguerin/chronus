@@ -1,5 +1,6 @@
-import { load } from "js-yaml";
 import z from "zod";
+import type { TextFile } from "../file/types.js";
+import { parseYaml, validateYamlFile } from "../yaml/index.js";
 import type { ChronusUserConfig } from "./types.js";
 
 const versionPolicySchema = z.union([
@@ -32,7 +33,7 @@ const schema = z.object({
   changedFiles: z.array(z.string()).optional(),
 });
 
-export function parseConfig(content: string): ChronusUserConfig {
-  const yaml = load(content);
-  return schema.parse(yaml);
+export function parseConfig(content: string | TextFile): ChronusUserConfig {
+  const parsed = parseYaml(content);
+  return validateYamlFile(parsed, schema);
 }
