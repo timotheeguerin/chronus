@@ -58,15 +58,5 @@
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.6.0",
     "vitest": "^1.5.0"
-  },
-  "syncpack": {
-    "dependencyTypes": [
-      "dev",
-      "overrides",
-      "peer",
-      "pnpmOverrides",
-      "prod",
-      "resolutions"
-    ]
   }
 }
