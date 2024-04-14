@@ -8,13 +8,14 @@ try {
 import { getOctokit, context as githubActionContext } from "@actions/github";
 import type { ChangeStatus, ChronusWorkspace, PackageStatus } from "@chronus/chronus";
 import { NodeChronusHost, getWorkspaceStatus, loadChronusWorkspace } from "@chronus/chronus";
-import { printChangeDescription, resolveChangeRelativePath } from "@chronus/chronus/change";
+import { printChangeDescription, resolveChangeRelativePath, type ChangeDescription } from "@chronus/chronus/change";
+import { collapsibleSection } from "./markdown.js";
 
 interface Context {
-  repoName: string;
-  repoOwner: string;
-  prNumber: number;
-  headRef: string;
+  repoName?: string;
+  repoOwner?: string;
+  prNumber?: number;
+  headRef?: string;
   prTitle?: string;
 }
 
@@ -58,14 +59,14 @@ function getAzureDevopsContext(): Context | undefined {
 
 function getGenericContext(): Context | undefined {
   const values = {
-    prNumber: process.env["GH_PR_NUMBER"],
-    repoName: process.env["GH_REPO_OWNER"],
-    repoOwner: process.env["GH_REPO_REPO"],
+    prNumber: process.env["GH_PR_NUMBER"] ? Number(process.env["GH_PR_NUMBER"]) : undefined,
+    repoOwner: process.env["GH_REPO_OWNER"],
+    repoName: process.env["GH_REPO_NAME"],
     headRef: process.env["GH_PR_HEAD_REF"],
     prTitle: process.env["GH_PR_TITLE"],
   };
 
-  return values.prNumber && values.repoName && values.repoOwner && values.headRef ? (values as any) : undefined;
+  return values;
 }
 
 const magicString = "<!--chronus-github-change-commenter-->";
@@ -82,13 +83,13 @@ async function main() {
   }
 
   if (context?.repoOwner === undefined) {
-    throw new Error("PR number not found. Set $GH_REPO_OWNER");
+    throw new Error("Repo owner not found. Set $GH_REPO_OWNER");
   }
   if (!context?.repoName) {
-    throw new Error("PR number not found. Set $GH_REPO_REPO");
+    throw new Error("Repo name not found. Set $GH_REPO_NAME");
   }
   if (!context?.headRef) {
-    throw new Error("PR number not found. Set $GH_PR_HEAD_REF");
+    throw new Error("Head ref not found. Set $GH_PR_HEAD_REF");
   }
 
   const github = getOctokit(token);
@@ -145,7 +146,7 @@ function resolveComment(
 
   if (undocummentedPackages.length > 0) {
     content.push(
-      `:x: There is undocummented changes. Run \`chronus add\` to add a changeset or [click here](${addChangeSetUrl(workspace, undocummentedPackages, pr, context)}).`,
+      `:x: There is undocummented changes. Run \`chronus add\` to add a changeset or [click here](${newChangeDescriptionUrl(workspace, undocummentedPackages, pr, context)}).`,
     );
     content.push("");
     content.push(`**The following packages have changes but are not documented.**`);
@@ -162,13 +163,36 @@ function resolveComment(
       }
     }
     content.push("");
-  } else {
+    content.push(showChanges(status, pr, context));
+  } else if (documentedPackages.length > 0) {
     content.push(`All changed packages have been documented.`);
+    for (const pkg of documentedPackages) {
+      content.push(` - :white_check_mark: \`${pkg.package.name}\``);
+    }
+    content.push("");
+    content.push(showChanges(status, pr, context));
+  } else {
+    content.push(`No changes needing a change description found.`);
   }
   return content.join("\n");
 }
 
-function addChangeSetUrl(
+function showChanges(status: ChangeStatus, pr: any, context: Context) {
+  const summaries = status.all.changeDescriptions
+    .flatMap((change) => {
+      return change.packages.flatMap((pkgName) => {
+        const editLink = `[✏️](${editChangeDescriptionUrl(change, pr, context)})`;
+        return [
+          `### \`${pkgName}\` - _${change.changeKind.name}_ ${editLink}`,
+          change.content.split("\n").map((x) => `> ${x}`),
+        ];
+      });
+    })
+    .join("\n");
+  return collapsibleSection("Show changes", summaries);
+}
+
+function newChangeDescriptionUrl(
   workspace: ChronusWorkspace,
   undocummentedPackages: PackageStatus[],
   pr: any,
@@ -196,6 +220,13 @@ function addChangeSetUrl(
     { frontMatterComment: `Change versionKind to one of: ${Object.keys(workspace.config.changeKinds).join(", ")}` },
   );
   return `${repoUrl}/new/${context.headRef}?filename=${filename}&value=${encodeURIComponent(content)}`;
+}
+
+function editChangeDescriptionUrl(change: ChangeDescription, pr: any, context: Context) {
+  const repoUrl = pr.head.repo.html_url;
+  const prRef = `/${context.repoOwner}/${context.repoName}/pull/${context.prNumber}`;
+
+  return `${repoUrl}/edit/${context.headRef}/.chronus/changes/${change.id}.md?pr=${prRef}`;
 }
 
 function getDefaultChangeKind(workspace: ChronusWorkspace): any {

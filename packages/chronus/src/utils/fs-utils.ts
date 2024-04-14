@@ -24,7 +24,7 @@ export async function lookup(
       return current;
     }
     last = current;
-    current = getDirectoryPath(startDir);
+    current = getDirectoryPath(current);
   }
   return undefined;
 }
