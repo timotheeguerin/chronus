@@ -1,5 +1,9 @@
 # @chronus/github-pr-commenter
 
+## 0.4.1
+
+No changes, version bump only.
+
 ## 0.4.0
 
 ### Features
