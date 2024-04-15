@@ -13,6 +13,7 @@ export interface PublishOptions {
   readonly access?: "public" | "restricted";
   readonly registry?: string;
   readonly engine?: "pnpm" | "npm";
+  readonly tag?: string;
   readonly reportSummary?: string;
 }
 
@@ -80,7 +81,7 @@ async function publishWorkspacePackages(
   const results: Record<string, PublishPackageResult> = {};
 
   for (const pkg of packageToPublish) {
-    await reporter.task(`${pc.yellow(pkg.name)} publishing`, async (task) => {
+    await reporter.task(`${pc.yellow(pkg.name)} publishing at tag ${others.tag ?? "latest"}`, async (task) => {
       const result = await publishPackage(pkg, resolvePath(workspace.path, pkg.relativePath), others);
       results[pkg.name] = result;
       if (result.published) {
@@ -110,7 +111,7 @@ async function publishTarballs(
   const results: Record<string, PublishPackageResult> = {};
 
   for (const pkg of unpublished) {
-    await reporter.task(`${pc.yellow(pkg.name)} publishing`, async (task) => {
+    await reporter.task(`${pc.yellow(pkg.name)} publishing at tag ${others.tag ?? "latest"}`, async (task) => {
       const result = await publishPackage(pkg, pkg.tarballPath, others);
       results[pkg.name] = result;
       if (result.published) {

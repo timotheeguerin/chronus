@@ -171,6 +171,7 @@ async function main() {
           access: args.access,
           registry: args.registry,
           engine: args.engine,
+          tag: args.tag,
           reportSummary: args.reportSummary && resolvePath(process.cwd(), args.reportSummary),
         }),
       ),
