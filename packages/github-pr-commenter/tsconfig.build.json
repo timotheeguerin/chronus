@@ -4,5 +4,5 @@
     "rootDir": "./src"
   },
   "references": [],
-  "exclude": ["**/*.test.*", "test/**/*"]
+  "include": ["src/**/*"]
 }

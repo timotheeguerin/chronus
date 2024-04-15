@@ -9,6 +9,7 @@ words:
   - EOTP
   - ETARGET
   - npmjs
+  - onwarn
   - pacote
   - picocolors
   - timotheeguerin
