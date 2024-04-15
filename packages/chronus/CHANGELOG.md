@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.10.1
+
+### Bug Fixes
+
+- [#165](https://github.com/timotheeguerin/chronus/pull/165) Fix `--tag` not respected
+
+
 ## 0.10.0
 
 ### Features
