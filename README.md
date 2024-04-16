@@ -12,20 +12,20 @@ chronus goal is to provide changelog management. It was heavily inspired by [cha
 
 ## Documentation
 
-- [CLI](cli.md)
+- [CLI](./docs/cli.md)
 
 Chronus functionalities:
 
-- [Configure change kinds](change-kinds.md) _Use a different set of change kinds from `major`, `minor`, `patch`_
-- [Filter files needing changelogs](changed-files-filter.md) _Ignore certain files from needing a changelog entry_
+- [Configure change kinds](./docs/change-kinds.md) _Use a different set of change kinds from `major`, `minor`, `patch`_
+- [Filter files needing changelogs](./docs/changed-files-filter.md) _Ignore certain files from needing a changelog entry_
 
 ## Develop
 
-- [CLI](cli.md)
+- [CLI](./docs/cli.md)
 
 Chronus functionalities:
 
-- [Configure change kinds](change-kinds.md) _Use a different set of change kinds from `major`, `minor`, `patch`_
+- [Configure change kinds](./docs/change-kinds.md) _Use a different set of change kinds from `major`, `minor`, `patch`_
 
 ### Requirements
 
