@@ -168,8 +168,8 @@ importers:
         specifier: workspace:*
         version: link:../chronus
       '@octokit/graphql':
-        specifier: ^8.1.0
-        version: 8.1.0
+        specifier: ^8.1.1
+        version: 8.1.1
       cross-spawn:
         specifier: ^7.0.3
         version: 7.0.3
@@ -1203,8 +1203,8 @@ packages:
       '@octokit/types': 13.1.0
       universal-user-agent: 6.0.1
 
-  /@octokit/graphql@8.1.0:
-    resolution: {integrity: sha512-XDvj6GcUnQYgbCLXElt3vZDzNIPGvGiwxQO2XzsvfVUjebGh0E5eCD/1My9zUGSNKaGVZitVuO8LMziGmoFryg==}
+  /@octokit/graphql@8.1.1:
+    resolution: {integrity: sha512-ukiRmuHTi6ebQx/HFRCXKbDlOh/7xEV6QUXaE7MJEKGNAncGI/STSbOkl12qVXZrfZdpXctx5O9X1AIaebiDBg==}
     engines: {node: '>= 18'}
     dependencies:
       '@octokit/request': 9.0.1
