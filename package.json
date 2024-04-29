@@ -51,7 +51,7 @@
     "rimraf": "^5.0.5",
     "syncpack": "^12.3.1",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^7.6.0",
+    "typescript-eslint": "^7.7.1",
     "vitest": "^1.5.0"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
