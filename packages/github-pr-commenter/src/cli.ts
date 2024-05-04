@@ -5,69 +5,13 @@ try {
 } catch {
   // package only present in dev.
 }
-import { getOctokit, context as githubActionContext } from "@actions/github";
 import type { ChangeStatus, ChronusWorkspace, PackageStatus } from "@chronus/chronus";
 import { NodeChronusHost, getWorkspaceStatus, loadChronusWorkspace } from "@chronus/chronus";
 import { printChangeDescription, resolveChangeRelativePath, type ChangeDescription } from "@chronus/chronus/change";
+import { Octokit } from "octokit";
+import { getContext } from "./contexts/index.js";
+import type { Context } from "./contexts/types.js";
 import { collapsibleSection } from "./markdown.js";
-
-interface Context {
-  repoName?: string;
-  repoOwner?: string;
-  prNumber?: number;
-  headRef?: string;
-  prTitle?: string;
-}
-
-function getGithubContext(): Context | undefined {
-  // eslint-disable-next-line no-console
-  console.log("Github context", githubActionContext);
-
-  if (
-    githubActionContext === undefined ||
-    (githubActionContext.eventName !== "pull_request" && githubActionContext.eventName !== "pull_request_target")
-  ) {
-    return undefined;
-  }
-  if (githubActionContext.payload.pull_request === undefined) {
-    throw new Error("Cannot run outside of a pull request");
-  }
-  return {
-    repoName: githubActionContext.repo.repo,
-    repoOwner: githubActionContext.repo.owner,
-    prNumber: githubActionContext.issue.number,
-    headRef: githubActionContext.payload.pull_request.head.ref,
-    prTitle: githubActionContext.payload.pull_request.title,
-  };
-}
-
-function getAzureDevopsContext(): Context | undefined {
-  const repo = process.env["BUILD_REPOSITORY_NAME"];
-  if (repo === undefined) {
-    return undefined;
-  }
-  const [repoOwner, repoName] = repo.split("/", 2);
-  const values = {
-    prNumber: process.env["SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"],
-    repoName,
-    repoOwner,
-    headRef: process.env["SYSTEM_PULLREQUEST_SOURCEBRANCH"],
-  };
-
-  return values.prNumber && values.repoName && values.repoOwner && values.headRef ? (values as any) : undefined;
-}
-
-function getGenericContext(): Context | undefined {
-  const values = {
-    prNumber: process.env["GH_PR_NUMBER"] ? Number(process.env["GH_PR_NUMBER"]) : undefined,
-    repoOwner: process.env["GH_REPO_OWNER"],
-    repoName: process.env["GH_REPO_NAME"],
-    headRef: process.env["GH_PR_HEAD_REF"],
-    prTitle: process.env["GH_PR_TITLE"],
-  };
-
-  return values;
-}
 
 const magicString = "<!--chronus-github-change-commenter-->";
 async function main() {
@@ -75,29 +19,16 @@ async function main() {
   if (!token) {
     throw new Error("GITHUB_TOKEN environment variable is not set");
   }
-  const context = getGithubContext() ?? getAzureDevopsContext() ?? getGenericContext();
-  // eslint-disable-next-line no-console
-  console.log("Resolved context", context);
-  if (!context?.prNumber) {
-    throw new Error("PR number not found. Set $GH_PR_NUMBER");
-  }
+  const context = getContext();
 
-  if (context?.repoOwner === undefined) {
-    throw new Error("Repo owner not found. Set $GH_REPO_OWNER");
-  }
-  if (!context?.repoName) {
-    throw new Error("Repo name not found. Set $GH_REPO_NAME");
-  }
-  if (!context?.headRef) {
-    throw new Error("Head ref not found. Set $GH_PR_HEAD_REF");
-  }
-
-  const github = getOctokit(token);
+  const github = new Octokit({
+    auth: `token ${token}`,
+  });
 
   const pr = await github.rest.pulls.get({
     pull_number: context.prNumber,
-    owner: context.repoOwner,
-    repo: context.repoName,
+    owner: context.repo.owner,
+    repo: context.repo.name,
   });
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, process.cwd());
@@ -111,23 +42,23 @@ async function main() {
 
   const comments = await github.rest.issues.listComments({
     issue_number: context.prNumber,
-    owner: context.repoOwner,
-    repo: context.repoName,
+    owner: context.repo.owner,
+    repo: context.repo.name,
   });
   const existingComment = comments.data.find((x) => x.body?.includes(magicString));
 
   if (existingComment) {
     await github.rest.issues.updateComment({
       comment_id: existingComment.id,
-      owner: context.repoOwner,
-      repo: context.repoName,
+      owner: context.repo.owner,
+      repo: context.repo.name,
       body: content,
     });
   } else {
     await github.rest.issues.createComment({
       issue_number: context.prNumber,
-      owner: context.repoOwner,
-      repo: context.repoName,
+      owner: context.repo.owner,
+      repo: context.repo.name,
       body: content,
     });
   }
@@ -224,7 +155,7 @@ function newChangeDescriptionUrl(
 
 function editChangeDescriptionUrl(change: ChangeDescription, pr: any, context: Context) {
   const repoUrl = pr.head.repo.html_url;
-  const prRef = `/${context.repoOwner}/${context.repoName}/pull/${context.prNumber}`;
+  const prRef = `/${context.repo.owner}/${context.repo.name}/pull/${context.prNumber}`;
 
   return `${repoUrl}/edit/${context.headRef}/.chronus/changes/${change.id}.md?pr=${prRef}`;
 }

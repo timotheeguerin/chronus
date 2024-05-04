@@ -32,7 +32,6 @@
     "test:watch": "vitest -w"
   },
   "dependencies": {
-    "@actions/github": "^6.0.0",
     "@chronus/chronus": "workspace:*",
     "@octokit/graphql": "^8.1.1",
     "cross-spawn": "^7.0.3",
