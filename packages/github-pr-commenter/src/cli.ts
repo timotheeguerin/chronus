@@ -8,7 +8,7 @@ try {
 import type { ChangeStatus, ChronusWorkspace, PackageStatus } from "@chronus/chronus";
 import { NodeChronusHost, getWorkspaceStatus, loadChronusWorkspace } from "@chronus/chronus";
 import { printChangeDescription, resolveChangeRelativePath, type ChangeDescription } from "@chronus/chronus/change";
-import { Octokit } from "octokit";
+import { Octokit } from "@octokit/rest";
 import { getContext } from "./contexts/index.js";
 import type { Context } from "./contexts/types.js";
 import { collapsibleSection } from "./markdown.js";

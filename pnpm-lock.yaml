@@ -207,12 +207,6 @@ importers:
       '@octokit/rest':
         specifier: ^20.1.1
         version: 20.1.1
-      human-id:
-        specifier: ^4.1.1
-        version: 4.1.1
-      octokit:
-        specifier: ^3.2.0
-        version: 3.2.0
     devDependencies:
       '@types/node':
         specifier: ^20.12.7
@@ -4152,11 +4146,6 @@ packages:
       debug: 4.3.4
     transitivePeerDependencies:
       - supports-color
-    dev: false
-
-  /human-id@4.1.1:
-    resolution: {integrity: sha512-3gKm/gCSUipeLsRYZbbdA1BD83lBoWUkZ7G9VFrhWPAU76KwYo5KR8V28bpoPm/ygy0x5/GCbpRQdY7VLYCoIg==}
-    hasBin: true
     dev: false
 
   /human-signals@5.0.0:
