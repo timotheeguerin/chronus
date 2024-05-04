@@ -13,7 +13,7 @@ import { getContext } from "./contexts/index.js";
 import type { Context } from "./contexts/types.js";
 import { collapsibleSection } from "./markdown.js";
 
-const magicString = "<!--chronus-github-change-commenter-->";
+const magicString = "<!--chronus-github-change-commenter TEST REVERT-->";
 async function main() {
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
