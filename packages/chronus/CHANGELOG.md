@@ -1,5 +1,26 @@
 # @chronus/chronus
 
+## 0.10.1
+
+### Bug Fixes
+
+- [#165](https://github.com/timotheeguerin/chronus/pull/165) Fix `--tag` not respected
+
+
+## 0.10.0
+
+### Features
+
+- [#161](https://github.com/timotheeguerin/chronus/pull/161) Add validation for version policies referencing packages not found in workspace
+
+### Bug Fixes
+
+- [#159](https://github.com/timotheeguerin/chronus/pull/159) Improve error display in the CLI
+- [#162](https://github.com/timotheeguerin/chronus/pull/162) Remove prettier and vitest from dependencies
+- [#155](https://github.com/timotheeguerin/chronus/pull/155) Fix Shouldn't try to build dependent graph with ignored packages
+- [#163](https://github.com/timotheeguerin/chronus/pull/163) Resolve chronus config in parent directory
+
+
 ## 0.9.0
 
 ### Features

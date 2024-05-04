@@ -1,5 +1,16 @@
 # @chronus/github-pr-commenter
 
+## 0.4.1
+
+No changes, version bump only.
+
+## 0.4.0
+
+### Features
+
+- [#163](https://github.com/timotheeguerin/chronus/pull/163) Add a collapsible section rendering all the change descriptions in the PR
+
+
 ## 0.3.5
 
 No changes, version bump only.

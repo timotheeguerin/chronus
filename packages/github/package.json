@@ -1,6 +1,6 @@
 {
   "name": "@chronus/github",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "type": "module",
   "description": "chronus",
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
@@ -34,7 +34,7 @@
   "dependencies": {
     "@actions/github": "^6.0.0",
     "@chronus/chronus": "workspace:*",
-    "@octokit/graphql": "^8.1.0",
+    "@octokit/graphql": "^8.1.1",
     "cross-spawn": "^7.0.3",
     "octokit": "^3.2.0",
     "picocolors": "^1.0.0",
