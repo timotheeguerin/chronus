@@ -204,9 +204,6 @@ importers:
       '@chronus/chronus':
         specifier: workspace:*
         version: link:../chronus
-      '@octokit/auth-action':
-        specifier: ^5.1.0
-        version: 5.1.0
       '@octokit/rest':
         specifier: ^20.1.1
         version: 20.1.1
@@ -1100,14 +1097,6 @@ packages:
       '@octokit/webhooks': 12.2.0
     dev: false
 
-  /@octokit/auth-action@5.1.0:
-    resolution: {integrity: sha512-37Utgi8/r7B6VnCgt0H+mIhpacmE413VfkHvPS2NXHCWe/qnBWtgOiwgPJMFHRVAnPFbLnXast7VmQVXA8TrPg==}
-    engines: {node: '>= 18'}
-    dependencies:
-      '@octokit/auth-token': 5.1.0
-      '@octokit/types': 13.1.0
-    dev: false
-
   /@octokit/auth-app@6.1.0:
     resolution: {integrity: sha512-UlCxZAlNM1FKkRdSJjGo/Ly2rGKGeuW49sLFuii++A+Yylv+Dxgl/eCEBP46Cjr1Xuqpc4wTH0IDFXCztaiFuA==}
     engines: {node: '>= 18'}
@@ -1161,11 +1150,6 @@ packages:
   /@octokit/auth-token@4.0.0:
     resolution: {integrity: sha512-tY/msAuJo6ARbK6SPIxZrPBms3xPbfwBrulZe0Wtr/DIY9lje2HeV1uoebShn6mx7SjCHif6EjMvoREj+gZ+SA==}
     engines: {node: '>= 18'}
-
-  /@octokit/auth-token@5.1.0:
-    resolution: {integrity: sha512-JH+5PhVMjpbBuKlykiseCHa2uZdEd8Qm/N9Kpqncx4o/wkGF38gqVjIP2gZqfaP3nxFZPpg0FwGClKzBi6nS2g==}
-    engines: {node: '>= 18'}
-    dev: false
 
   /@octokit/auth-unauthenticated@5.0.1:
     resolution: {integrity: sha512-oxeWzmBFxWd+XolxKTc4zr+h3mt+yofn4r7OfoIkR/Cj/o70eEGmPsFbueyJE2iBAGpjgTnEOKM3pnuEGVmiqg==}
