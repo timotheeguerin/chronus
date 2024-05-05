@@ -30,10 +30,15 @@ jobs:
       - run: pnpm build
         name: Build
 
-      - run: node ./packages/github-pr-commenter/cmd/cli.mjs verify
+      - name: Create PR Comment
+        run: node ./packages/github/cmd/cli.mjs verify --out ./.comment/comment.md
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        name: Create/update comment
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: comment
+          path: .comment/
 
       - run: node ./packages/chronus/cmd/cli.mjs verify
         name: Verify changes
