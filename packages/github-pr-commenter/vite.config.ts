@@ -2,7 +2,7 @@ import { builtinModules } from "module";
 import path from "path";
 import { defineConfig } from "vite";
 
-const externals = new Set([...builtinModules, "globby"]);
+const externals = new Set([...builtinModules, "@chronus/github", "source-map-support/register.js"]);
 export default defineConfig({
   build: {
     target: "node20",

@@ -29,7 +29,6 @@
     "test:watch": "vitest -w"
   },
   "dependencies": {
-    "@chronus/chronus": "workspace:*",
     "@chronus/github": "workspace:*",
     "@octokit/rest": "^20.1.1"
   },
