@@ -8,7 +8,7 @@ try {
 import { getPullRequestContext, resolveChangeStatusCommentForPr } from "@chronus/github";
 import { Octokit } from "@octokit/rest";
 
-const magicString = "<!--chronus-github-change-commenter TEST REVERT-->";
+const magicString = "<!--chronus-github-change-commenter-->";
 async function main() {
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
