@@ -34,6 +34,7 @@
   "dependencies": {
     "@chronus/chronus": "workspace:*",
     "@octokit/graphql": "^8.1.1",
+    "@octokit/rest": "^20.1.1",
     "cross-spawn": "^7.0.3",
     "octokit": "^3.2.0",
     "picocolors": "^1.0.0",

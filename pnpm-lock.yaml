@@ -167,6 +167,9 @@ importers:
       '@octokit/graphql':
         specifier: ^8.1.1
         version: 8.1.1
+      '@octokit/rest':
+        specifier: ^20.1.1
+        version: 20.1.1
       cross-spawn:
         specifier: ^7.0.3
         version: 7.0.3
@@ -204,6 +207,9 @@ importers:
       '@chronus/chronus':
         specifier: workspace:*
         version: link:../chronus
+      '@chronus/github':
+        specifier: workspace:*
+        version: link:../github
       '@octokit/rest':
         specifier: ^20.1.1
         version: 20.1.1

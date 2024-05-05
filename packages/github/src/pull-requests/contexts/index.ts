@@ -1,9 +1,12 @@
 import { getAzureDevopsContext } from "./azure-devops.js";
 import { getGenericContext } from "./generic.js";
 import { getGithubContext } from "./github.js";
-import type { Context } from "./types.js";
+import type { PullRequestContext } from "./types.js";
 
-export function getContext(): Context {
+/**
+ * Resolve the context for the current PR resolving automatically from different CI environments or manually set environment variables.
+ */
+export function getPullRequestContext(): PullRequestContext {
   const context = getGithubContext() ?? getAzureDevopsContext() ?? getGenericContext();
 
   // eslint-disable-next-line no-console

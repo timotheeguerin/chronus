@@ -1,4 +1,4 @@
-export interface Context {
+export interface PullRequestContext {
   readonly repo: {
     readonly name: string;
     readonly owner: string;
