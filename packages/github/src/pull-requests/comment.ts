@@ -18,7 +18,7 @@ const magicString = "<!--chronus-github-change-commenter TEST REVERT-->";
  * Resolve the github comment markdown for the current PR.
  */
 export async function resolveChangeStatusCommentForPr(context: PullRequestContext) {
-  const token = getGithubToken();
+  const token = await getGithubToken();
   const github = new Octokit({
     auth: `token ${token}`,
   });
