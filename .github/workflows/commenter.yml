@@ -10,7 +10,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  changes:
+  commenter:
     if: ${{ github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'publish/') }}
     runs-on: ubuntu-latest
     steps:
