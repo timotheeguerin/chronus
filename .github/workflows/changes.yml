@@ -36,6 +36,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - uses: actions/upload-artifact@v4
+        retention-days: 1 # Only need for the next workflow so don't need to waste storage
         with:
           name: comment
           path: .comment/
