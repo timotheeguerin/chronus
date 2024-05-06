@@ -8,8 +8,8 @@ try {
 }
 import type { ChangeStatusComment } from "@chronus/github/pull-requests";
 import { Octokit } from "@octokit/rest";
-import { readFile } from "fs/promises";
-import { parseArgs } from "util";
+import { readFile } from "node:fs/promises";
+import { parseArgs } from "node:util";
 
 const args = parseArgs({
   args: process.argv.slice(2),
