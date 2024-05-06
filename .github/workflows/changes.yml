@@ -30,10 +30,16 @@ jobs:
       - run: pnpm build
         name: Build
 
-      # - run: node ./packages/github-pr-commenter/cmd/cli.mjs verify
-      #   env:
-      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      #   name: Create/update comment
+      - name: Create PR Comment
+        run: node ./packages/github/cmd/cli.mjs get-pr-comment --out ./.comment/comment.md
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: comment
+          path: .comment/
+          retention-days: 1 # Only need for the next workflow so don't need to waste storageretention-days
 
       - run: node ./packages/chronus/cmd/cli.mjs verify
         name: Verify changes

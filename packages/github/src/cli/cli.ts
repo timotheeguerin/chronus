@@ -2,6 +2,7 @@ import { resolvePath } from "@chronus/chronus/utils";
 import "source-map-support/register.js";
 import yargs from "yargs";
 import { createRelease } from "./actions/create-release.js";
+import { getPrComment } from "./actions/get-pr-comment.js";
 
 export const DEFAULT_PORT = 3000;
 
@@ -64,6 +65,12 @@ async function main() {
           dryRun: args["dry-run"],
           workspaceDir: process.cwd(),
         }),
+    )
+    .command(
+      "get-pr-comment",
+      "Get PR comment",
+      (cmd) => cmd.option("out", { type: "string", description: "Output file" }).demandOption("out"),
+      (args) => getPrComment({ out: resolvePath(process.cwd(), args.out) }),
     )
 
     .demandCommand(1, "You need at least one command before moving on")

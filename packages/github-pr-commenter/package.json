@@ -21,6 +21,7 @@
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
     "build": "tsc -p ./tsconfig.build.json",
+    "build-vite": "vite build",
     "clean": "rimraf dist/ .temp/",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
@@ -28,17 +29,16 @@
     "test:watch": "vitest -w"
   },
   "dependencies": {
-    "@actions/github": "^6.0.0",
-    "@chronus/chronus": "workspace:*",
-    "@octokit/auth-action": "^5.1.0",
-    "human-id": "^4.1.1",
-    "octokit": "^3.2.0"
+    "@chronus/github": "workspace:*",
+    "@octokit/rest": "^20.1.1"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
     "rimraf": "^5.0.5",
     "source-map-support": "^0.5.21",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vite": "^5.2.8",
+    "vite-bundle-visualizer": "^1.1.0"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
 }

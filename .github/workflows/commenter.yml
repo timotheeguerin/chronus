@@ -1,31 +1,42 @@
 name: Make Change Comment
 
 on:
-  pull_request_target:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Check Changes"]
+    types:
+      - completed
 
 permissions:
   pull-requests: write
 
 jobs:
-  changes:
+  commenter:
     if: ${{ github.actor != 'dependabot[bot]' && !startsWith(github.head_ref, 'publish/') }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0 ## Needed for changelog
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-
-      # DO NOT BUILD ANYTHING FROM THE PR HERE https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+          name: comment
       - run: |
-          npm install -g @chronus/github-pr-commenter 
-          chronus-github-pr-commenter
+          npm install -g @chronus/github-pr-commenter
+          chronus-github-pr-commenter --comment-file comment.md
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         name: Create/update comment
+
+      # - uses: actions/checkout@v4
+      #   with:
+      #     ref: ${{ github.event.pull_request.head.sha }}
+      #     fetch-depth: 0 ## Needed for changelog
+      # - name: Use Node.js 20.x
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 20.x
+
+      # # DO NOT BUILD ANYTHING FROM THE PR HERE https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+      # - run: |
+      #     npm install -g @chronus/github-pr-commenter
+      #     chronus-github-pr-commenter
+      #   env:
+      #     GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      #   name: Create/update comment
