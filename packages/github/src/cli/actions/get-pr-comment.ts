@@ -9,14 +9,15 @@ export interface GetPRCommentArgs {
 
 export async function getPrComment(args: GetPRCommentArgs) {
   const context = getPullRequestContext();
-  const content = await resolveChangeStatusCommentForPr(context);
+  const comment = await resolveChangeStatusCommentForPr(context);
 
+  const raw = JSON.stringify(comment, null, 2);
   if (args.out === undefined) {
-    log(content);
+    log(raw);
   } else {
     log("Writing comment to file: " + args.out);
     await mkdir(getDirectoryPath(args.out), { recursive: true });
-    await writeFile(args.out, content);
+    await writeFile(args.out, raw);
   }
 }
 
