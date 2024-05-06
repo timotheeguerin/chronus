@@ -17,6 +17,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: comment
+          run-id: ${{github.event.workflow_run.id }}
       - run: |
           npm install -g @chronus/github-pr-commenter
           chronus-github-pr-commenter --comment-file comment.md
