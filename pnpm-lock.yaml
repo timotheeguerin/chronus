@@ -81,8 +81,8 @@ importers:
         specifier: ^4.0.5
         version: 4.0.5
       pacote:
-        specifier: ^18.0.0
-        version: 18.0.0
+        specifier: ^18.0.4
+        version: 18.0.4
       picocolors:
         specifier: ^1.0.0
         version: 1.0.0
@@ -1039,8 +1039,8 @@ packages:
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dev: false
 
-  /@npmcli/package-json@5.0.3:
-    resolution: {integrity: sha512-cgsjCvld2wMqkUqvY+SZI+1ZJ7umGBYc9IAKfqJRKJCcs7hCQYxScUgdsyrRINk3VmdCYf9TXiLBHQ6ECTxhtg==}
+  /@npmcli/package-json@5.1.0:
+    resolution: {integrity: sha512-1aL4TuVrLS9sf8quCLerU3H9J4vtCtgu8VauYozrmEyU57i/EdKleCnsQ7vpnABIH6c9mnTxcH5sFkO3BlV8wQ==}
     engines: {node: ^16.14.0 || >=18.0.0}
     dependencies:
       '@npmcli/git': 5.0.6
@@ -1061,8 +1061,8 @@ packages:
       which: 4.0.0
     dev: false
 
-  /@npmcli/redact@1.1.0:
-    resolution: {integrity: sha512-PfnWuOkQgu7gCbnSsAisaX7hKOdZ4wSAhAzH3/ph5dSGau52kCRrMMGbiSQLwyTZpgldkZ49b0brkOr1AzGBHQ==}
+  /@npmcli/redact@2.0.0:
+    resolution: {integrity: sha512-SEjCPAVHWYUIQR+Yn03kJmrJjZDtJLYpj300m3HV9OTRZNpC5YpbMsM3eTkECyT4aWj8lDr9WeY6TWefpubtYQ==}
     engines: {node: ^16.14.0 || >=18.0.0}
     dev: false
 
@@ -1071,7 +1071,7 @@ packages:
     engines: {node: ^16.14.0 || >=18.0.0}
     dependencies:
       '@npmcli/node-gyp': 3.0.0
-      '@npmcli/package-json': 5.0.3
+      '@npmcli/package-json': 5.1.0
       '@npmcli/promise-spawn': 7.0.1
       node-gyp: 10.1.0
       proc-log: 4.0.0
@@ -5096,11 +5096,11 @@ packages:
       semver: 7.6.0
     dev: false
 
-  /npm-registry-fetch@16.2.1:
-    resolution: {integrity: sha512-8l+7jxhim55S85fjiDGJ1rZXBWGtRLi1OSb4Z3BPLObPuIaeKRlPRiYMSHU4/81ck3t71Z+UwDDl47gcpmfQQA==}
+  /npm-registry-fetch@17.0.1:
+    resolution: {integrity: sha512-fLu9MTdZTlJAHUek/VLklE6EpIiP3VZpTiuN7OOMCt2Sd67NCpSEetMaxHHEZiZxllp8ZLsUpvbEszqTFEc+wA==}
     engines: {node: ^16.14.0 || >=18.0.0}
     dependencies:
-      '@npmcli/redact': 1.1.0
+      '@npmcli/redact': 2.0.0
       make-fetch-happen: 13.0.0
       minipass: 7.0.4
       minipass-fetch: 3.0.4
@@ -5304,13 +5304,14 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /pacote@18.0.0:
-    resolution: {integrity: sha512-ma7uVt/q3Sb3XbLwUjOeClz+7feHjMOFegHn5whw++x+GzikZkAq/2auklSbRuy6EI2iJh1/ZqCpVaUcxRaeqQ==}
+  /pacote@18.0.4:
+    resolution: {integrity: sha512-V912GIsY6UJx+oL1o3MgFXSocUBiqVqVYuHhTxpuYSpBgfoM2kitpimil3xUGd7hU/soGGAoR5mc58daDys45A==}
     engines: {node: ^16.14.0 || >=18.0.0}
     hasBin: true
     dependencies:
       '@npmcli/git': 5.0.6
       '@npmcli/installed-package-contents': 2.0.2
+      '@npmcli/package-json': 5.1.0
       '@npmcli/promise-spawn': 7.0.1
       '@npmcli/run-script': 8.0.0
       cacache: 18.0.2
@@ -5319,11 +5320,9 @@ packages:
       npm-package-arg: 11.0.2
       npm-packlist: 8.0.2
       npm-pick-manifest: 9.0.0
-      npm-registry-fetch: 16.2.1
+      npm-registry-fetch: 17.0.1
       proc-log: 4.0.0
       promise-retry: 2.0.1
-      read-package-json: 7.0.0
-      read-package-json-fast: 3.0.2
       sigstore: 2.3.0
       ssri: 10.0.5
       tar: 6.2.1
@@ -5640,24 +5639,6 @@ packages:
   /react-is@18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
     dev: true
-
-  /read-package-json-fast@3.0.2:
-    resolution: {integrity: sha512-0J+Msgym3vrLOUB3hzQCuZHII0xkNGCtz/HJH9xZshwv9DbDwkw1KaE3gx/e2J5rpEY5rtOy6cyhKOPrkP7FZw==}
-    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
-    dependencies:
-      json-parse-even-better-errors: 3.0.1
-      npm-normalize-package-bin: 3.0.1
-    dev: false
-
-  /read-package-json@7.0.0:
-    resolution: {integrity: sha512-uL4Z10OKV4p6vbdvIXB+OzhInYtIozl/VxUBPgNkBuUi2DeRonnuspmaVAMcrkmfjKGNmRndyQAbE7/AmzGwFg==}
-    engines: {node: ^16.14.0 || >=18.0.0}
-    dependencies:
-      glob: 10.3.12
-      json-parse-even-better-errors: 3.0.1
-      normalize-package-data: 6.0.0
-      npm-normalize-package-bin: 3.0.1
-    dev: false
 
   /read-pkg-up@7.0.1:
     resolution: {integrity: sha512-zK0TB7Xd6JpCLmlLmufqykGE+/TlOePD6qKClNW7hHDKFh/J7/7gCWGR7joEQEW1bKq3a3yUZSObOoWLFQ4ohg==}
