@@ -18,6 +18,8 @@ jobs:
         with:
           name: comment
           run-id: ${{github.event.workflow_run.id }}
+          github-token: ${{secrets.GITHUB_TOKEN}}
+
       - run: |
           npm install -g @chronus/github-pr-commenter
           chronus-github-pr-commenter --comment-file comment.md
