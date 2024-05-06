@@ -1,1 +1,1 @@
-export { getPullRequestContext, resolveChangeStatusCommentForPr } from "./pull-requests/index.js";
+export { resolveChangeStatusCommentForPr } from "./pull-requests/index.js";

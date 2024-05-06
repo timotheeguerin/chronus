@@ -9,7 +9,7 @@ import {
 import { printChangeDescription, resolveChangeRelativePath, type ChangeDescription } from "@chronus/chronus/change";
 import { Octokit } from "octokit";
 import { getGithubToken } from "../utils/gh-token.js";
-import type { PullRequestContext } from "./contexts/types.js";
+import type { PullRequestContext } from "./context/types.js";
 import { collapsibleSection } from "./markdown.js";
 
 const magicString = "<!--chronus-github-change-commenter TEST REVERT-->";

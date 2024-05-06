@@ -3,6 +3,7 @@ import { getGenericContext } from "./generic.js";
 import { getGithubContext } from "./github.js";
 import type { PullRequestContext } from "./types.js";
 
+export type { PullRequestContext } from "./types.js";
 /**
  * Resolve the context for the current PR resolving automatically from different CI environments or manually set environment variables.
  */

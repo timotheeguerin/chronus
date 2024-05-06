@@ -1,5 +1,6 @@
 import { writeFile } from "fs/promises";
-import { getPullRequestContext, resolveChangeStatusCommentForPr } from "../../pull-requests/index.js";
+import { getPullRequestContext } from "../../pull-requests/context/index.js";
+import { resolveChangeStatusCommentForPr } from "../../pull-requests/index.js";
 
 export interface GetPRCommentArgs {
   readonly out?: string;
