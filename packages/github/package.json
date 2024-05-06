@@ -9,7 +9,7 @@
   "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
-    "./pull-requests/context": "./dist/pull-requests/context/index.js",
+    "./pull-requests": "./dist/pull-requests/index.js",
     "./changelog": "./dist/changelog/index.js"
   },
   "bin": {

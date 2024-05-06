@@ -11,13 +11,14 @@ import { Octokit } from "octokit";
 import { getGithubToken } from "../utils/gh-token.js";
 import type { PullRequestContext } from "./context/types.js";
 import { collapsibleSection } from "./markdown.js";
+import type { ChangeStatusComment } from "./types.js";
 
 const magicString = "<!--chronus-github-change-commenter TEST REVERT-->";
 
 /**
  * Resolve the github comment markdown for the current PR.
  */
-export async function resolveChangeStatusCommentForPr(context: PullRequestContext) {
+export async function resolveChangeStatusCommentForPr(context: PullRequestContext): Promise<ChangeStatusComment> {
   const token = await getGithubToken();
   const github = new Octokit({
     auth: `token ${token}`,
@@ -36,7 +37,12 @@ export async function resolveChangeStatusCommentForPr(context: PullRequestContex
     context.prTitle = pr.data.title;
   }
 
-  return getChangeStatusComment(workspace, status, pr.data, context as any);
+  const content = getChangeStatusComment(workspace, status, pr.data, context as any);
+  return {
+    content,
+    prNumber: context.prNumber,
+    repo: context.repo,
+  };
 }
 
 function getChangeStatusComment(

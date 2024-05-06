@@ -31,7 +31,7 @@ jobs:
         name: Build
 
       - name: Create PR Comment
-        run: node ./packages/github/cmd/cli.mjs get-pr-comment --out ./.comment/comment.md
+        run: node ./packages/github/cmd/cli.mjs get-pr-comment --out ./.comment/comment.json
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
