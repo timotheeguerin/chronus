@@ -204,9 +204,6 @@ importers:
 
   packages/github-pr-commenter:
     dependencies:
-      '@chronus/chronus':
-        specifier: workspace:*
-        version: link:../chronus
       '@chronus/github':
         specifier: workspace:*
         version: link:../github
