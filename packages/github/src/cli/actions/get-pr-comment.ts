@@ -1,4 +1,5 @@
-import { writeFile } from "fs/promises";
+import { getDirectoryPath } from "@chronus/chronus/utils";
+import { mkdir, writeFile } from "fs/promises";
 import { getPullRequestContext } from "../../pull-requests/context/index.js";
 import { resolveChangeStatusCommentForPr } from "../../pull-requests/index.js";
 
@@ -14,6 +15,7 @@ export async function getPrComment(args: GetPRCommentArgs) {
     log(content);
   } else {
     log("Writing comment to file: " + args.out);
+    await mkdir(getDirectoryPath(args.out), { recursive: true });
     await writeFile(args.out, content);
   }
 }
