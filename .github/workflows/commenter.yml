@@ -22,7 +22,7 @@ jobs:
 
       - run: |
           npm install -g @chronus/github-pr-commenter
-          chronus-github-pr-commenter --comment-file comment.md
+          chronus-github-pr-commenter --comment-file comment.json
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         name: Create/update comment

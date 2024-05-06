@@ -6,10 +6,10 @@ try {
 } catch {
   // package only present in dev.
 }
-import { getPullRequestContext, type PullRequestContext } from "@chronus/github/pull-requests/context";
+import type { ChangeStatusComment } from "@chronus/github/pull-requests";
 import { Octokit } from "@octokit/rest";
-import { readFile } from "fs/promises";
-import { parseArgs } from "util";
+import { readFile } from "node:fs/promises";
+import { parseArgs } from "node:util";
 
 const args = parseArgs({
   args: process.argv.slice(2),
@@ -23,12 +23,16 @@ const args = parseArgs({
 const commentFile = args.values["comment-file"];
 const magicString = "<!--chronus-github-change-commenter-->";
 
-async function getCommentContent(context: PullRequestContext) {
+async function getCommentContent(): Promise<ChangeStatusComment> {
   if (commentFile) {
     const buffer = await readFile(commentFile, "utf-8");
-    return buffer.toString();
+    const data = JSON.parse(buffer.toString());
+    return data;
   } else {
-    const { resolveChangeStatusCommentForPr } = await import(/* @vite-ignore */ "@chronus/github");
+    const { resolveChangeStatusCommentForPr, getPullRequestContext } = await import(
+      /* @vite-ignore */ "@chronus/github/pull-requests"
+    );
+    const context = getPullRequestContext();
     return await resolveChangeStatusCommentForPr(context);
   }
 }
@@ -38,38 +42,37 @@ async function main() {
   if (!token) {
     throw new Error("GITHUB_TOKEN environment variable is not set");
   }
-  const context = getPullRequestContext();
 
   const github = new Octokit({
     auth: `token ${token}`,
   });
 
-  const content = await getCommentContent(context);
+  const data = await getCommentContent();
   console.log("Comment:");
   console.log("-".repeat(100));
-  console.log(content);
+  console.log(data);
   console.log("-".repeat(100));
 
   const comments = await github.rest.issues.listComments({
-    issue_number: context.prNumber,
-    owner: context.repo.owner,
-    repo: context.repo.name,
+    issue_number: data.prNumber,
+    owner: data.repo.owner,
+    repo: data.repo.name,
   });
   const existingComment = comments.data.find((x) => x.body?.includes(magicString));
 
   if (existingComment) {
     await github.rest.issues.updateComment({
       comment_id: existingComment.id,
-      owner: context.repo.owner,
-      repo: context.repo.name,
-      body: content,
+      owner: data.repo.owner,
+      repo: data.repo.name,
+      body: data.content,
     });
   } else {
     await github.rest.issues.createComment({
-      issue_number: context.prNumber,
-      owner: context.repo.owner,
-      repo: context.repo.name,
-      body: content,
+      issue_number: data.prNumber,
+      owner: data.repo.owner,
+      repo: data.repo.name,
+      body: data.content,
     });
   }
 }
