@@ -42,7 +42,7 @@
     "globby": "^14.0.1",
     "is-unicode-supported": "^2.0.0",
     "micromatch": "^4.0.5",
-    "pacote": "^18.0.0",
+    "pacote": "^18.0.6",
     "picocolors": "^1.0.0",
     "pluralize": "^8.0.0",
     "prompts": "^2.4.2",
