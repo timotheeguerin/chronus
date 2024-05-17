@@ -13,7 +13,7 @@ import type { PullRequestContext } from "./context/types.js";
 import { collapsibleSection } from "./markdown.js";
 import type { ChangeStatusComment } from "./types.js";
 
-const magicString = "<!--chronus-github-change-commenter TEST REVERT-->";
+const magicString = "<!--chronus-github-change-commenter-->";
 
 /**
  * Resolve the github comment markdown for the current PR.
