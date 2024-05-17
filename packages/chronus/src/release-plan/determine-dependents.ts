@@ -110,7 +110,7 @@ export function applyDependents({
         }
 
         // We don't bump private packages
-        if (pkg.ignored) {
+        if (pkg.state === "private" || pkg.state === "ignored") {
           return;
         }
         // For things that are being given a major bump, we check if we have already

@@ -6,10 +6,16 @@ import type { ChronusHost } from "../utils/host.js";
 import { loadWorkspace } from "../workspace-manager/auto-discover.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
 import { getLocationInYamlScript } from "../yaml/location.js";
-import type { ChronusPackage, ChronusWorkspace } from "./types.js";
+import type { ChronusPackage, ChronusPackageState, ChronusWorkspace } from "./types.js";
 
-function isPackageIgnored(config: ChronusResolvedConfig, pkg: Package): boolean {
-  return Boolean(pkg.manifest.private || (config.ignore && config.ignore.some((x) => micromatch.isMatch(pkg.name, x))));
+function getPackageState(config: ChronusResolvedConfig, pkg: Package): ChronusPackageState {
+  if (config.ignore && config.ignore.some((x) => micromatch.isMatch(pkg.name, x))) {
+    return "ignored";
+  }
+  if (pkg.manifest.private) {
+    return "private";
+  }
+  return "versioned";
 }
 
 export async function loadChronusWorkspace(host: ChronusHost, dir: string): Promise<ChronusWorkspace> {
@@ -43,13 +49,13 @@ function validateConfigWithWorkspace(config: ChronusResolvedConfig, workspace: W
 
 export function createChronusWorkspace(workspace: Workspace, config: ChronusResolvedConfig): ChronusWorkspace {
   const chronusPackages = workspace.packages.map((pkg): ChronusPackage => {
-    return { ...pkg, ignored: isPackageIgnored(config, pkg) };
+    return { ...pkg, state: getPackageState(config, pkg) };
   });
   const map = new Map<string, ChronusPackage>(chronusPackages.map((pkg) => [pkg.name, pkg]));
   return {
     path: config.workspaceRoot,
     workspace,
-    packages: chronusPackages.filter((pkg): pkg is ChronusPackage & { ignored: false } => !pkg.ignored),
+    packages: chronusPackages.filter((pkg): pkg is ChronusPackage & { ignored: false } => pkg.state === "versioned"),
     allPackages: chronusPackages,
     config,
     getPackage: (packageName: string) => {

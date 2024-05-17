@@ -1,9 +1,16 @@
 import type { ChronusResolvedConfig } from "../config/types.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
 
+/**
+ * How this package should be treated.
+ * - `versioned` means it will be versioned.
+ * - `private` means dependencies will be bumped if needs be but this package will not be versioned.
+ * - `ignored` means it will be completely ignored and assume those package do not belong in the workspace.
+ */
+export type ChronusPackageState = "versioned" | "private" | "ignored";
+
 export interface ChronusPackage extends Package {
-  /** If that package should ignore versioning. */
-  readonly ignored: boolean;
+  readonly state: ChronusPackageState;
 }
 
 export interface ChronusWorkspace {

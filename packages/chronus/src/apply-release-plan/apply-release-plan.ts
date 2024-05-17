@@ -19,7 +19,7 @@ export async function applyReleasePlan(
     releasePlan.changes.map((x) => x.change),
     interactive,
   );
-  for (const pkg of workspace.allPackages) {
+  for (const pkg of workspace.allPackages.filter((x) => x.state !== "ignored")) {
     await updatePackageJson(host, workspace, pkg, actionForPackage);
   }
 
