@@ -1,5 +1,12 @@
 # @chronus/github-pr-commenter
 
+## 0.5.0
+
+### Features
+
+- [#181](https://github.com/timotheeguerin/chronus/pull/181) Move bulk of the logic into `@chronus/github`
+
+
 ## 0.4.1
 
 No changes, version bump only.

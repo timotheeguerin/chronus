@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.10.2
+
+### Bug Fixes
+
+- [#195](https://github.com/timotheeguerin/chronus/pull/195) Packages in the `ignored` config should be completely ignored.
+
+
 ## 0.10.1
 
 ### Bug Fixes
