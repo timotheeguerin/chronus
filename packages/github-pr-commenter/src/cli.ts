@@ -11,6 +11,8 @@ import { Octokit } from "@octokit/rest";
 import { readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
+const magicString = "<!--chronus-github-change-commenter-->";
+
 const args = parseArgs({
   args: process.argv.slice(2),
   options: {
@@ -21,7 +23,6 @@ const args = parseArgs({
 });
 
 const commentFile = args.values["comment-file"];
-const magicString = "<!--chronus-github-change-commenter-->";
 
 async function getCommentContent(): Promise<ChangeStatusComment> {
   if (commentFile) {
@@ -29,9 +30,7 @@ async function getCommentContent(): Promise<ChangeStatusComment> {
     const data = JSON.parse(buffer.toString());
     return data;
   } else {
-    const { resolveChangeStatusCommentForPr, getPullRequestContext } = await import(
-      /* @vite-ignore */ "@chronus/github/pull-requests"
-    );
+    const { resolveChangeStatusCommentForPr, getPullRequestContext } = await import("@chronus/github/pull-requests");
     const context = getPullRequestContext();
     return await resolveChangeStatusCommentForPr(context);
   }
