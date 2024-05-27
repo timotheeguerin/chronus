@@ -41,7 +41,7 @@
     "cross-spawn": "^7.0.3",
     "globby": "^14.0.1",
     "is-unicode-supported": "^2.0.0",
-    "micromatch": "^4.0.5",
+    "micromatch": "^4.0.7",
     "pacote": "^18.0.6",
     "picocolors": "^1.0.1",
     "pluralize": "^8.0.0",
