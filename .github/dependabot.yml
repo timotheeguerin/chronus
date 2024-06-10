@@ -10,8 +10,8 @@ updates:
     schedule:
       interval: "weekly"
     groups:
-    ESLint:
-      patterns:
-        - "eslint"
-        - "typescript-eslint"
-        - "@typescript-eslint/*"
+      ESLint:
+        patterns:
+          - "eslint"
+          - "typescript-eslint"
+          - "@typescript-eslint/*"
