@@ -15,8 +15,8 @@ importers:
         specifier: workspace:*
         version: link:packages/github
       '@eslint/js':
-        specifier: ^9.3.0
-        version: 9.3.0
+        specifier: ^9.4.0
+        version: 9.4.0
       '@types/node':
         specifier: ^20.12.12
         version: 20.12.12
@@ -889,6 +889,11 @@ packages:
 
   /@eslint/js@9.3.0:
     resolution: {integrity: sha512-niBqk8iwv96+yuTwjM6bWg8ovzAPF9qkICsGtcoa5/dmqcEMfdwNAX7+/OHcJHc7wj7XqPxH98oAHytFYlw6Sw==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    dev: true
+
+  /@eslint/js@9.4.0:
+    resolution: {integrity: sha512-fdI7VJjP3Rvc70lC4xkFXHB0fiPeojiL1PxVG6t1ZvXQrarj893PweuBTujxDUFk0Fxj4R7PIIAZ/aiiyZPZcg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     dev: true
 
