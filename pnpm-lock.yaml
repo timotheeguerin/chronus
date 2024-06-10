@@ -102,8 +102,8 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0
       yaml:
-        specifier: ^2.4.2
-        version: 2.4.2
+        specifier: ^2.4.5
+        version: 2.4.5
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -239,8 +239,8 @@ importers:
         specifier: ^5.31.0
         version: 5.31.0(typanion@3.14.0)
       yaml:
-        specifier: ^2.4.2
-        version: 2.4.2
+        specifier: ^2.4.5
+        version: 2.4.5
     devDependencies:
       '@types/cross-spawn':
         specifier: ^6.0.6
@@ -2833,7 +2833,7 @@ packages:
     dependencies:
       '@cspell/cspell-types': 8.8.1
       comment-json: 4.2.3
-      yaml: 2.4.2
+      yaml: 2.4.5
     dev: true
 
   /cspell-dictionary@8.8.1:
@@ -7053,8 +7053,8 @@ packages:
   /yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
-  /yaml@2.4.2:
-    resolution: {integrity: sha512-B3VqDZ+JAg1nZpaEmWtTXUlBneoGx6CPM9b0TENK6aoSu5t73dItudwdgmi6tHlIZZId4dZ9skcAQ2UbcyAeVA==}
+  /yaml@2.4.5:
+    resolution: {integrity: sha512-aBx2bnqDzVOyNKfsysjA2ms5ZlnjSAW2eG3/L5G/CSujfjLJTJsEw1bGw8kCf04KodQWk1pxlGnZ56CRxiawmg==}
     engines: {node: '>= 14'}
     hasBin: true
 
