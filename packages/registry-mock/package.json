@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "cross-spawn": "^7.0.3",
-    "verdaccio": "^5.31.0",
+    "verdaccio": "^5.31.1",
     "yaml": "^2.4.5"
   },
   "devDependencies": {
