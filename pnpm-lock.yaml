@@ -15,8 +15,8 @@ importers:
         specifier: workspace:*
         version: link:packages/github
       '@eslint/js':
-        specifier: ^9.3.0
-        version: 9.3.0
+        specifier: ^9.6.0
+        version: 9.6.0
       '@types/node':
         specifier: ^20.14.10
         version: 20.14.10
@@ -906,11 +906,6 @@ packages:
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /@eslint/js@9.3.0:
-    resolution: {integrity: sha512-niBqk8iwv96+yuTwjM6bWg8ovzAPF9qkICsGtcoa5/dmqcEMfdwNAX7+/OHcJHc7wj7XqPxH98oAHytFYlw6Sw==}
-    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     dev: true
 
   /@eslint/js@9.6.0:
