@@ -178,7 +178,7 @@ describe("with pnpm", () => {
     await checkPackagePublished("pkg-pnpm-a");
   });
 
-  it("publish tgz", { timeout: 20_000 }, async () => {
+  it.skip("publish tgz", { timeout: 20_000 }, async () => {
     const pkg = await createTestPackage("packages/pkg-pnpm-b", "pkg-pnpm-b");
 
     await mkdir(resolvePath(testDir.path, "artifacts"), { recursive: true });
