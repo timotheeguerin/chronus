@@ -4,14 +4,13 @@
   "type": "module",
   "description": "Monorepo for chronus",
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
-  "packageManager": "pnpm@8.15.1",
+  "packageManager": "pnpm@9.5.0",
   "license": "MIT",
   "private": true,
   "author": "Microsoft",
   "repository": "timotheeguerin/chronus.git",
   "engines": {
-    "node": ">=16.0.0",
-    "pnpm": ">=7.6.0"
+    "node": ">=16.0.0"
   },
   "workspaces": [
     "packages/*"
