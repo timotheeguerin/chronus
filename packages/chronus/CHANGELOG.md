@@ -1,5 +1,18 @@
 # @chronus/chronus
 
+## 0.11.0
+
+### Features
+
+- [#244](https://github.com/timotheeguerin/chronus/pull/244) Packages with prerelease version (e.g. `1.0.0-alpha.1`) will only see their prerelease version bumped regardless of the change type.
+  
+| Old version     | Change type    | Old Logic | New Logic       |
+| --------------- | ------- | --------- | --------------- |
+| `1.0.0-alpha.1` | `major` | `1.0.0`   | `1.0.0-alpha.2` |
+| `1.0.0-alpha.1` | `minor` | `1.0.0`   | `1.0.0-alpha.2` |
+| `1.0.0-alpha.1` | `patch` | `1.0.0`   | `1.0.0-alpha.2` |
+
+
 ## 0.10.2
 
 ### Bug Fixes
