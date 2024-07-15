@@ -8,7 +8,7 @@ updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "monthly"
+      interval: "weekly"
     groups:
       ESLint:
         patterns:
@@ -19,3 +19,10 @@ updates:
         update-types:
           - major
           - minor
+
+      # Group remaining dev dependencies for minor and patch release. Major can be upgraded individually.
+      dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
