@@ -88,6 +88,22 @@ describe("Assemble Release Plan", () => {
         expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.0.1" });
       });
     });
+
+    describe("prerelease version (x.y.z-foo.n) only increase the n regardless of the change type", () => {
+      const prereleaseWorkspace = mkWorkspace([mkPkg("pkg-a", { version: "1.0.0-alpha.1" })]);
+      it.each(["patch", "minor", "major"] as const)("%s", (type) => {
+        const plan = assembleReleasePlan(
+          [mkChange("pkg-a", type)],
+          createChronusWorkspace(prereleaseWorkspace, baseConfig),
+        );
+        expect(plan.actions).toHaveLength(1);
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-a",
+          oldVersion: "1.0.0-alpha.1",
+          newVersion: "1.0.0-alpha.2",
+        });
+      });
+    });
   });
 
   describe("lockStepVersioning", () => {
