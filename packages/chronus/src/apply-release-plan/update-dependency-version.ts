@@ -1,5 +1,6 @@
 const workspaceScheme = "workspace:";
 
+/** Update the current version range with the new version. Supports standard semver annotations as well as `workspace:` protocol. */
 export function updateDependencyVersion(currentVersion: string, newVersion: string): string {
   if (currentVersion.startsWith("workspace:")) {
     return updateWorkspaceDependencyVersion(currentVersion, newVersion);
