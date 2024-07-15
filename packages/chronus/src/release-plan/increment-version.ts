@@ -12,9 +12,8 @@ export function incrementVersion(release: InternalReleaseAction) {
     return release.oldVersion;
   }
   if (oldVersion.prerelease.length > 0) {
-    return semverInc(oldVersion, "prerelease");
+    return semverInc(oldVersion, "prerelease")!;
   }
 
-  const version = semverInc(oldVersion, release.type)!;
-  return version;
+  return semverInc(oldVersion, release.type)!;
 }
