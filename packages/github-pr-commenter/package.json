@@ -33,11 +33,11 @@
     "@octokit/rest": "^21.0.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.10",
+    "@types/node": "^20.14.11",
     "rimraf": "^6.0.1",
     "source-map-support": "^0.5.21",
     "typescript": "^5.5.3",
-    "vite": "^5.3.3",
+    "vite": "^5.3.4",
     "vite-bundle-visualizer": "^1.2.1"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
