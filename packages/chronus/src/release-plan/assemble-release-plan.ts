@@ -6,7 +6,7 @@ import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
 import type { ReleaseAction, ReleasePlan, ReleasePlanChangeApplication } from "./types.js";
 
-export interface ApplyChangesetsOptions {
+export interface AssembleReleasePlanOptions {
   readonly ignorePolicies?: boolean;
   readonly only?: string[];
 }
@@ -14,7 +14,7 @@ export interface ApplyChangesetsOptions {
 export function assembleReleasePlan(
   changes: ChangeDescription[],
   workspace: ChronusWorkspace,
-  options?: ApplyChangesetsOptions,
+  options?: AssembleReleasePlanOptions,
 ): ReleasePlan {
   const packagesByName = new Map(workspace.allPackages.map((pkg) => [pkg.name, pkg]));
   const { changeApplications, actions: requested } = reduceChanges(changes, workspace, options?.only);

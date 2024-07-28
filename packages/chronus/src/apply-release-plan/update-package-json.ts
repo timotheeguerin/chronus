@@ -6,11 +6,15 @@ import type { PackageJson } from "../workspace-manager/types.js";
 import type { ChronusPackage, ChronusWorkspace } from "../workspace/types.js";
 import { updateDependencyVersion } from "./update-dependency-version.js";
 
+export interface VersionAction {
+  readonly newVersion: string;
+}
+
 export async function updatePackageJson(
   host: ChronusHost,
   workspace: ChronusWorkspace,
   pkg: ChronusPackage,
-  actionForPackage: Map<string, ReleaseAction>,
+  actionForPackage: Map<string, VersionAction>,
 ) {
   const newPkgJson = getNewPackageJson(pkg, actionForPackage);
   await host.writeFile(
@@ -19,7 +23,7 @@ export async function updatePackageJson(
   );
 }
 
-function getNewPackageJson(pkg: ChronusPackage, actionForPackage: Map<string, ReleaseAction>): PackageJson {
+function getNewPackageJson(pkg: ChronusPackage, actionForPackage: Map<string, VersionAction>): PackageJson {
   const action = actionForPackage.get(pkg.name);
   const currentPkgJson: Mutable<PackageJson> = JSON.parse(JSON.stringify(pkg.manifest));
   if (action) {
