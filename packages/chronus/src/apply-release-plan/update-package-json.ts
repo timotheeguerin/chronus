@@ -1,4 +1,3 @@
-import type { ReleaseAction } from "../release-plan/types.js";
 import type { ChronusHost } from "../utils/host.js";
 import { resolvePath } from "../utils/path-utils.js";
 import type { Mutable } from "../utils/types.js";
