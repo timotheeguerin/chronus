@@ -14,15 +14,21 @@ export async function updatePackageJson(
   workspace: ChronusWorkspace,
   pkg: ChronusPackage,
   actionForPackage: Map<string, VersionAction>,
+  dependencyUpdateMode: "stable" | "prerelease" = "stable",
 ) {
-  const newPkgJson = getNewPackageJson(pkg, actionForPackage);
+  const newPkgJson = getNewPackageJson(workspace, pkg, actionForPackage, dependencyUpdateMode);
   await host.writeFile(
     resolvePath(workspace.path, pkg.relativePath, "package.json"),
     JSON.stringify(newPkgJson, null, 2) + "\n",
   );
 }
 
-function getNewPackageJson(pkg: ChronusPackage, actionForPackage: Map<string, VersionAction>): PackageJson {
+function getNewPackageJson(
+  workspace: ChronusWorkspace,
+  pkg: ChronusPackage,
+  actionForPackage: Map<string, VersionAction>,
+  dependencyUpdateMode: "stable" | "prerelease",
+): PackageJson {
   const action = actionForPackage.get(pkg.name);
   const currentPkgJson: Mutable<PackageJson> = JSON.parse(JSON.stringify(pkg.manifest));
   if (action) {
@@ -36,7 +42,11 @@ function getNewPackageJson(pkg: ChronusPackage, actionForPackage: Map<string, Ve
       for (const dep of Object.keys(depObj)) {
         const depAction = actionForPackage.get(dep);
         if (depAction) {
-          depObj[dep] = updateDependencyVersion(depObj[dep], depAction.newVersion);
+          depObj[dep] = updateDependencyVersion(
+            depObj[dep],
+            { newVersion: depAction.newVersion, oldVersion: workspace.getPackage(dep).version },
+            dependencyUpdateMode,
+          );
         }
       }
     }

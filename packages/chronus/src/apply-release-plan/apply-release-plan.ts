@@ -31,9 +31,14 @@ export async function applyReleasePlan(
   }
 }
 
-export async function updatePackageVersions(host: ChronusHost, workspace: ChronusWorkspace, actionForPackage: Map<string, VersionAction>) {
+export async function updatePackageVersions(
+  host: ChronusHost,
+  workspace: ChronusWorkspace,
+  actionForPackage: Map<string, VersionAction>,
+  dependencyUpdateMode?: "stable" | "prerelease",
+) {
   for (const pkg of workspace.allPackages.filter((x) => x.state !== "ignored")) {
-    await updatePackageJson(host, workspace, pkg, actionForPackage);
+    await updatePackageJson(host, workspace, pkg, actionForPackage, dependencyUpdateMode);
   }
 }
 async function cleanChangeApplication(

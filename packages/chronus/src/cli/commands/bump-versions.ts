@@ -84,7 +84,7 @@ async function bumpPrereleaseVersion(host: ChronusHost, workspace: ChronusWorksp
   for (const [pkgName, action] of versionActions) {
     log(`Bumping ${pc.magenta(pkgName.padEnd(maxLength))} to ${pc.cyan(action.newVersion)}`);
   }
-  await updatePackageVersions(host, workspace, versionActions);
+  await updatePackageVersions(host, workspace, versionActions, "prerelease");
 }
 
 interface InterpolatePrereleaseVersionArgs {
