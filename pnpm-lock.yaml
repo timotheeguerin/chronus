@@ -102,8 +102,8 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0
       yaml:
-        specifier: ^2.4.5
-        version: 2.4.5
+        specifier: ^2.5.0
+        version: 2.5.0
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -239,8 +239,8 @@ importers:
         specifier: ^5.31.1
         version: 5.31.1(encoding@0.1.13)(typanion@3.14.0)
       yaml:
-        specifier: ^2.4.5
-        version: 2.4.5
+        specifier: ^2.5.0
+        version: 2.5.0
     devDependencies:
       '@types/cross-spawn':
         specifier: ^6.0.6
@@ -4019,8 +4019,8 @@ packages:
   yallist@4.0.0:
     resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
-  yaml@2.4.5:
-    resolution: {integrity: sha512-aBx2bnqDzVOyNKfsysjA2ms5ZlnjSAW2eG3/L5G/CSujfjLJTJsEw1bGw8kCf04KodQWk1pxlGnZ56CRxiawmg==}
+  yaml@2.5.0:
+    resolution: {integrity: sha512-2wWLbGbYDiSqqIKoPjar3MPgB94ErzCtrNE1FdqGuaO0pi2JGjmE8aW8TDZwzU7vuxcGRdL/4gPQwQ7hD5AMSw==}
     engines: {node: '>= 14'}
     hasBin: true
 
@@ -5576,7 +5576,7 @@ snapshots:
     dependencies:
       '@cspell/cspell-types': 8.11.0
       comment-json: 4.2.4
-      yaml: 2.4.5
+      yaml: 2.5.0
 
   cspell-dictionary@8.11.0:
     dependencies:
@@ -8260,7 +8260,7 @@ snapshots:
 
   yallist@4.0.0: {}
 
-  yaml@2.4.5: {}
+  yaml@2.5.0: {}
 
   yargs-parser@21.1.1: {}
 
