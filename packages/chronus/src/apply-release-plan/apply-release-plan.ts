@@ -4,7 +4,7 @@ import { resolveChangelogGenerator, updateChangelog } from "../changelog/generat
 import type { ReleaseAction, ReleasePlan, ReleasePlanChangeApplication } from "../release-plan/types.js";
 import type { ChronusHost } from "../utils/host.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
-import { updatePackageJson } from "./update-package-json.js";
+import { updatePackageJson, type VersionAction } from "./update-package-json.js";
 
 export async function applyReleasePlan(
   host: ChronusHost,
@@ -19,9 +19,8 @@ export async function applyReleasePlan(
     releasePlan.changes.map((x) => x.change),
     interactive,
   );
-  for (const pkg of workspace.allPackages.filter((x) => x.state !== "ignored")) {
-    await updatePackageJson(host, workspace, pkg, actionForPackage);
-  }
+
+  await updatePackageVersions(host, workspace, actionForPackage);
 
   for (const action of releasePlan.actions) {
     await updateChangelog(host, workspace, changelogGenerator, action);
@@ -32,6 +31,16 @@ export async function applyReleasePlan(
   }
 }
 
+export async function updatePackageVersions(
+  host: ChronusHost,
+  workspace: ChronusWorkspace,
+  actionForPackage: Map<string, VersionAction>,
+  dependencyUpdateMode?: "stable" | "prerelease",
+) {
+  for (const pkg of workspace.allPackages.filter((x) => x.state !== "ignored")) {
+    await updatePackageJson(host, workspace, pkg, actionForPackage, dependencyUpdateMode);
+  }
+}
 async function cleanChangeApplication(
   host: ChronusHost,
   workspace: ChronusWorkspace,

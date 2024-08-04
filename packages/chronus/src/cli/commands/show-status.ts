@@ -3,7 +3,7 @@ import type { ReleaseAction, ReleasePlan } from "../../release-plan/types.js";
 import type { VersionType } from "../../types.js";
 import { NodeChronusHost } from "../../utils/node-host.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
-import { resolveReleasePlan, type ApplyChangesetsOptions } from "./apply-changesets.js";
+import { resolveReleasePlan, type BumpVersionOptions } from "./bump-versions.js";
 
 export interface ShowStatusOptions {
   readonly ignorePolicies?: boolean;
@@ -50,7 +50,7 @@ function logType(actions: ReleaseAction[], type: VersionType, pad: number, color
   }
 }
 
-async function resolveCurrentReleasePlan(cwd: string, options?: ApplyChangesetsOptions): Promise<ReleasePlan> {
+async function resolveCurrentReleasePlan(cwd: string, options?: BumpVersionOptions): Promise<ReleasePlan> {
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
   return await resolveReleasePlan(host, workspace, options);
