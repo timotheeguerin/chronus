@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.12.0
+
+### Features
+
+- [#255](https://github.com/timotheeguerin/chronus/pull/255) Add new `--prerelease` flag to `chronus version` command allowing bumping of versions for a reprelease build
+
+
 ## 0.11.0
 
 ### Features
