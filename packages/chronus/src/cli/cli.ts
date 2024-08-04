@@ -68,7 +68,13 @@ async function main() {
             type: "boolean",
             description: "Update packages version following the prerelease policy",
           }),
-      withErrors((args) => bumpVersions(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only, prerelease: args.prerelease })),
+      withErrors((args) =>
+        bumpVersions(process.cwd(), {
+          ignorePolicies: args.ignorePolicies,
+          only: args.only,
+          prerelease: args.prerelease,
+        }),
+      ),
     )
     .command(
       "status",

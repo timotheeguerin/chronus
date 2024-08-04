@@ -37,6 +37,7 @@ function resolveWorkspaceVersion(currentRequirement: string, action: ResolvedVer
   const reqWithoutScheme = currentRequirement.slice(workspaceScheme.length);
   switch (reqWithoutScheme) {
     case "*":
+      return "*";
     case "^":
     case "~":
     case ">=":
@@ -45,7 +46,14 @@ function resolveWorkspaceVersion(currentRequirement: string, action: ResolvedVer
       if (reqWithoutScheme.startsWith(">=")) {
         return `>=${action.oldVersion}`;
       } else {
-        return `${reqWithoutScheme[0]}${action.oldVersion}`;
+        switch (reqWithoutScheme[0]) {
+          case "*":
+          case "^":
+          case "~":
+            return `${reqWithoutScheme[0]}${action.oldVersion}`;
+          default:
+            return action.oldVersion;
+        }
       }
   }
 }
