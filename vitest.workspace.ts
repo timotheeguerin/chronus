@@ -9,6 +9,5 @@ export const defaultVitestConfig = defineConfig({
   test: {
     environment: "node",
     isolate: false,
-    watchExclude: [],
   },
 });

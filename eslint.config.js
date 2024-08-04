@@ -7,14 +7,17 @@ import { fileURLToPath } from "url";
 
 export default tsEslint.config(
   {
-    ignores: ["**/dist/**/*", "**/.temp/**/*"],
+    ignores: ["**/dist/**/*", "**/.temp/**/*", "eslint.config.js"],
   },
   eslint.configs.recommended,
   ...tsEslint.configs.recommended,
   {
     languageOptions: {
       parserOptions: {
-        project: "./tsconfig.json",
+        projectService: {
+          allowDefaultProject: ["eng/prepare-release-branch.js", "packages/*/cmd/cli.mjs"],
+          defaultProject: "./tsconfig.json",
+        },
         tsconfigRootDir: dirname(fileURLToPath(import.meta.url)),
       },
     },
@@ -23,7 +26,7 @@ export default tsEslint.config(
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
-        { varsIgnorePattern: "^_", argsIgnorePattern: ".*", ignoreRestSiblings: true },
+        { varsIgnorePattern: "^_", argsIgnorePattern: ".*", caughtErrorsIgnorePattern: ".*", ignoreRestSiblings: true },
       ],
       "prefer-const": "warn",
       "@typescript-eslint/no-floating-promises": "warn",
