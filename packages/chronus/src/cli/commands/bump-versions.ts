@@ -1,10 +1,9 @@
 import pc from "picocolors";
-import { parse } from "semver";
 import { isCI } from "std-env";
 import { updatePackageVersions } from "../../apply-release-plan/apply-release-plan.js";
 import { applyReleasePlan } from "../../apply-release-plan/index.js";
-import type { VersionAction } from "../../apply-release-plan/update-package-json.js";
 import { readChangeDescriptions } from "../../change/read.js";
+import { getPrereleaseVersionActions } from "../../prerelease-versioning/index.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { ReleasePlan } from "../../release-plan/types.js";
 import type { ChronusHost } from "../../utils/host.js";
@@ -49,54 +48,13 @@ export async function resolveReleasePlan(
 }
 
 async function bumpPrereleaseVersion(host: ChronusHost, workspace: ChronusWorkspace, prereleaseTemplate: string) {
-  const changesets = await readChangeDescriptions(host, workspace);
-  const releasePlan = assembleReleasePlan(changesets, workspace);
-
-  const changePerPackage = new Map<string, number>();
-  for (const pkg of workspace.packages) {
-    changePerPackage.set(pkg.name, 0);
-  }
-
-  for (const change of changesets) {
-    for (const pkgName of change.packages) {
-      const existing = changePerPackage.get(pkgName);
-      if (existing !== undefined) {
-        changePerPackage.set(pkgName, existing + 1);
-      }
-    }
-  }
-
-  const versionActions = new Map<string, VersionAction>();
-  for (const pkg of workspace.packages) {
-    const changeCount = changePerPackage.get(pkg.name) ?? 0;
-    const action = releasePlan.actions.find((x) => x.packageName === pkg.name)!;
-    const version = parse(pkg.version)!;
-
-    const prereleaseVersion = interpolateTemplate(prereleaseTemplate, {
-      changeCount,
-      changeCountWithPatch: changeCount + version.patch,
-      nextVersion: action.newVersion,
-    });
-    versionActions.set(pkg.name, { newVersion: prereleaseVersion });
-  }
-
+  const changes = await readChangeDescriptions(host, workspace);
+  const versionActions = await getPrereleaseVersionActions(changes, workspace, prereleaseTemplate);
   const maxLength = workspace.packages.reduce((max, pkg) => Math.max(max, pkg.name.length), 0);
   for (const [pkgName, action] of versionActions) {
     log(`Bumping ${pc.magenta(pkgName.padEnd(maxLength))} to ${pc.cyan(action.newVersion)}`);
   }
   await updatePackageVersions(host, workspace, versionActions, "prerelease");
-}
-
-interface InterpolatePrereleaseVersionArgs {
-  readonly changeCount: number;
-  readonly changeCountWithPatch: number;
-  readonly nextVersion: string;
-}
-
-function interpolateTemplate(template: string, args: InterpolatePrereleaseVersionArgs) {
-  return template.replace(/{(\w+)}/g, (_, key) => {
-    return String(args[key as keyof typeof args]);
-  });
 }
 
 function log(...args: any[]) {
