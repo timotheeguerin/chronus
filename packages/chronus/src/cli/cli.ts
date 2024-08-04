@@ -2,7 +2,7 @@ import "source-map-support/register.js";
 import yargs from "yargs";
 import { resolvePath } from "../utils/path-utils.js";
 import { addChangeset } from "./commands/add-changeset.js";
-import { applyChangesets } from "./commands/apply-changesets.js";
+import { bumpVersions } from "./commands/bump-versions.js";
 import { changelog } from "./commands/changelog.js";
 import { listPendingPublish } from "./commands/list-pending-publish.js";
 import { pack } from "./commands/pack.js";
@@ -63,8 +63,18 @@ async function main() {
             type: "string",
             array: true,
             description: "Only bump the specified package(s)",
+          })
+          .option("prerelease", {
+            type: "boolean",
+            description: "Update packages version following the prerelease policy",
           }),
-      withErrors((args) => applyChangesets(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only })),
+      withErrors((args) =>
+        bumpVersions(process.cwd(), {
+          ignorePolicies: args.ignorePolicies,
+          only: args.only,
+          prerelease: args.prerelease,
+        }),
+      ),
     )
     .command(
       "status",
