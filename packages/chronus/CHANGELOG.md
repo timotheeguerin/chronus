@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.12.1
+
+### Bug Fixes
+
+- [#260](https://github.com/timotheeguerin/chronus/pull/260) Fix regex performance issues
+
+
 ## 0.12.0
 
 ### Features
