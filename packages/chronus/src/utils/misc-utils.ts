@@ -45,7 +45,6 @@ export function getLastJsonObject(str: string) {
     if (str[i] === "{") {
       start = i;
       try {
-        console.log("Try", str.slice(start, end + 1));
         return JSON.parse(str.slice(start, end + 1));
       } catch (err) {
         // ignore keep trying to look for previous { to parse
