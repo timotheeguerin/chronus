@@ -8,7 +8,7 @@ import { parseYaml } from "../yaml/parse.js";
 import { validateYamlFile } from "../yaml/schema-validator.js";
 import type { ChangeDescription, ChangeDescriptionFrontMatter } from "./types.js";
 
-const mdRegex = /\s*---([^]*?)\n\s*---(\s*(?:\n|$)[^]*)/;
+const mdRegex = /^\s*---([^]*?)\n---\n([^]*)/;
 
 const changeFrontMatterSchema = z.object({
   changeKind: z.string(),
