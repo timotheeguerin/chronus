@@ -32,16 +32,23 @@ export function prettyBytes(bytes: number, decimals = 2) {
 }
 
 export function getLastJsonObject(str: string) {
-  str = str.replace(/[^}]*$/, "");
+  let start = 0;
+  let end = str.length - 1;
+  for (let i = str.length - 1; i >= 0; i--) {
+    if (str[i] === "}") {
+      end = i;
+      break;
+    }
+  }
 
-  while (str) {
-    str = str.replace(/[^{]*/, "");
-
-    try {
-      return JSON.parse(str);
-    } catch (err) {
-      // move past the potentially leading `{` so the regexp in the loop can try to match for the next `{`
-      str = str.slice(1);
+  for (let i = end; i >= 0; i--) {
+    if (str[i] === "{") {
+      start = i;
+      try {
+        return JSON.parse(str.slice(start, end + 1));
+      } catch (err) {
+        // ignore keep trying to look for previous { to parse
+      }
     }
   }
   return null;
