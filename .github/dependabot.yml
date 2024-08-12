@@ -26,3 +26,8 @@ updates:
         update-types:
           - "minor"
           - "patch"
+        exclude-patterns: # Deditected group
+          - "eslint"
+          - "typescript-eslint"
+          - "@typescript-eslint/*"
+          - "@eslint/*"
