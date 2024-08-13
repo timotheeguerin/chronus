@@ -13,14 +13,8 @@ chronus goal is to provide changelog management. It was heavily inspired by [cha
 
 ## Documentation
 
-- [CLI](./docs/cli.md)
+[Docs](./docs/readme.md)
 
-Chronus functionalities:
-
-- [Configure change kinds](./docs/change-kinds.md) _Use a different set of change kinds from `major`, `minor`, `patch`_
-- [Filter files needing changelogs](./docs/changed-files-filter.md) _Ignore certain files from needing a changelog entry_
-- [Prereleases for nightly/next builds](https://github.com/timotheeguerin/chronus/blob/main/docs/prerelease.md)
-- 
 ## Develop
 
 ### Requirements
