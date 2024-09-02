@@ -37,8 +37,8 @@
     "@chronus/github": "workspace:*",
     "@eslint/js": "^9.9.0",
     "@types/node": "^22.5.0",
-    "@typescript-eslint/parser": "^8.0.0",
-    "@typescript-eslint/utils": "^8.0.0",
+    "@typescript-eslint/parser": "^8.3.0",
+    "@typescript-eslint/utils": "^8.3.0",
     "@vitest/ui": "^2.0.5",
     "cspell": "^8.14.2",
     "eslint": "^9.9.0",
@@ -50,7 +50,7 @@
     "rimraf": "^6.0.1",
     "syncpack": "^12.4.0",
     "typescript": "^5.5.4",
-    "typescript-eslint": "^8.0.0",
+    "typescript-eslint": "^8.3.0",
     "vitest": "^2.0.5"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
