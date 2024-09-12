@@ -87,6 +87,22 @@ describe("Assemble Release Plan", () => {
         });
         expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.0.1" });
       });
+
+      it("dependency with workspace: requirement are only bumped if the new version will be incompatible with last release", () => {
+        const workspace: Workspace = mkWorkspace([
+          mkPkg("pkg-a", {}),
+          mkPkg("pkg-b", { dependencies: { "pkg-a": "workspace:~" } }),
+          mkPkg("pkg-c", { dependencies: { "pkg-a": "workspace:^" } }),
+        ]);
+        const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
+        expect(plan.actions).toHaveLength(2);
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-a",
+          oldVersion: "1.0.0",
+          newVersion: "1.1.0",
+        });
+        expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.0.1" });
+      });
     });
 
     describe("prerelease version (x.y.z-foo.n) only increase the n regardless of the change type", () => {
