@@ -45,7 +45,6 @@ export function assembleReleasePlan(
       internalActions.set(request.packageName, request);
     }
   }
-
   // The map passed in to determineDependents will be mutated
   applyDependents({
     actions: internalActions,

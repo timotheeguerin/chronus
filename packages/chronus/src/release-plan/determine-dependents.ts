@@ -48,7 +48,6 @@ export function applyDependents({
         let type: VersionType | undefined;
 
         const dependent = dependentPackage.name;
-
         const dependencyVersionRanges = getDependencyVersionRanges(dependentPackage.manifest, nextRelease);
 
         for (const { depType, versionRange } of dependencyVersionRanges) {
@@ -71,7 +70,7 @@ export function applyDependents({
             }
           } else if (
             (!actions.has(dependent) || actions.get(dependent)!.type === "none") &&
-            !semverSatisfies(incrementVersion(nextRelease), versionRange)
+            !willRangeBeValid(nextRelease, versionRange)
           ) {
             switch (depType) {
               case "dependencies":
@@ -137,6 +136,22 @@ export function applyDependents({
   }
 
   return updated;
+}
+
+/**
+ * Check the given version range will be valid with the new version after this release action.
+ */
+function willRangeBeValid(release: InternalReleaseAction, versionRange: string) {
+  switch (versionRange) {
+    case "*":
+      return true;
+    case "^":
+      return release.type === "minor" || release.type === "patch";
+    case "~":
+      return release.type === "patch";
+    default:
+      return semverSatisfies(incrementVersion(release), versionRange);
+  }
 }
 
 /*
