@@ -31,14 +31,15 @@ jobs:
         name: Build
 
       - name: Create PR Comment
-        run: node ./packages/github/cmd/cli.mjs get-pr-comment --out ./.comment/comment.json
+        run: node ./packages/github/cmd/cli.mjs get-pr-comment --out ./comment-out/comment.json
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        wt
 
       - uses: actions/upload-artifact@v4
         with:
           name: comment
-          path: .comment/
+          path: comment-out/
           retention-days: 1 # Only need for the next workflow so don't need to waste storageretention-days
 
       - run: node ./packages/chronus/cmd/cli.mjs verify
