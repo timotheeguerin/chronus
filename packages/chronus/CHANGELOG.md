@@ -1,5 +1,13 @@
 # @chronus/chronus
 
+## 0.12.1
+
+### Bug Fixes
+
+- [#260](https://github.com/timotheeguerin/chronus/pull/260) Fix regex performance issues
+- [#282](https://github.com/timotheeguerin/chronus/pull/282) Fix incorrectly detecting packages as needing new version when using `workspace:` range
+
+
 ## 0.12.0
 
 ### Features
