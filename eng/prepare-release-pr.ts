@@ -3,10 +3,12 @@
 // @ts-check
 import { context, getOctokit } from "@actions/github";
 import { execSync } from "child_process";
-import { showStatusAsMarkdown } from "../packages/chronus/dist/cli/commands/show-status.js";
+import { resolveCurrentReleasePlan } from "../packages/chronus/src/release-plan/current.js";
+import { renderReleasePlanAsMarkdown } from "../packages/chronus/src/release-plan/markdown.js";
 const branchName = "publish/auto-release";
 
-const changeStatus = await showStatusAsMarkdown(process.cwd());
+const plan = resolveCurrentReleasePlan(NodeChronusHost, process.cwd());
+const changeStatus = await renderReleasePlanAsMarkdown(plan);
 execSync(`pnpm change version`, { stdio: "inherit" });
 const stdout = execSync(`git status --porcelain`).toString();
 
