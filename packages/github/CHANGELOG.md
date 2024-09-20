@@ -1,5 +1,12 @@
 # Changelog - @chronus/github
 
+## 0.4.4
+
+### Bug Fixes
+
+- [#288](https://github.com/timotheeguerin/chronus/pull/288) Fix trying to generate changelogs when no change would cause crash
+
+
 ## 0.4.3
 
 No changes, version bump only.

@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.13.0
+
+### Features
+
+- [#287](https://github.com/timotheeguerin/chronus/pull/287) [API] Expose function to get markdown summary of release plan
+
+
 ## 0.12.1
 
 ### Bug Fixes
