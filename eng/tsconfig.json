@@ -3,5 +3,5 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["./**/*.ts", "../packages/chronus/src/release-plan/index.ts"]
+  "include": ["./**/*.ts", "../packages/chronus/src/index.ts"]
 }
