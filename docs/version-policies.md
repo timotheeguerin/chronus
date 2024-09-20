@@ -23,7 +23,7 @@ For example if you have the following packages
 | Package | Version |
 | ------- | ------- |
 | a       | 1.2.0   |
-| a       | 1.2.0   |
+| b       | 1.2.0   |
 | c       | 2.1.0   |
 
 and specified the following policy:
