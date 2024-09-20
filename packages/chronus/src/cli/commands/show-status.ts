@@ -1,9 +1,8 @@
 import pc from "picocolors";
-import type { ReleaseAction, ReleasePlan } from "../../release-plan/types.js";
+import { resolveCurrentReleasePlan } from "../../release-plan/current.js";
+import type { ReleaseAction } from "../../release-plan/types.js";
 import type { VersionType } from "../../types.js";
 import { NodeChronusHost } from "../../utils/node-host.js";
-import { loadChronusWorkspace } from "../../workspace/load.js";
-import { resolveReleasePlan, type BumpVersionOptions } from "./bump-versions.js";
 
 export interface ShowStatusOptions {
   readonly ignorePolicies?: boolean;
@@ -15,7 +14,7 @@ function log(...args: any[]) {
   console.log(...args);
 }
 export async function showStatus(cwd: string, options: ShowStatusOptions): Promise<void> {
-  const releasePlan = await resolveCurrentReleasePlan(cwd, options);
+  const releasePlan = await resolveCurrentReleasePlan(NodeChronusHost, cwd, options);
 
   let max = 50;
   for (const action of releasePlan.actions) {
@@ -47,39 +46,5 @@ function logType(actions: ReleaseAction[], type: VersionType, pad: number, color
           pc.cyan(action.newVersion),
       );
     }
-  }
-}
-
-async function resolveCurrentReleasePlan(cwd: string, options?: BumpVersionOptions): Promise<ReleasePlan> {
-  const host = NodeChronusHost;
-  const workspace = await loadChronusWorkspace(host, cwd);
-  return await resolveReleasePlan(host, workspace, options);
-}
-
-export async function showStatusAsMarkdown(cwd: string): Promise<string> {
-  const releasePlan = await resolveCurrentReleasePlan(cwd);
-  return [
-    "",
-    "## Change summary:",
-    "",
-    ...typeAsMarkdown(releasePlan.actions, "major"),
-    "",
-    ...typeAsMarkdown(releasePlan.actions, "minor"),
-    "",
-    ...typeAsMarkdown(releasePlan.actions, "patch"),
-    "",
-  ].join("\n");
-}
-
-function typeAsMarkdown(actions: ReleaseAction[], type: VersionType): string[] {
-  const bold = (x: string) => `**${x}**`;
-  const filteredActions = actions.filter((x) => x.type === type);
-  if (filteredActions.length === 0) {
-    return [`### ${"No"} packages to be bumped at ${bold(type)}`];
-  } else {
-    return [
-      `### ${filteredActions.length} packages to be bumped at ${bold(type)}:`,
-      ...filteredActions.map((action) => `- ${action.packageName} \`${action.oldVersion}\` → \`${action.newVersion}\``),
-    ];
   }
 }
