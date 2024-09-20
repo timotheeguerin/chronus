@@ -21,6 +21,9 @@ export async function getGithubInfoForChange(
   commits: Record<string, string>,
   githubToken: string,
 ): Promise<Record<string, GithubInfo>> {
+  if (Object.keys(commits).length === 0) {
+    return {};
+  }
   const commitQueries = Object.values(commits).map((sha) => {
     return `_${sha}: object(expression: ${JSON.stringify(sha)}) {
       ... on Commit {

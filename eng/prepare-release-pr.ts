@@ -7,7 +7,6 @@ import {
   renderReleasePlanAsMarkdown,
   resolveCurrentReleasePlan,
 } from "../packages/chronus/src/index.js";
-import {} from "../packages/chronus/src/release-plan/current.js";
 const branchName = "publish/auto-release";
 
 const plan = await resolveCurrentReleasePlan(NodeChronusHost, process.cwd());
