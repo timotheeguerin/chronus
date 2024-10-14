@@ -43,7 +43,7 @@
     "cspell": "^8.15.2",
     "eslint": "^9.12.0",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-unicorn": "^55.0.0",
+    "eslint-plugin-unicorn": "^56.0.0",
     "eslint-plugin-vitest": "^0.5.4",
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.1.0",
