@@ -36,7 +36,7 @@
     "@chronus/chronus": "workspace:*",
     "@octokit/graphql": "^8.1.1",
     "@octokit/rest": "^21.0.2",
-    "cross-spawn": "^7.0.3",
+    "cross-spawn": "^7.0.5",
     "octokit": "^4.0.2",
     "picocolors": "^1.1.1",
     "yargs": "^17.7.2"
