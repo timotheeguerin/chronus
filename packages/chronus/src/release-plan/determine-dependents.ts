@@ -1,13 +1,12 @@
 import semverSatisfies from "semver/functions/satisfies.js";
 import type { DependencyType, VersionType } from "../types.js";
-import { isPackageIncluded } from "../utils/misc-utils.js";
 import type { PackageJson } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
 
-function filterPackages(packages: string[], opts: { only?: string[]; exclude?: string[] }): string[] {
-  return packages.filter((x) => isPackageIncluded(x, opts));
+function filterPackages(packages: string[], { only, exclude }: { only?: string[]; exclude?: string[] }): string[] {
+  return packages.filter((pkg) => (!only || only.includes(pkg)) && (!exclude || !exclude.includes(pkg)));
 }
 
 /*
