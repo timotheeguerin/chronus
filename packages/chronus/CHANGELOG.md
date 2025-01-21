@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.14.0
+
+### Features
+
+- [#333](https://github.com/timotheeguerin/chronus/pull/333) Add `--exclude` and `--only` to `pack`
+
+
 ## 0.13.0
 
 ### Features

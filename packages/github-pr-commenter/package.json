@@ -1,6 +1,6 @@
 {
   "name": "@chronus/github-pr-commenter",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "type": "module",
   "description": "chronus",
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
