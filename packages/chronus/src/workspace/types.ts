@@ -1,4 +1,4 @@
-import type { ChronusResolvedConfig } from "../config/types.js";
+import type { ChronusResolvedConfig, VersionPolicy } from "../config/types.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
 
 /**
@@ -11,6 +11,7 @@ export type ChronusPackageState = "versioned" | "private" | "ignored";
 
 export interface ChronusPackage extends Package {
   readonly state: ChronusPackageState;
+  readonly policy: VersionPolicy;
 }
 
 export interface ChronusWorkspace {

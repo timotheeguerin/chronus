@@ -20,7 +20,7 @@ export async function pack({ reporter, dir, packDestination, only, exclude }: Pa
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, dir);
   for (const pkg of workspace.packages) {
-    if (!isPackageIncluded(pkg.name, { only, exclude })) {
+    if (!isPackageIncluded(pkg, { only, exclude })) {
       continue;
     }
     await reporter.task(`${pc.yellow(pkg.name)} packing`, async (task) => {

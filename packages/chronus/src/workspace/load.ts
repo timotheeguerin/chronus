@@ -1,6 +1,6 @@
 import micromatch from "micromatch";
 import { resolveConfig } from "../config/index.js";
-import type { ChronusResolvedConfig } from "../config/types.js";
+import type { ChronusResolvedConfig, VersionPolicy } from "../config/types.js";
 import { ChronusError, throwIfDiagnostic, type Diagnostic } from "../utils/errors.js";
 import type { ChronusHost } from "../utils/host.js";
 import { loadWorkspace } from "../workspace-manager/auto-discover.js";
@@ -48,8 +48,23 @@ function validateConfigWithWorkspace(config: ChronusResolvedConfig, workspace: W
 }
 
 export function createChronusWorkspace(workspace: Workspace, config: ChronusResolvedConfig): ChronusWorkspace {
+  const policyPerPackage = new Map<string, VersionPolicy>();
+  for (const policy of config.versionPolicies ?? []) {
+    for (const pkg of policy.packages) {
+      policyPerPackage.set(pkg, policy);
+    }
+  }
+  const defaultPolicy: VersionPolicy = {
+    name: "_default",
+    type: "independent",
+    packages: [],
+  };
   const chronusPackages = workspace.packages.map((pkg): ChronusPackage => {
-    return { ...pkg, state: getPackageState(config, pkg) };
+    return {
+      ...pkg,
+      state: getPackageState(config, pkg),
+      policy: policyPerPackage.get(pkg.name) ?? defaultPolicy,
+    };
   });
   const map = new Map<string, ChronusPackage>(chronusPackages.map((pkg) => [pkg.name, pkg]));
   return {
