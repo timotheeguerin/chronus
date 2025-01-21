@@ -1,3 +1,5 @@
+import type { ChronusPackage } from "../workspace/types.js";
+
 export function isDefined<T>(arg: T | undefined): arg is T {
   return arg !== undefined;
 }
@@ -52,4 +54,22 @@ export function getLastJsonObject(str: string) {
     }
   }
   return null;
+}
+
+export function isPackageIncluded(
+  pkg: ChronusPackage,
+  { only, exclude }: { only?: string[]; exclude?: string[] },
+): boolean {
+  const pkgName = pkg.name;
+  const policyName = pkg.policy.name;
+
+  if (exclude && (exclude.includes(pkgName) || exclude.includes(policyName))) {
+    return false;
+  }
+
+  if (only && (only.includes(pkgName) || only.includes(policyName))) {
+    return true;
+  }
+
+  return true;
 }

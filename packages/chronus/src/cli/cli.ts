@@ -13,6 +13,19 @@ import { withErrors, withErrorsAndReporter } from "./utils.js";
 
 export const DEFAULT_PORT = 3000;
 
+const filteringOptions = {
+  only: {
+    type: "string",
+    array: true,
+    description: "Only bump the specified packages/policies",
+  },
+  exclude: {
+    type: "string",
+    array: true,
+    description: "Exclude bump the specified packages/policies",
+  },
+} as const;
+
 async function main() {
   await yargs(process.argv.slice(2))
     .scriptName("chronus")
@@ -59,11 +72,7 @@ async function main() {
             description: "Ignore versioning policies and bump each package independently",
             default: false,
           })
-          .option("only", {
-            type: "string",
-            array: true,
-            description: "Only bump the specified package(s)",
-          })
+          .option(filteringOptions)
           .option("prerelease", {
             type: "boolean",
             description: "Update packages version following the prerelease policy",
@@ -72,6 +81,7 @@ async function main() {
         bumpVersions(process.cwd(), {
           ignorePolicies: args.ignorePolicies,
           only: args.only,
+          exclude: args.exclude,
           prerelease: args.prerelease,
         }),
       ),
@@ -86,12 +96,10 @@ async function main() {
             description: "Ignore versioning policies and bump each package independently",
             default: false,
           })
-          .option("only", {
-            type: "string",
-            array: true,
-            description: "Only bump the specified package(s)",
-          }),
-      withErrors((args) => showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only })),
+          .option(filteringOptions),
+      withErrors((args) =>
+        showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only, exclude: args.exclude }),
+      ),
     )
     .command(
       ["ls-pending-publish", "list-pending-publish"],
@@ -130,14 +138,18 @@ async function main() {
       ["pack"],
       "Pack all packages that can be published",
       (cmd) =>
-        cmd.option("pack-destination", {
-          type: "string",
-          description: "Containing directory for the packed packages. Default to each package own directory.",
-        }),
+        cmd
+          .option("pack-destination", {
+            type: "string",
+            description: "Containing directory for the packed packages. Default to each package own directory.",
+          })
+          .option(filteringOptions),
       withErrorsAndReporter((args) =>
         pack({
           reporter: args.reporter,
           dir: process.cwd(),
+          only: args.only,
+          exclude: args.exclude,
           packDestination: args.packDestination && resolveCliPath(args.packDestination),
         }),
       ),
