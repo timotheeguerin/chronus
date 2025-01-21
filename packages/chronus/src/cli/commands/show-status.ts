@@ -7,6 +7,7 @@ import { NodeChronusHost } from "../../utils/node-host.js";
 export interface ShowStatusOptions {
   readonly ignorePolicies?: boolean;
   readonly only?: string[];
+  readonly exclude?: string[];
 }
 
 function log(...args: any[]) {

@@ -5,6 +5,10 @@ import type { ChronusWorkspace } from "../workspace/types.js";
 import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
 
+function filterPackages(packages: string[], { only, exclude }: { only?: string[]; exclude?: string[] }): string[] {
+  return packages.filter((pkg) => (!only || only.includes(pkg)) && (!exclude || !exclude.includes(pkg)));
+}
+
 /*
   WARNING:
   Important note for understanding how this package works:
@@ -22,11 +26,13 @@ export function applyDependents({
   workspace,
   dependentsGraph,
   only,
+  exclude,
 }: {
   actions: Map<string, InternalReleaseAction>;
   workspace: ChronusWorkspace;
   dependentsGraph: Map<string, string[]>;
   only?: string[];
+  exclude?: string[];
 }): boolean {
   let updated = false;
   // NOTE this is intended to be called recursively
@@ -41,8 +47,7 @@ export function applyDependents({
     if (!pkgDependents) {
       continue;
     }
-    pkgDependents
-      .filter((x) => !only || only.includes(x))
+    filterPackages(pkgDependents, { only, exclude })
       .map((x) => workspace.getPackage(x))
       .map((dependentPackage) => {
         let type: VersionType | undefined;

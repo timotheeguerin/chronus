@@ -9,6 +9,7 @@ import type { ReleaseAction, ReleasePlan, ReleasePlanChangeApplication } from ".
 export interface AssembleReleasePlanOptions {
   readonly ignorePolicies?: boolean;
   readonly only?: string[];
+  readonly exclude?: string[];
 }
 
 export function assembleReleasePlan(
@@ -51,6 +52,7 @@ export function assembleReleasePlan(
     workspace,
     dependentsGraph,
     only: options?.only,
+    exclude: options?.exclude,
   });
 
   const actions = [...internalActions.values()].map((incompleteRelease): ReleaseAction => {
