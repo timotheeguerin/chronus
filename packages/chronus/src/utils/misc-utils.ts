@@ -53,3 +53,7 @@ export function getLastJsonObject(str: string) {
   }
   return null;
 }
+
+export function isPackageIncluded(pkg: string, { only, exclude }: { only?: string[]; exclude?: string[] }): boolean {
+  return (!only || only.includes(pkg)) && (!exclude || !exclude.includes(pkg));
+}

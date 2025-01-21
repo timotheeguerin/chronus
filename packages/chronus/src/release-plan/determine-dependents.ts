@@ -1,9 +1,14 @@
 import semverSatisfies from "semver/functions/satisfies.js";
 import type { DependencyType, VersionType } from "../types.js";
+import { isPackageIncluded } from "../utils/misc-utils.js";
 import type { PackageJson } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
+
+function filterPackages(packages: string[], opts: { only?: string[]; exclude?: string[] }): string[] {
+  return packages.filter((x) => isPackageIncluded(x, opts));
+}
 
 /*
   WARNING:
@@ -22,11 +27,13 @@ export function applyDependents({
   workspace,
   dependentsGraph,
   only,
+  exclude,
 }: {
   actions: Map<string, InternalReleaseAction>;
   workspace: ChronusWorkspace;
   dependentsGraph: Map<string, string[]>;
   only?: string[];
+  exclude?: string[];
 }): boolean {
   let updated = false;
   // NOTE this is intended to be called recursively
@@ -41,8 +48,7 @@ export function applyDependents({
     if (!pkgDependents) {
       continue;
     }
-    pkgDependents
-      .filter((x) => !only || only.includes(x))
+    filterPackages(pkgDependents, { only, exclude })
       .map((x) => workspace.getPackage(x))
       .map((dependentPackage) => {
         let type: VersionType | undefined;

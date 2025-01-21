@@ -17,6 +17,7 @@ export interface BumpVersionOptions {
   readonly ignorePolicies?: boolean;
   readonly prerelease?: boolean | string;
   readonly only?: string[];
+  readonly exclude?: string[];
 }
 
 export async function bumpVersions(cwd: string, options?: BumpVersionOptions): Promise<void> {
