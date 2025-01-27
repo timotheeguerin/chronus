@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.14.1
+
+### Bug Fixes
+
+- [#340](https://github.com/timotheeguerin/chronus/pull/340) Add support for pnpm 9.14.0
+
+
 ## 0.14.0
 
 ### Features
