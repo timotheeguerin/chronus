@@ -1,5 +1,6 @@
 import { mkdir, stat } from "fs/promises";
 import pacote from "pacote";
+import { gte } from "semver";
 import { execAsync } from "../utils/exec-async.js";
 import { getLastJsonObject } from "../utils/misc-utils.js";
 import { resolvePath } from "../utils/path-utils.js";
@@ -57,17 +58,34 @@ async function packPackageWithNpm(pkg: Package, pkgDir: string, packDestination:
   };
 }
 
+function getOutputFilename(output: string, supportsJson: boolean): string {
+  if (supportsJson) {
+    const parsedResult = getLastJsonObject(output);
+    return parsedResult.filename;
+  }
+  return output.trim();
+}
+
 async function packPackageWithPnpm(pkg: Package, pkgDir: string, packDestination: string): Promise<PackPackageResult> {
+  const version = await getPnpmVersion(pkgDir);
+  const supportsJson = gte(version, "9.14.0");
   const command = getPnpmCommand(packDestination);
+
+  if (supportsJson) {
+    command.args.push("--json");
+  }
   const result = await execAsync(command.command, command.args, { cwd: pkgDir });
+
   if (result.code !== 0) {
     throw new Error(`Failed to pack package ${pkg.name} at ${pkg.relativePath}. Log:\n${result.stdall}`);
   }
 
-  const filename = result.stdout.toString().trim();
+  const filename = getOutputFilename(result.stdout.toString(), supportsJson);
   const path = resolvePath(packDestination, filename);
+
   const stats = await stat(path);
   const tabballManifest = await pacote.manifest(path, { fullMetadata: true });
+
   return {
     id: tabballManifest._id,
     name: tabballManifest.name,
@@ -82,6 +100,11 @@ async function packPackageWithPnpm(pkg: Package, pkgDir: string, packDestination
 interface Command {
   readonly command: string;
   readonly args: string[];
+}
+
+async function getPnpmVersion(dir: string): Promise<string> {
+  const result = await execAsync("pnpm", ["--version"], { cwd: dir });
+  return result.stdout.toString().trim();
 }
 
 function getPnpmCommand(destination: string): Command {
