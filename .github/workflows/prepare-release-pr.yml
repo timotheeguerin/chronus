@@ -30,4 +30,4 @@ jobs:
       - name: Create release branch
         run: pnpm tsx ./eng/prepare-release-pr.ts
         env:
-          GITHUB_TOKEN: ${{secrets.CUSTOM_GITHUB_TOKEN}}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
