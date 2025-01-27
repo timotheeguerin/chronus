@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Monorepo for chronus",
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
-  "packageManager": "pnpm@9.5.0",
+  "packageManager": "pnpm@9.15.4",
   "license": "MIT",
   "private": true,
   "author": "Microsoft",
