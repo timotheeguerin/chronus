@@ -87,7 +87,7 @@ function reduceChanges(
     const packages = change.packages
       .filter((name) => !only || only.includes(name))
       .map((name) => workspace.getPackage(name))
-      .filter((pkg) => pkg.state === "versioned");
+      .filter((pkg) => pkg.state === "versioned" || pkg.state === "standalone");
 
     changeApplications.push({
       usage: change.packages.length === packages.length ? "used" : packages.length === 0 ? "unused" : "partial",

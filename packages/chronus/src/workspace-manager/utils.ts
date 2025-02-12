@@ -3,7 +3,11 @@ import type { ChronusHost } from "../utils/host.js";
 import { isDefined, resolvePath } from "../utils/index.js";
 import type { Package } from "./types.js";
 
-export async function findPackagesFromPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
+export async function findPackagesFromPattern(
+  host: ChronusHost,
+  root: string,
+  pattern: string | string[],
+): Promise<Package[]> {
   const packageRoots = await host.glob(pattern, {
     baseDir: root,
     onlyDirectories: true,

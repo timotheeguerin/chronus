@@ -85,7 +85,7 @@ export function getDependencyGraph(
 
       const range = getValidRange(repRange);
 
-      if ((range && !range.test(expected)) || isProtocolRange(repRange)) {
+      if (((range && !range.test(expected)) || isProtocolRange(repRange)) && usesWorkspaceRange) {
         valid = false;
         throw new ChronusError(
           `Package "${name}" must depend on the current version of "${depName}": "${expected}" vs "${originalDepRange}"`,

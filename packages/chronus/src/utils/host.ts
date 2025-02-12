@@ -25,7 +25,7 @@ export interface ChronusHost {
    */
   access(path: string): Promise<void>;
 
-  glob(pattern: string, options?: GlobOptions): Promise<string[]>;
+  glob(pattern: string | string[], options?: GlobOptions): Promise<string[]>;
 }
 
 export interface RmOptions {

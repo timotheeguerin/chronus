@@ -6,6 +6,8 @@ export interface ChronusUserConfig {
   readonly source?: YamlFile;
   readonly baseBranch: string;
   readonly workspaceType?: WorkspaceType | "auto";
+  /** Additional packages that do not belong the workspace */
+  readonly additionalPackages?: string[];
   readonly versionPolicies?: VersionPolicy[];
   /** Projects or pattern of package name to ignore. By default all private: true packages are ignored. */
   readonly ignore?: string[];
