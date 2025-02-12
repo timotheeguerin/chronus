@@ -35,7 +35,7 @@ export const NodeChronusHost: ChronusHost = {
     await doIO(() => access(normalizedPath));
   },
 
-  async glob(pattern: string, options?: GlobOptions): Promise<string[]> {
+  async glob(pattern: string | string[], options?: GlobOptions): Promise<string[]> {
     return globby(pattern, {
       cwd: options?.baseDir,
       onlyDirectories: options?.onlyDirectories,

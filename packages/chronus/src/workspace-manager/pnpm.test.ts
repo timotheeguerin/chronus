@@ -10,7 +10,7 @@ describe("pnpm", () => {
   beforeEach(async () => {
     host = createTestHost({
       "proj/pnpm-workspace.yaml": stringify({
-        packages: ["packages/*"],
+        packages: ["packages/*", "!packages/pkg-excluded/**"],
       }),
     });
 
@@ -39,5 +39,13 @@ describe("pnpm", () => {
       relativePath: "packages/pkg-b",
       manifest: { name: "pkg-b", version: "1.2.0" },
     });
+  });
+
+  it("doesn't included excluded packages", async () => {
+    host.addFile("proj/packages/pkg-a/package.json", JSON.stringify({ name: "pkg-a", version: "1.0.0" }));
+    host.addFile("proj/packages/pkg-excluded/package.json", JSON.stringify({ name: "pkg-excluded", version: "1.2.0" }));
+    const workspace = await pnpm.load("proj");
+    expect(workspace.packages).toHaveLength(1);
+    expect(workspace.packages[0]).toHaveProperty("name", "pkg-a");
   });
 });

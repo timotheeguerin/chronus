@@ -36,7 +36,7 @@ export function createTestHost(files: Record<string, string> = {}): TestHost {
     access: (path: string) => {
       return path in fs ? Promise.resolve() : Promise.reject(new Error(`VFS: File ${path} does not exist`));
     },
-    glob: (pattern: string, options?: GlobOptions) => {
+    glob: (pattern: string | string[], options?: GlobOptions) => {
       const baseDir = (options?.baseDir ?? "") + "/";
       const filesInBaseDir = Object.keys(fs)
         .filter((x) => x.startsWith(baseDir))
@@ -51,7 +51,7 @@ export function createTestHost(files: Record<string, string> = {}): TestHost {
           current = getDirectoryPath(current);
         }
       }
-      return Promise.resolve([...content].filter((x) => micromatch.isMatch(x, pattern)));
+      return Promise.resolve(micromatch([...content], pattern));
     },
   };
   return {

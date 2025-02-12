@@ -5,6 +5,7 @@ import { ChronusError, throwIfDiagnostic, type Diagnostic } from "../utils/error
 import type { ChronusHost } from "../utils/host.js";
 import { loadWorkspace } from "../workspace-manager/auto-discover.js";
 import type { Package, Workspace } from "../workspace-manager/types.js";
+import { findPackagesFromPattern } from "../workspace-manager/utils.js";
 import { getLocationInYamlScript } from "../yaml/location.js";
 import type { ChronusPackage, ChronusPackageState, ChronusWorkspace } from "./types.js";
 
@@ -20,17 +21,32 @@ function getPackageState(config: ChronusResolvedConfig, pkg: Package): ChronusPa
 
 export async function loadChronusWorkspace(host: ChronusHost, dir: string): Promise<ChronusWorkspace> {
   const config = await resolveConfig(host, dir);
-  const workspace = await loadWorkspace(host, config.workspaceRoot, config.workspaceType);
-  validateConfigWithWorkspace(config, workspace);
-  return createChronusWorkspace(workspace, config);
+  const additionalPackages: Package[] = await loadStandalonePackages(host, config);
+  const workspace: Workspace = await loadWorkspace(host, config.workspaceRoot, config.workspaceType);
+  validateConfigWithWorkspace(config, workspace, additionalPackages);
+  return createChronusWorkspace(workspace, config, additionalPackages);
 }
 
-function validateConfigWithWorkspace(config: ChronusResolvedConfig, workspace: Workspace): void {
+/** Any packages that do not belong to the namespace but are referenced in the config */
+async function loadStandalonePackages(host: ChronusHost, config: ChronusResolvedConfig) {
+  return config.additionalPackages
+    ? await findPackagesFromPattern(host, config.workspaceRoot, config.additionalPackages)
+    : [];
+}
+
+function validateConfigWithWorkspace(
+  config: ChronusResolvedConfig,
+  workspace: Workspace,
+  additionalPackages: Package[],
+): void {
   const diagnostics: Diagnostic[] = [];
   if (config.versionPolicies) {
     for (const [policyIndex, policy] of config.versionPolicies.entries()) {
       for (const [pkgIndex, pkgName] of policy.packages.entries()) {
-        if (!workspace.packages.some((pkg) => pkg.name === pkgName)) {
+        if (
+          !workspace.packages.some((pkg) => pkg.name === pkgName) &&
+          !additionalPackages.some((pkg) => pkg.name === pkgName)
+        ) {
           diagnostics.push({
             code: "package-not-found",
             message: `Package '${pkgName}' is not found in workspace`,
@@ -47,7 +63,11 @@ function validateConfigWithWorkspace(config: ChronusResolvedConfig, workspace: W
   throwIfDiagnostic(diagnostics);
 }
 
-export function createChronusWorkspace(workspace: Workspace, config: ChronusResolvedConfig): ChronusWorkspace {
+export function createChronusWorkspace(
+  workspace: Workspace,
+  config: ChronusResolvedConfig,
+  additionalPackages: Package[] = [],
+): ChronusWorkspace {
   const policyPerPackage = new Map<string, VersionPolicy>();
   for (const policy of config.versionPolicies ?? []) {
     for (const pkg of policy.packages) {
@@ -59,13 +79,22 @@ export function createChronusWorkspace(workspace: Workspace, config: ChronusReso
     type: "independent",
     packages: [],
   };
-  const chronusPackages = workspace.packages.map((pkg): ChronusPackage => {
-    return {
-      ...pkg,
-      state: getPackageState(config, pkg),
-      policy: policyPerPackage.get(pkg.name) ?? defaultPolicy,
-    };
-  });
+  const chronusPackages = [
+    ...workspace.packages.map((pkg): ChronusPackage => {
+      return {
+        ...pkg,
+        state: getPackageState(config, pkg),
+        policy: policyPerPackage.get(pkg.name) ?? defaultPolicy,
+      };
+    }),
+    ...additionalPackages.map((pkg): ChronusPackage => {
+      return {
+        ...pkg,
+        state: "standalone",
+        policy: policyPerPackage.get(pkg.name) ?? defaultPolicy,
+      };
+    }),
+  ];
   const map = new Map<string, ChronusPackage>(chronusPackages.map((pkg) => [pkg.name, pkg]));
   return {
     path: config.workspaceRoot,

@@ -36,20 +36,23 @@ function getNewPackageJson(
     currentPkgJson.version = newVersion;
   }
 
-  for (const depType of ["dependencies", "devDependencies", "peerDependencies"] as const) {
-    const depObj = currentPkgJson[depType];
-    if (depObj) {
-      for (const dep of Object.keys(depObj)) {
-        const depAction = actionForPackage.get(dep);
-        if (depAction) {
-          depObj[dep] = updateDependencyVersion(
-            depObj[dep],
-            { newVersion: depAction.newVersion, oldVersion: workspace.getPackage(dep).version },
-            dependencyUpdateMode,
-          );
+  if (pkg.state !== "standalone") {
+    for (const depType of ["dependencies", "devDependencies", "peerDependencies"] as const) {
+      const depObj = currentPkgJson[depType];
+      if (depObj) {
+        for (const dep of Object.keys(depObj)) {
+          const depAction = actionForPackage.get(dep);
+          if (depAction) {
+            depObj[dep] = updateDependencyVersion(
+              depObj[dep],
+              { newVersion: depAction.newVersion, oldVersion: workspace.getPackage(dep).version },
+              dependencyUpdateMode,
+            );
+          }
         }
       }
     }
   }
+
   return currentPkgJson;
 }
