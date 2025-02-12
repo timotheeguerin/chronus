@@ -1,5 +1,16 @@
 # @chronus/chronus
 
+## 0.15.0
+
+### Features
+
+- [#352](https://github.com/timotheeguerin/chronus/pull/352) Add new `additionalPackages` entry which can be used to give path to some additional packages that are not part of the main workspace and should still be versioned.
+
+### Bug Fixes
+
+- [#352](https://github.com/timotheeguerin/chronus/pull/352) Correctly respect negate patterns in pnpm workspace packages list
+
+
 ## 0.14.1
 
 ### Bug Fixes
