@@ -1,5 +1,16 @@
 # @chronus/chronus
 
+## 0.16.0
+
+### Bug Fixes
+
+- [#365](https://github.com/timotheeguerin/chronus/pull/365) Fix `--exclude` not respected for `version`, `status` commands
+
+### Features
+
+- [#367](https://github.com/timotheeguerin/chronus/pull/367) Reverse order of change kinds in changelog. As changes are recommneded to be ordered from least disruptive to most in the config.
+
+
 ## 0.15.0
 
 ### Features
