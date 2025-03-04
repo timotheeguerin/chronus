@@ -249,4 +249,42 @@ describe("Assemble Release Plan", () => {
       expect(plan.changes[0]).toMatchObject({ usage: "partial", packages: ["pkg-a"] });
     });
   });
+
+  describe("partial release plan using exclude option", () => {
+    it("ignore packages with changes", () => {
+      const workspace: Workspace = mkWorkspace([mkPkg("pkg-a", {}), mkPkg("pkg-b", {})]);
+      const plan = assembleReleasePlan(
+        [mkChange("pkg-a", "minor"), mkChange("pkg-b", "minor")],
+        createChronusWorkspace(workspace, baseConfig),
+        { exclude: ["pkg-b"] },
+      );
+      expect(plan.actions).toHaveLength(1);
+      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+    });
+
+    it("ignore packages that would need to be bumped as dependent", () => {
+      const workspace: Workspace = mkWorkspace([
+        mkPkg("pkg-a", {}),
+        mkPkg("pkg-b", { dependencies: { "pkg-a": "1.0.0" } }),
+      ]);
+      const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig), {
+        exclude: ["pkg-b"],
+      });
+      expect(plan.actions).toHaveLength(1);
+      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+    });
+
+    it("report changes as partially used if only bumping some packages tagged in it", () => {
+      const workspace: Workspace = mkWorkspace([mkPkg("pkg-a", {}), mkPkg("pkg-b", {})]);
+      const plan = assembleReleasePlan(
+        [mkChange(["pkg-a", "pkg-b"], "minor")],
+        createChronusWorkspace(workspace, baseConfig),
+        {
+          exclude: ["pkg-b"],
+        },
+      );
+      expect(plan.changes).toHaveLength(1);
+      expect(plan.changes[0]).toMatchObject({ usage: "partial", packages: ["pkg-a"] });
+    });
+  });
 });

@@ -1,5 +1,6 @@
 import type { ChangeDescription } from "../change/types.js";
 import { getDependentsGraph } from "../dependency-graph/index.js";
+import { isPackageIncluded } from "../utils/misc-utils.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { applyDependents } from "./determine-dependents.js";
 import { incrementVersion } from "./increment-version.js";
@@ -18,7 +19,10 @@ export function assembleReleasePlan(
   options?: AssembleReleasePlanOptions,
 ): ReleasePlan {
   const packagesByName = new Map(workspace.allPackages.map((pkg) => [pkg.name, pkg]));
-  const { changeApplications, actions: requested } = reduceChanges(changes, workspace, options?.only);
+  const { changeApplications, actions: requested } = reduceChanges(changes, workspace, {
+    only: options?.only,
+    exclude: options?.exclude,
+  });
 
   const dependentsGraph = getDependentsGraph(workspace.packages);
   const internalActions = new Map<string, InternalReleaseAction>();
@@ -46,6 +50,7 @@ export function assembleReleasePlan(
       internalActions.set(request.packageName, request);
     }
   }
+
   // The map passed in to determineDependents will be mutated
   applyDependents({
     actions: internalActions,
@@ -76,7 +81,7 @@ export function assembleReleasePlan(
 function reduceChanges(
   changes: ChangeDescription[],
   workspace: ChronusWorkspace,
-  only?: string[],
+  filters: { only?: string[]; exclude?: string[] } = {},
 ): { changeApplications: ReleasePlanChangeApplication[]; actions: Map<string, InternalReleaseAction> } {
   const actions: Map<string, InternalReleaseAction> = new Map();
   const changeApplications: ReleasePlanChangeApplication[] = [];
@@ -85,8 +90,8 @@ function reduceChanges(
     // Filter out ignored packages because they should not trigger a release
     // If their dependencies need updates, they will be added to releases by `determineDependents()` with release type `none`
     const packages = change.packages
-      .filter((name) => !only || only.includes(name))
       .map((name) => workspace.getPackage(name))
+      .filter((pkg) => isPackageIncluded(pkg, filters))
       .filter((pkg) => pkg.state === "versioned" || pkg.state === "standalone");
 
     changeApplications.push({

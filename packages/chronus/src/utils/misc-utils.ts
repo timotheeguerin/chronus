@@ -67,8 +67,8 @@ export function isPackageIncluded(
     return false;
   }
 
-  if (only && (only.includes(pkgName) || only.includes(policyName))) {
-    return true;
+  if (only) {
+    return only.includes(pkgName) || only.includes(policyName);
   }
 
   return true;
