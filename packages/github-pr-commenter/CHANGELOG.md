@@ -1,5 +1,9 @@
 # @chronus/github-pr-commenter
 
+## 0.5.9
+
+No changes, version bump only.
+
 ## 0.5.8
 
 No changes, version bump only.
