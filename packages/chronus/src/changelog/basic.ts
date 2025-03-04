@@ -60,7 +60,7 @@ export class BasicChangelogGenerator {
 
     const lines = [`# ${newVersion}`, ""];
     let hasChange = false;
-    for (const changeKind of Object.values(this.workspace.config.changeKinds)) {
+    for (const changeKind of Object.values(this.workspace.config.changeKinds).reverse()) {
       const changes = changesByKindAndPackages.get(changeKind.name);
       if (changes && changes.size > 0) {
         hasChange = true;

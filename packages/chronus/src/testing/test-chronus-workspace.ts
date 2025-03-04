@@ -7,9 +7,9 @@ import { createChronusWorkspace } from "../workspace/load.js";
  * Fixed set of change kinds to use in testing
  */
 export const TestingChangeKinds = {
-  major: { name: "major", versionType: "major", description: "Breaking changes", title: "Major" },
-  minor: { name: "minor", versionType: "minor", description: "Features", title: "Minor" },
   patch: { name: "patch", versionType: "patch", description: "Bug fixes", title: "Patch" },
+  minor: { name: "minor", versionType: "minor", description: "Features", title: "Minor" },
+  major: { name: "major", versionType: "major", description: "Breaking changes", title: "Major" },
 } as const;
 
 function mkWorkspace(packages: Package[]): Workspace {
