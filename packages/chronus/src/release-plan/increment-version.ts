@@ -15,5 +15,9 @@ export function incrementVersion(release: InternalReleaseAction) {
     return semverInc(oldVersion, "prerelease")!;
   }
 
-  return semverInc(oldVersion, release.type)!;
+  if (oldVersion.major === 0 && release.type === "major") {
+    return semverInc(oldVersion, "minor")!;
+  } else {
+    return semverInc(oldVersion, release.type)!;
+  }
 }
