@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 0.17.0
+
+### Features
+
+- [#369](https://github.com/timotheeguerin/chronus/pull/369) Do not bump `0.` to `1.0` when a change is marked as `major`
+
+
 ## 0.16.0
 
 ### Bug Fixes
