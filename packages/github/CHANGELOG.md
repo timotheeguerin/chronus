@@ -1,5 +1,9 @@
 # Changelog - @chronus/github
 
+## 0.4.8
+
+No changes, version bump only.
+
 ## 0.4.7
 
 No changes, version bump only.
