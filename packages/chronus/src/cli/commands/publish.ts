@@ -1,3 +1,4 @@
+import { exit } from "node:process";
 import pc from "picocolors";
 import { publishPackage } from "../../publish/publish-package.js";
 import type { PublishPackageResult, PublishSummary } from "../../publish/types.js";
@@ -42,6 +43,9 @@ export async function publish({ reporter, pattern, reportSummary, ...others }: P
   if (reportSummary) {
     const summary = createPublishSummary(results, workspace);
     await host.writeFile(reportSummary, JSON.stringify(summary, null, 2));
+  }
+  if (Object.values(results).some((result) => !result.published)) {
+    exit(1);
   }
 }
 
