@@ -37,6 +37,28 @@ describe("generate single package changelog", () => {
       ].join("\n"),
     );
   });
+
+  it("indent multi line change entry", () => {
+    const generator = new BasicChangelogGenerator(workspace);
+    const generated = generator.renderPackageVersion("1.0.0", [
+      { id: "change-1", changeKind: TestingChangeKinds.major, content: "Change 1\nwith\nsome\ndetails", packages: [] },
+    ]);
+
+    expect(generated).toEqual(
+      [
+        //render indented
+        "## 1.0.0",
+        "",
+        "### Majors",
+        "",
+        "- Change 1",
+        "  with",
+        "  some",
+        "  details",
+        "",
+      ].join("\n"),
+    );
+  });
 });
 
 describe("generate aggregated changelog", () => {

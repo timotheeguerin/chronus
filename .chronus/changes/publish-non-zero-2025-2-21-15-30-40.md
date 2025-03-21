@@ -6,3 +6,5 @@ packages:
 ---
 
 Report non zero exit when publish fails
+with 
+some multiline

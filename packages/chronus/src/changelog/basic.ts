@@ -83,7 +83,13 @@ export class BasicChangelogGenerator {
   }
 
   renderEntry(change: ChangeDescription) {
-    return `- ${change.content}`;
+    return `- ${this.renderContent(change.content)}`;
+  }
+
+  renderContent(content: string) {
+    const [first, ...lines] = content.split("\n");
+    const transformedLines = lines.map((line) => `  ${line}`);
+    return [first, ...transformedLines].join("\n");
   }
 }
 

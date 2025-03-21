@@ -18,7 +18,7 @@ export class GithubChangelogGenerator extends BasicChangelogGenerator {
       : githubInfo?.commit
         ? `${this.renderCommitLink(githubInfo)} `
         : "";
-    return `- ${prefix}${change.content}`;
+    return `- ${prefix}${this.renderContent(change.content)}`;
   }
 
   renderPrLink(pr: GithubPrRef) {
