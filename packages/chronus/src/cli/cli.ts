@@ -188,6 +188,10 @@ async function main() {
             type: "string",
             description: "Npm dist-tag to use when publishing the package.",
           })
+          .option("otp", {
+            type: "string",
+            description: "This is a one-time password from a two-factor authenticator.",
+          })
           .option("report-summary", {
             type: "string",
             description: "Save the list of published packages.",
@@ -200,6 +204,7 @@ async function main() {
           registry: args.registry,
           engine: args.engine,
           tag: args.tag,
+          otp: args.otp,
           reportSummary: args.reportSummary && resolvePath(process.cwd(), args.reportSummary),
         }),
       ),
