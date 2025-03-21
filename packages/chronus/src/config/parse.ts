@@ -25,6 +25,7 @@ const changeKindsSchema = z.object({
 
 const schema = z.object({
   baseBranch: z.string(),
+  baseRemote: z.string().optional(),
   workspaceType: z.enum(["auto", "npm", "pnpm", "rush"]).optional(),
   additionalPackages: z.array(z.string()).optional(),
   versionPolicies: z.array(versionPolicySchema).optional(),
