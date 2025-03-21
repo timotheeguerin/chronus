@@ -8,6 +8,7 @@ import { createGitSourceControl } from "../../source-control/git.js";
 import { NodeChronusHost } from "../../utils/node-host.js";
 import type { Package } from "../../workspace-manager/types.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
+import type { ChronusWorkspace } from "../../workspace/types.js";
 
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
@@ -16,10 +17,23 @@ function log(...args: any[]) {
 
 export interface AddChangesetOptions {
   readonly cwd: string;
+  readonly packages?: string[];
   readonly since?: string;
 }
 
-export async function addChangeset({ cwd, since }: AddChangesetOptions): Promise<void> {
+async function resolvePackagesToInclude(
+  workspace: ChronusWorkspace,
+  status: ChangeStatus,
+  packages?: string[],
+): Promise<Package[] | undefined> {
+  if (packages === undefined) {
+    return await promptForPackages(status);
+  }
+  return packages.map((x) => {
+    return workspace.getPackage(x);
+  });
+}
+export async function addChangeset({ cwd, since, packages }: AddChangesetOptions): Promise<void> {
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
   const sourceControl = createGitSourceControl(workspace.path);
@@ -28,7 +42,7 @@ export async function addChangeset({ cwd, since }: AddChangesetOptions): Promise
     log("No package changed. Exiting.\n");
     return;
   }
-  const packageToInclude = await promptForPackages(status);
+  const packageToInclude = await resolvePackagesToInclude(workspace, status, packages);
 
   if (packageToInclude === undefined || packageToInclude.length === 0) {
     log("No package selected. Exiting.\n");
