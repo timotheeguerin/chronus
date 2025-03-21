@@ -26,7 +26,7 @@ async function resolvePackagesToInclude(
   status: ChangeStatus,
   packages?: string[],
 ): Promise<Package[] | undefined> {
-  if (packages === undefined) {
+  if (packages === undefined || packages.length === 0) {
     return await promptForPackages(status);
   }
   return packages.map((x) => {

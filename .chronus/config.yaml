@@ -1,5 +1,5 @@
 baseBranch: main
-remote: https://github.com/timotheeguerin/chronus
+baseRemote: https://github.com/timotheeguerin/chronus
 changelog: ["@chronus/github/changelog", { repo: "timotheeguerin/chronus" }]
 changeKinds:
   breaking:

@@ -74,7 +74,7 @@ export interface GitRepository {
    * Returns files changed from the base remote branch.
    * @param dir Repository directory
    */
-  listChangedFilesFromBase(baseBranch: string): Promise<string[]>;
+  listChangedFilesFromBase(baseBranch: string, baseRemote?: string): Promise<string[]>;
 
   /**
    * Get the name of the current local branch.
@@ -204,8 +204,7 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
 
   async function findRemoteFromUrl(remoteUrl: string) {
     const remotes = splitStdoutLines(await execGit(["remote", `--v`], { repositoryPath }));
-    console.log(remotes);
-    return remotes.find((remote) => remote.includes(remoteUrl))?.split(" ")[0];
+    return remotes.find((remote) => remote.includes(remoteUrl))?.split("\t")[0];
   }
 
   async function getCurrentBranch() {
