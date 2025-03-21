@@ -41,15 +41,21 @@ async function main() {
       default: false,
     })
     .command(
-      "add",
+      "add [packages...]",
       "Add a new change description",
       (cmd) =>
-        cmd.option("since", {
-          type: "string",
-          description:
-            "Verify since the the given branch. Default to the baseBranch configured in .chronus/config.yaml",
-        }),
-      withErrors((args) => addChangeset({ cwd: process.cwd(), since: args.since })),
+        cmd
+          .positional("packages", {
+            type: "string",
+            array: true,
+            description: "Specify which packages to include in the changeset and skip the interactive prompt",
+          })
+          .option("since", {
+            type: "string",
+            description:
+              "Verify since the the given branch. Default to the baseBranch configured in .chronus/config.yaml",
+          }),
+      withErrors((args) => addChangeset({ cwd: process.cwd(), packages: args.packages, since: args.since })),
     )
     .command(
       "verify",
