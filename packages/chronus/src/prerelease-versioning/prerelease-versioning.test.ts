@@ -76,4 +76,16 @@ describe("Assemble Release Plan", () => {
     expect(res.get("pkg-b")?.newVersion).toBe("1.0.4-dev.0");
     expect(res.get("pkg-c")?.newVersion).toBe("1.0.1-dev.0");
   });
+
+  it("respect filters", async () => {
+    const res = await getPrereleaseVersionActions(
+      [mkChange(["pkg-a"], "minor"), mkChange(["pkg-b"], "minor")],
+      createChronusWorkspace(workspace, baseConfig),
+      "{nextVersion}-dev.{changeCount}",
+      { only: ["pkg-a"] },
+    );
+
+    expect(res.size).toBe(1);
+    expect(res.get("pkg-a")?.newVersion).toBe("1.1.0-dev.1");
+  });
 });

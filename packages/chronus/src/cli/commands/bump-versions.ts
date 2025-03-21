@@ -29,6 +29,7 @@ export async function bumpVersions(cwd: string, options?: BumpVersionOptions): P
       host,
       workspace,
       options.prerelease === true ? DefaultPrereleaseTemplate : options.prerelease,
+      { only: options.only, exclude: options.exclude },
     );
   } else {
     const releasePlan = await resolveReleasePlan(host, workspace, options);
@@ -48,9 +49,14 @@ export async function resolveReleasePlan(
   return releasePlan;
 }
 
-async function bumpPrereleaseVersion(host: ChronusHost, workspace: ChronusWorkspace, prereleaseTemplate: string) {
+async function bumpPrereleaseVersion(
+  host: ChronusHost,
+  workspace: ChronusWorkspace,
+  prereleaseTemplate: string,
+  filters: { only?: string[]; exclude?: string[] } = {},
+) {
   const changes = await readChangeDescriptions(host, workspace);
-  const versionActions = await getPrereleaseVersionActions(changes, workspace, prereleaseTemplate);
+  const versionActions = await getPrereleaseVersionActions(changes, workspace, prereleaseTemplate, filters);
   const maxLength = workspace.packages.reduce((max, pkg) => Math.max(max, pkg.name.length), 0);
   for (const [pkgName, action] of versionActions) {
     log(`Bumping ${pc.magenta(pkgName.padEnd(maxLength))} to ${pc.cyan(action.newVersion)}`);

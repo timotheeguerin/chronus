@@ -2,6 +2,7 @@ import { inc, parse } from "semver";
 import type { VersionAction } from "../apply-release-plan/update-package-json.js";
 import type { ChangeDescription } from "../change/types.js";
 import { assembleReleasePlan } from "../release-plan/assemble-release-plan.js";
+import { isPackageIncluded } from "../utils/misc-utils.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 
 /**
@@ -18,6 +19,7 @@ export async function getPrereleaseVersionActions(
   changes: ChangeDescription[],
   workspace: ChronusWorkspace,
   prereleaseTemplate: string,
+  filters: { only?: string[]; exclude?: string[] } = {},
 ): Promise<Map<string, VersionAction>> {
   const releasePlan = assembleReleasePlan(changes, workspace);
 
@@ -36,7 +38,7 @@ export async function getPrereleaseVersionActions(
   }
 
   const versionActions = new Map<string, VersionAction>();
-  for (const pkg of workspace.packages) {
+  for (const pkg of workspace.packages.filter((pkg) => isPackageIncluded(pkg, filters))) {
     const changeCount = changePerPackage.get(pkg.name) ?? 0;
     const action = releasePlan.actions.find((x) => x.packageName === pkg.name);
     const version = parse(pkg.version)!;
