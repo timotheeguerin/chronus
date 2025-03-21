@@ -74,7 +74,7 @@ export interface GitRepository {
    * Returns files changed from the base remote branch.
    * @param dir Repository directory
    */
-  listChangedFilesFromBase(baseBranch: string): Promise<string[]>;
+  listChangedFilesFromBase(baseBranch: string, baseRemote?: string): Promise<string[]>;
 
   /**
    * Get the name of the current local branch.
@@ -170,12 +170,20 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     return stdout.toString().trim();
   }
 
-  async function listChangedFilesFromBase(baseBranch: string) {
+  async function listChangedFilesFromBase(baseBranch: string, remote?: string) {
     let remoteBase: string | undefined;
-    try {
-      remoteBase = await findRemoteForBranch(baseBranch);
-    } catch {
-      // ignore
+    if (remote) {
+      try {
+        remoteBase = await findRemoteFromUrl(remote);
+      } catch {
+        // ignore
+      }
+    } else {
+      try {
+        remoteBase = await findRemoteForBranch(baseBranch);
+      } catch {
+        // ignore
+      }
     }
     if (remoteBase === undefined) {
       remoteBase = `refs/remotes/origin/${baseBranch}`;
@@ -192,6 +200,11 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     return splitStdoutLines(
       await execGit(["for-each-ref", "--format", "%(upstream:short)", ref], { repositoryPath }),
     )[0];
+  }
+
+  async function findRemoteFromUrl(remoteUrl: string) {
+    const remotes = splitStdoutLines(await execGit(["remote", `--v`], { repositoryPath }));
+    return remotes.find((remote) => remote.includes(remoteUrl))?.split("\t")[0];
   }
 
   async function getCurrentBranch() {

@@ -40,7 +40,10 @@ export async function findChangeStatus(
   workspace: ChronusWorkspace,
   options?: FindChangeStatusOptions,
 ): Promise<ChangeStatus> {
-  const filesChanged = await sourceControl.listChangedFilesFromBase(options?.since ?? workspace.config.baseBranch);
+  const filesChanged = await sourceControl.listChangedFilesFromBase(
+    options?.since ?? workspace.config.baseBranch,
+    workspace.config.baseRemote,
+  );
   const untrackedOrModifiedFiles = await sourceControl.listUntrackedOrModifiedFiles();
   const stagedFiles = await sourceControl.listUntrackedOrModifiedFiles();
   const publicPackages = workspace.packages;

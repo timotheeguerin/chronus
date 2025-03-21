@@ -4,7 +4,11 @@ import type { YamlFile } from "../yaml/types.js";
 
 export interface ChronusUserConfig {
   readonly source?: YamlFile;
+  /** Base branch that should be used to compare */
   readonly baseBranch: string;
+  /** Base remote to use to compare against. Set this to the upstream remote to support forks that don't point their main branch to the upstream remote */
+  readonly baseRemote?: string;
+  /** Workspace type: pnpm, npm, yarn or auto */
   readonly workspaceType?: WorkspaceType | "auto";
   /** Additional packages that do not belong the workspace */
   readonly additionalPackages?: string[];
