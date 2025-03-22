@@ -10,7 +10,7 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "sourceMap": true,
-    "declarationMap": true,
+    "declarationMap": false,
     "verbatimModuleSyntax": true,
     "strict": true,
     "declaration": true,
