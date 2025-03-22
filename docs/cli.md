@@ -1,5 +1,11 @@
 # Chronus CLI
 
+## Usage
+
+| Npm           | Pnpm           | Yarn           | Global    |
+| ------------- | -------------- | -------------- | --------- |
+| `npx chronus` | `pnpx chronus` | `yarn chronus` | `chronus` |
+
 ## `chronus add [packages...]`
 
 Add a new change description. Optionally specify the packages that the change applies to. By default it will prompt for which package to apply the change to.
