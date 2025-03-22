@@ -21,7 +21,7 @@
   ],
   "repository": "timotheeguerin/chronus.git",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
@@ -35,7 +35,7 @@
   "dependencies": {
     "@chronus/chronus": "workspace:*",
     "@octokit/graphql": "^8.2.1",
-    "@octokit/rest": "^21.1.0",
+    "@octokit/rest": "^21.1.1",
     "cross-spawn": "^7.0.6",
     "octokit": "^4.1.2",
     "picocolors": "^1.1.1",

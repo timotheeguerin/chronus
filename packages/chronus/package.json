@@ -26,7 +26,7 @@
   ],
   "repository": "timotheeguerin/chronus.git",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
@@ -46,7 +46,7 @@
     "picocolors": "^1.1.1",
     "pluralize": "^8.0.0",
     "prompts": "^2.4.2",
-    "semver": "^7.6.3",
+    "semver": "^7.7.1",
     "source-map-support": "^0.5.21",
     "std-env": "^3.8.1",
     "yaml": "^2.7.0",

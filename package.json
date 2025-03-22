@@ -10,7 +10,7 @@
   "author": "Microsoft",
   "repository": "timotheeguerin/chronus.git",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "workspaces": [
     "packages/*"
@@ -35,16 +35,16 @@
   "devDependencies": {
     "@actions/github": "^6.0.0",
     "@chronus/github": "workspace:*",
-    "@eslint/js": "^9.22.0",
+    "@eslint/js": "^9.23.0",
     "@types/node": "^22.13.11",
     "@typescript-eslint/parser": "^8.27.0",
     "@typescript-eslint/utils": "^8.27.0",
+    "@vitest/eslint-plugin": "^1.1.38",
     "@vitest/ui": "^3.0.9",
     "cspell": "^8.17.5",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-unicorn": "^57.0.0",
-    "eslint-plugin-vitest": "^0.5.4",
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "rimraf": "^6.0.1",

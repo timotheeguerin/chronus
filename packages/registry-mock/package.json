@@ -18,7 +18,7 @@
   ],
   "repository": "timotheeguerin/chronus.git",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "cross-spawn": "^7.0.6",
-    "verdaccio": "^6.0.1",
+    "verdaccio": "^6.0.5",
     "yaml": "^2.7.0"
   },
   "devDependencies": {
