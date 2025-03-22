@@ -19,8 +19,8 @@ export class BasicReporter implements Reporter {
       },
     };
     this.log(`${pc.yellow("-")} ${current}`);
-    await action(task);
-    this.log(`${pc.green("✔")} ${current}`);
+    const status = await action(task);
+    this.log(`${this.getStatusChar(status)} ${current}\n`);
   }
 
   getStatusChar(status: TaskStatus | void | undefined) {
