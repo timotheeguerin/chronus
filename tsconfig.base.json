@@ -18,7 +18,6 @@
     "target": "ES2022",
     "types": ["node"],
     "lib": ["ES2022"],
-    "skipLibCheck": true, // Issue with Node16 module resolution for now.
     "newLine": "LF"
   }
 }
