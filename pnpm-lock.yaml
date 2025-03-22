@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@vitest/eslint-plugin':
-        specifier: ^1.1.38
-        version: 1.1.38(@typescript-eslint/utils@8.27.0(eslint@9.23.0)(typescript@5.8.2))(eslint@9.23.0)(typescript@5.8.2)(vitest@3.0.9)
     devDependencies:
       '@actions/github':
         specifier: ^6.0.0
@@ -30,6 +26,9 @@ importers:
       '@typescript-eslint/utils':
         specifier: ^8.27.0
         version: 8.27.0(eslint@9.23.0)(typescript@5.8.2)
+      '@vitest/eslint-plugin':
+        specifier: ^1.1.38
+        version: 1.1.38(@typescript-eslint/utils@8.27.0(eslint@9.23.0)(typescript@5.8.2))(eslint@9.23.0)(typescript@5.8.2)(vitest@3.0.9)
       '@vitest/ui':
         specifier: ^3.0.9
         version: 3.0.9(vitest@3.0.9)

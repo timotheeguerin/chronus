@@ -39,6 +39,7 @@
     "@types/node": "^22.13.11",
     "@typescript-eslint/parser": "^8.27.0",
     "@typescript-eslint/utils": "^8.27.0",
+    "@vitest/eslint-plugin": "^1.1.38",
     "@vitest/ui": "^3.0.9",
     "cspell": "^8.17.5",
     "eslint": "^9.23.0",
@@ -53,8 +54,5 @@
     "typescript-eslint": "^8.27.0",
     "vitest": "^3.0.9"
   },
-  "bugs": "https://github.com/timotheeguerin/chronus/issues",
-  "dependencies": {
-    "@vitest/eslint-plugin": "^1.1.38"
-  }
+  "bugs": "https://github.com/timotheeguerin/chronus/issues"
 }
