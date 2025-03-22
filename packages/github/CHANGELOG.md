@@ -1,5 +1,16 @@
 # Changelog - @chronus/github
 
+## 0.5.0
+
+### Features
+
+- [#383](https://github.com/timotheeguerin/chronus/pull/383) Render multiline changelog indented
+
+### Breaking Changes
+
+- [#387](https://github.com/timotheeguerin/chronus/pull/387) Minimum node version of 20
+
+
 ## 0.4.9
 
 No changes, version bump only.

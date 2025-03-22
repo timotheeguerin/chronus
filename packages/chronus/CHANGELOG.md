@@ -1,5 +1,24 @@
 # @chronus/chronus
 
+## 0.18.0
+
+### Bug Fixes
+
+- [#385](https://github.com/timotheeguerin/chronus/pull/385) Fix basic reporter used in non tty out(e.g. CI) no reporting the correct status in progress trackers
+- [#381](https://github.com/timotheeguerin/chronus/pull/381) Report non zero exit when publish fails
+- [#382](https://github.com/timotheeguerin/chronus/pull/382) Respect `--only` and `--exclude` when using `--prerelease`
+- [#384](https://github.com/timotheeguerin/chronus/pull/384) Add `baseRemote` config option allowing to explicitly define what is the base remote to compare against
+
+### Features
+
+- [#378](https://github.com/timotheeguerin/chronus/pull/378) Allow specifying one or more packages to add changes in the `chronus add` command.
+- [#383](https://github.com/timotheeguerin/chronus/pull/383) Render multiline changelog indented
+
+### Breaking Changes
+
+- [#387](https://github.com/timotheeguerin/chronus/pull/387) Minimum node version of 20
+
+
 ## 0.17.0
 
 ### Features

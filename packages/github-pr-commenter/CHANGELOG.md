@@ -1,5 +1,12 @@
 # @chronus/github-pr-commenter
 
+## 0.6.0
+
+### Breaking Changes
+
+- [#387](https://github.com/timotheeguerin/chronus/pull/387) Minimum node version of 20
+
+
 ## 0.5.9
 
 No changes, version bump only.
