@@ -37,3 +37,14 @@ chronus-github get-pr-comment --out ./comment-out/comment.json
 ```
 
 **This must be used with the `@chronus/github-pr-commenter` package to then publish it in a 2 step process as described by github https://securitylab.github.com/research/github-actions-preventing-pwn-requests/**
+
+### Create Github release
+
+Create a github release from the publish summary extracting back the changelog from changelog.md.
+
+```bash
+# Chronus publish the package and create a release summary
+chronus publish --access public --report-summary ./publish-summary.json
+# Chronus github uses the summary to create the github release
+chronus-github create-releases --repo <user>/<name> --publish-summary ./publish-summary.json
+```
