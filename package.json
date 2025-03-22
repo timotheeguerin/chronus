@@ -10,7 +10,7 @@
   "author": "Microsoft",
   "repository": "timotheeguerin/chronus.git",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "workspaces": [
     "packages/*"
