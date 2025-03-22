@@ -1,11 +1,18 @@
 {
   "name": "@chronus/github-pr-commenter",
-  "version": "0.5.9",
+  "version": "1.0.0",
   "type": "module",
   "description": "chronus",
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "license": "MIT",
   "author": "Microsoft",
+  "keywords": [
+    "change",
+    "changelog",
+    "chronus",
+    "github",
+    "monorepo"
+  ],
   "main": "dist/index.js",
   "bin": {
     "chronus-github-pr-commenter": "./cmd/cli.mjs"
