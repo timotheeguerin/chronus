@@ -6,6 +6,12 @@
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
   "license": "MIT",
   "author": "Microsoft",
+  "keywords": [
+    "change",
+    "changelog",
+    "chronus",
+    "monorepo"
+  ],
   "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
