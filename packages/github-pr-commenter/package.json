@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@chronus/github": "workspace:*",
-    "@octokit/rest": "^21.1.0"
+    "@octokit/rest": "^21.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.13.11",
