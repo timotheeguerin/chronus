@@ -36,7 +36,7 @@
     "@actions/github": "^6.0.0",
     "@chronus/github": "workspace:*",
     "@eslint/js": "^9.23.0",
-    "@types/node": "^22.13.11",
+    "@types/node": "^22.13.13",
     "@typescript-eslint/parser": "^8.27.0",
     "@typescript-eslint/utils": "^8.27.0",
     "@vitest/eslint-plugin": "^1.1.38",
