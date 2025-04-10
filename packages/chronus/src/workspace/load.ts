@@ -99,7 +99,9 @@ export function createChronusWorkspace(
   return {
     path: config.workspaceRoot,
     workspace,
-    packages: chronusPackages.filter((pkg): pkg is ChronusPackage & { ignored: false } => pkg.state === "versioned"),
+    packages: chronusPackages.filter(
+      (pkg): pkg is ChronusPackage & { ignored: false } => pkg.state === "versioned" || pkg.state === "standalone",
+    ),
     allPackages: chronusPackages,
     config,
     getPackage: (packageName: string) => {
