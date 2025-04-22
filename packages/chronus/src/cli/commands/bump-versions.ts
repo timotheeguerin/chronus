@@ -1,7 +1,6 @@
 import pc from "picocolors";
 import { isCI } from "std-env";
-import { updatePackageVersions } from "../../apply-release-plan/apply-release-plan.js";
-import { applyReleasePlan } from "../../apply-release-plan/index.js";
+import { applyReleasePlan, updatePackageVersions } from "../../apply-release-plan/apply-release-plan.js";
 import { readChangeDescriptions } from "../../change/read.js";
 import { getPrereleaseVersionActions } from "../../prerelease-versioning/index.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";

@@ -120,6 +120,14 @@ describe("Assemble Release Plan", () => {
         });
       });
     });
+
+    it("doesn't include action if package only has none changes", () => {
+      const workspace: Workspace = mkWorkspace([mkPkg("pkg-a", {})]);
+      const plan = assembleReleasePlan([mkChange(["pkg-a"], "none")], createChronusWorkspace(workspace, baseConfig), {
+        only: ["pkg-a"],
+      });
+      expect(plan.actions).toHaveLength(0);
+    });
   });
 
   describe("lockStepVersioning", () => {

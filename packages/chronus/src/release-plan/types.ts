@@ -3,7 +3,7 @@ import type { VersionType } from "../types.js";
 
 export interface ReleaseAction {
   readonly packageName: string;
-  readonly type: VersionType;
+  readonly type: Omit<VersionType, "none">;
   readonly oldVersion: string;
   readonly newVersion: string;
   readonly changes: ChangeDescription[];

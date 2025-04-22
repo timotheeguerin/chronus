@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import "source-map-support/register.js";
 import yargs from "yargs";
 import { resolvePath } from "../utils/path-utils.js";
@@ -13,6 +14,7 @@ import { withErrors, withErrorsAndReporter } from "./utils.js";
 
 export const DEFAULT_PORT = 3000;
 
+const pkg = JSON.parse(await readFile(resolvePath(import.meta.dirname, "../../package.json"), "utf8"));
 const filteringOptions = {
   only: {
     type: "string",
@@ -31,6 +33,7 @@ async function main() {
     .scriptName("chronus")
     .strict()
     .help()
+    .version(pkg.version)
     .parserConfiguration({
       "greedy-arrays": false,
       "boolean-negation": false,

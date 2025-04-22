@@ -60,17 +60,19 @@ export function assembleReleasePlan(
     exclude: options?.exclude,
   });
 
-  const actions = [...internalActions.values()].map((incompleteRelease): ReleaseAction => {
-    return {
-      ...incompleteRelease,
-      newVersion: getNewVersion(incompleteRelease),
-      changes: changes.filter(
-        (change) =>
-          change.changeKind.versionType !== "none" &&
-          change.packages.some((pkgName) => pkgName === incompleteRelease.packageName),
-      ),
-    };
-  });
+  const actions = [...internalActions.values()]
+    .filter((x) => x.type !== "none")
+    .map((incompleteRelease): ReleaseAction => {
+      return {
+        ...incompleteRelease,
+        newVersion: getNewVersion(incompleteRelease),
+        changes: changes.filter(
+          (change) =>
+            change.changeKind.versionType !== "none" &&
+            change.packages.some((pkgName) => pkgName === incompleteRelease.packageName),
+        ),
+      };
+    });
 
   return {
     changes: changeApplications,
