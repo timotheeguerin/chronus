@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 1.0.2
+
+### Bug Fixes
+
+- [#410](https://github.com/timotheeguerin/chronus/pull/410) Fix bumping package with only `none` changes created empty changelog entry
+
+
 ## 1.0.1
 
 ### Bug Fixes
