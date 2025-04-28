@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@chronus/chronus": "workspace:*",
-    "@octokit/graphql": "^8.2.1",
+    "@octokit/graphql": "^8.2.2",
     "@octokit/rest": "^21.1.1",
     "cross-spawn": "^7.0.6",
     "octokit": "^4.1.3",
