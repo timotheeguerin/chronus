@@ -33,26 +33,26 @@
     "cspell": "cspell --no-progress ."
   },
   "devDependencies": {
-    "@actions/github": "^6.0.0",
+    "@actions/github": "^6.0.1",
     "@chronus/github": "workspace:*",
     "@eslint/js": "^9.26.0",
-    "@types/node": "^22.15.3",
-    "@typescript-eslint/parser": "^8.32.0",
-    "@typescript-eslint/utils": "^8.32.0",
-    "@vitest/eslint-plugin": "^1.1.43",
-    "@vitest/ui": "^3.1.2",
+    "@types/node": "^22.15.19",
+    "@typescript-eslint/parser": "^8.32.1",
+    "@typescript-eslint/utils": "^8.32.1",
+    "@vitest/eslint-plugin": "^1.2.0",
+    "@vitest/ui": "^3.1.4",
     "cspell": "^8.19.3",
     "eslint": "^9.26.0",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-unicorn": "^59.0.0",
+    "eslint-plugin-unicorn": "^59.0.1",
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "rimraf": "^6.0.1",
     "syncpack": "^13.0.4",
-    "tsx": "^4.19.3",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.32.0",
-    "vitest": "^3.1.2"
+    "typescript-eslint": "^8.32.1",
+    "vitest": "^3.1.4"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
 }
