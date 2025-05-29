@@ -41,7 +41,7 @@
     "@typescript-eslint/utils": "^8.33.0",
     "@vitest/eslint-plugin": "^1.2.1",
     "@vitest/ui": "^3.1.4",
-    "cspell": "^8.19.3",
+    "cspell": "^9.0.2",
     "eslint": "^9.27.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-unicorn": "^59.0.1",
