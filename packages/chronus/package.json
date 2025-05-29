@@ -63,7 +63,7 @@
     "@chronus/registry-mock": "workspace:*",
     "@types/cross-spawn": "^6.0.6",
     "@types/micromatch": "^4.0.9",
-    "@types/node": "^22.15.3",
+    "@types/node": "^22.15.25",
     "@types/node-fetch": "^2.6.12",
     "@types/pacote": "^11.1.8",
     "@types/pluralize": "^0.0.33",
@@ -74,7 +74,7 @@
     "prettier": "^3.5.3",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
-    "vitest": "^3.1.2"
+    "vitest": "^3.1.4"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
 }
