@@ -96,8 +96,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       semver:
-        specifier: ^7.7.1
-        version: 7.7.1
+        specifier: ^7.7.2
+        version: 7.7.2
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
@@ -4546,7 +4546,7 @@ snapshots:
       npm-pick-manifest: 10.0.0
       proc-log: 5.0.0
       promise-retry: 2.0.1
-      semver: 7.7.1
+      semver: 7.7.2
       which: 5.0.0
 
   '@npmcli/installed-package-contents@3.0.0':
@@ -4563,7 +4563,7 @@ snapshots:
       hosted-git-info: 8.0.2
       json-parse-even-better-errors: 4.0.0
       proc-log: 5.0.0
-      semver: 7.7.1
+      semver: 7.7.2
       validate-npm-package-license: 3.0.4
 
   '@npmcli/promise-spawn@8.0.2':
@@ -7096,7 +7096,7 @@ snapshots:
     dependencies:
       hosted-git-info: 8.1.0
       proc-log: 5.0.0
-      semver: 7.7.1
+      semver: 7.7.2
       validate-npm-package-name: 6.0.0
 
   npm-packlist@10.0.0:
@@ -7108,7 +7108,7 @@ snapshots:
       npm-install-checks: 7.1.1
       npm-normalize-package-bin: 4.0.0
       npm-package-arg: 12.0.2
-      semver: 7.7.1
+      semver: 7.7.2
 
   npm-registry-fetch@18.0.2:
     dependencies:
@@ -7872,7 +7872,7 @@ snapshots:
       ora: 8.2.0
       prompts: 2.4.2
       read-yaml-file: 2.1.0
-      semver: 7.7.1
+      semver: 7.7.2
       tightrope: 0.2.0
       ts-toolbelt: 9.6.0
     transitivePeerDependencies:
