@@ -27,7 +27,7 @@ export async function bumpVersions(cwd: string, options?: BumpVersionOptions): P
     await bumpPrereleaseVersion(
       host,
       workspace,
-      options.prerelease === true || options.prerelease === "" ? DefaultPrereleaseTemplate : options.prerelease,
+      options.prerelease === true ? DefaultPrereleaseTemplate : options.prerelease,
       { only: options.only, exclude: options.exclude },
     );
   } else {
