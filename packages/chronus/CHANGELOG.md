@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 1.1.0
+
+### Features
+
+- [#437](https://github.com/timotheeguerin/chronus/pull/437) Allow prerelease to pass template in cli `chronus version --prerelease "{nextVersion}-dev.{changeCountWithPatch}"`
+
+
 ## 1.0.2
 
 ### Bug Fixes
