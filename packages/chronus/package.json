@@ -57,7 +57,7 @@
     "std-env": "^3.9.0",
     "yaml": "^2.8.0",
     "yargs": "^18.0.0",
-    "zod": "^3.24.3"
+    "zod": "^3.25.56"
   },
   "devDependencies": {
     "@chronus/registry-mock": "workspace:*",
