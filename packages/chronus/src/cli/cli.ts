@@ -83,7 +83,8 @@ async function main() {
           })
           .option(filteringOptions)
           .option("prerelease", {
-            type: "boolean",
+            type: "string",
+            coerce: (x) => (x === "" ? true : x),
             description: "Update packages version following the prerelease policy",
           }),
       withErrors((args) =>
