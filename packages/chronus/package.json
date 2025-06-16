@@ -63,7 +63,7 @@
     "@chronus/registry-mock": "workspace:*",
     "@types/cross-spawn": "^6.0.6",
     "@types/micromatch": "^4.0.9",
-    "@types/node": "^22.15.25",
+    "@types/node": "^24.0.3",
     "@types/node-fetch": "^2.6.12",
     "@types/pacote": "^11.1.8",
     "@types/pluralize": "^0.0.33",
