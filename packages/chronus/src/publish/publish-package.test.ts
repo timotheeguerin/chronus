@@ -7,7 +7,7 @@ import { stringify } from "yaml";
 import { createTestDir, type TestDir } from "../testing/test-dir.js";
 import { execAsync } from "../utils/exec-async.js";
 import { resolvePath } from "../utils/path-utils.js";
-import type { Package, PackageJson } from "../workspace-manager/types.js";
+import type { Package, PackageJson } from "../workspace-manager/node/types.js";
 import { publishPackageWithNpm, publishPackageWithPnpm } from "./publish-package.js";
 
 const MOCK_REGISTRY = `http://localhost:${REGISTRY_MOCK_PORT}/`;

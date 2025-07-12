@@ -1,7 +1,7 @@
-export type WorkspaceType = "npm" | "pnpm" | "rush";
+import type { ChronusHost } from "../../utils/host.js";
 
 export interface Workspace {
-  readonly type: WorkspaceType;
+  readonly type: string;
   readonly path: string;
   readonly packages: Package[];
 }
@@ -33,7 +33,8 @@ export interface PackageJson {
 }
 
 export interface WorkspaceManager {
-  type: WorkspaceType;
-  is(dir: string): Promise<boolean>;
-  load(dir: string): Promise<Workspace>;
+  type: string;
+  aliases?: string[];
+  is(host: ChronusHost, dir: string): Promise<boolean>;
+  load(host: ChronusHost, dir: string): Promise<Workspace>;
 }

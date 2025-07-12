@@ -2,7 +2,7 @@ import { expect, it } from "vitest";
 import { stringify } from "yaml";
 import type { ChronusUserConfig } from "../config/types.js";
 import { createTestHost } from "../testing/test-host.js";
-import type { PackageJson } from "../workspace-manager/types.js";
+import type { PackageJson } from "../workspace-manager/node/types.js";
 import { loadChronusWorkspace } from "./load.js";
 
 function makeHost(options: { config?: Partial<ChronusUserConfig>; packages?: Record<string, PackageJson> } = {}) {

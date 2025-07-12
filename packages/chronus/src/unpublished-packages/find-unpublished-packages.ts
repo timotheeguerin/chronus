@@ -1,6 +1,6 @@
 import pacote from "pacote";
 import type { ChronusWorkspace } from "../index.js";
-import type { Package, PackageBase } from "../workspace-manager/types.js";
+import type { Package, PackageBase } from "../workspace-manager/node/types.js";
 
 export async function findUnpublishedWorkspacePackages(workspace: ChronusWorkspace): Promise<Package[]> {
   const data = await Promise.all(

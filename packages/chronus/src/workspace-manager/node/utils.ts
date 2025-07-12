@@ -1,6 +1,6 @@
-import { isPathAccessible } from "../utils/fs-utils.js";
-import type { ChronusHost } from "../utils/host.js";
-import { isDefined, resolvePath } from "../utils/index.js";
+import { isPathAccessible } from "../../utils/fs-utils.js";
+import type { ChronusHost } from "../../utils/host.js";
+import { isDefined, resolvePath } from "../../utils/index.js";
 import type { Package } from "./types.js";
 
 export async function findPackagesFromPattern(

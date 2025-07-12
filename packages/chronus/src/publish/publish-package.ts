@@ -3,8 +3,8 @@ import pacote from "pacote";
 import { isCI } from "std-env";
 import { execAsync, type ExecResult } from "../utils/exec-async.js";
 import { NodeChronusHost, getDirectoryPath, getLastJsonObject, lookup } from "../utils/index.js";
-import { createPnpmWorkspaceManager } from "../workspace-manager/pnpm.js";
-import type { PackageBase } from "../workspace-manager/types.js";
+import { createPnpmWorkspaceManager } from "../workspace-manager/node/pnpm.js";
+import type { PackageBase } from "../workspace-manager/node/types.js";
 import type { PublishPackageResult } from "./types.js";
 
 export interface PublishPackageOptions {
@@ -54,9 +54,9 @@ async function shouldUsePnpm(pkgDir: string, engine: "npm" | "pnpm" | undefined)
   } else if (engine === "npm") {
     return false;
   }
-  const pnpmWs = createPnpmWorkspaceManager(NodeChronusHost);
+  const pnpmWs = createPnpmWorkspaceManager();
   const root = await lookup(pkgDir, (current) => {
-    return pnpmWs.is(current);
+    return pnpmWs.is(NodeChronusHost, current);
   });
   return Boolean(root);
 }
