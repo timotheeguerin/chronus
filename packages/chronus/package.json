@@ -63,7 +63,7 @@
     "@chronus/registry-mock": "workspace:*",
     "@types/cross-spawn": "^6.0.6",
     "@types/micromatch": "^4.0.9",
-    "@types/node": "^24.0.3",
+    "@types/node": "^24.0.10",
     "@types/node-fetch": "^2.6.12",
     "@types/pacote": "^11.1.8",
     "@types/pluralize": "^0.0.33",
@@ -71,7 +71,7 @@
     "@types/semver": "^7.7.0",
     "@types/xml2js": "^0.4.14",
     "@types/yargs": "^17.0.33",
-    "prettier": "^3.6.0",
+    "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
