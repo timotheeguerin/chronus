@@ -1,6 +1,6 @@
 import type { ChronusResolvedConfig } from "../config/types.js";
 import type { ChronusWorkspace } from "../index.js";
-import type { Package, PackageJson, Workspace } from "../workspace-manager/node/types.js";
+import type { Package, PackageJson, Workspace } from "../workspace-manager/types.js";
 import { createChronusWorkspace } from "../workspace/load.js";
 
 /**

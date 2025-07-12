@@ -1,8 +1,8 @@
 import { beforeEach, expect, it } from "vitest";
 import { stringify } from "yaml";
 import { createTestHost, type TestHost } from "../../testing/test-host.js";
+import type { WorkspaceManager } from "../types.js";
 import { createPnpmWorkspaceManager } from "./pnpm.js";
-import type { WorkspaceManager } from "./types.js";
 
 let host: TestHost;
 let pnpm: WorkspaceManager;

@@ -1,7 +1,7 @@
 import type { ChronusHost } from "../utils/host.js";
 import { resolvePath } from "../utils/path-utils.js";
 import type { Mutable } from "../utils/types.js";
-import type { PackageJson } from "../workspace-manager/node/types.js";
+import type { PackageJson } from "../workspace-manager/types.js";
 import type { ChronusPackage, ChronusWorkspace } from "../workspace/types.js";
 import { updateDependencyVersion } from "./update-dependency-version.js";
 

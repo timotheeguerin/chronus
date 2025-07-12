@@ -1,5 +1,5 @@
 import type { ChronusResolvedConfig, VersionPolicy } from "../config/types.js";
-import type { Package, Workspace } from "../workspace-manager/node/types.js";
+import type { Package, Workspace } from "../workspace-manager/types.js";
 
 /**
  * How this package should be treated.

@@ -4,7 +4,7 @@ import { isCI } from "std-env";
 import { execAsync, type ExecResult } from "../utils/exec-async.js";
 import { NodeChronusHost, getDirectoryPath, getLastJsonObject, lookup } from "../utils/index.js";
 import { createPnpmWorkspaceManager } from "../workspace-manager/node/pnpm.js";
-import type { PackageBase } from "../workspace-manager/node/types.js";
+import type { PackageBase } from "../workspace-manager/types.js";
 import type { PublishPackageResult } from "./types.js";
 
 export interface PublishPackageOptions {

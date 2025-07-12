@@ -6,7 +6,7 @@ import { writeChangeDescription } from "../../change/write.js";
 import type { ChangeKindResolvedConfig, ChronusResolvedConfig } from "../../config/types.js";
 import { createGitSourceControl } from "../../source-control/git.js";
 import { NodeChronusHost } from "../../utils/node-host.js";
-import type { Package } from "../../workspace-manager/node/types.js";
+import type { Package } from "../../workspace-manager/types.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
 import type { ChronusWorkspace } from "../../workspace/types.js";
 

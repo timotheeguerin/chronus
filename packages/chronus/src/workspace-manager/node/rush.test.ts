@@ -1,7 +1,7 @@
 import { beforeEach, expect, it } from "vitest";
 import { createTestHost, type TestHost } from "../../testing/test-host.js";
+import type { WorkspaceManager } from "../types.js";
 import { createRushWorkspaceManager } from "./rush.js";
-import type { WorkspaceManager } from "./types.js";
 
 let host: TestHost;
 let rush: WorkspaceManager;

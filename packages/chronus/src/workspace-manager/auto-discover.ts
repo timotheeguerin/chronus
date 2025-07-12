@@ -2,7 +2,7 @@ import { ChronusError, type ChronusHost } from "../utils/index.js";
 import { createNodeWorkspaceManager } from "./node/node.js";
 import { createPnpmWorkspaceManager } from "./node/pnpm.js";
 import { createRushWorkspaceManager } from "./node/rush.js";
-import type { Workspace, WorkspaceManager } from "./node/types.js";
+import type { Workspace, WorkspaceManager } from "./types.js";
 
 const ecosystems = [createPnpmWorkspaceManager(), createRushWorkspaceManager(), createNodeWorkspaceManager()];
 

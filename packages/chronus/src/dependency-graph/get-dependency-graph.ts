@@ -1,6 +1,6 @@
 import { Range } from "semver";
 import { ChronusError } from "../utils/errors.js";
-import type { Package, PackageJson } from "../workspace-manager/node/types.js";
+import type { Package, PackageJson } from "../workspace-manager/types.js";
 
 const DEPENDENCY_TYPES = ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"] as const;
 

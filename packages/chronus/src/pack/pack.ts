@@ -4,7 +4,7 @@ import { gte } from "semver";
 import { execAsync } from "../utils/exec-async.js";
 import { getLastJsonObject } from "../utils/misc-utils.js";
 import { resolvePath } from "../utils/path-utils.js";
-import type { Package } from "../workspace-manager/node/types.js";
+import type { Package } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 
 export interface PackPackageResult {

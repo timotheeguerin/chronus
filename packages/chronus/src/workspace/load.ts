@@ -4,8 +4,8 @@ import type { ChronusResolvedConfig, VersionPolicy } from "../config/types.js";
 import { ChronusError, throwIfDiagnostic, type Diagnostic } from "../utils/errors.js";
 import type { ChronusHost } from "../utils/host.js";
 import { loadWorkspace } from "../workspace-manager/auto-discover.js";
-import type { Package, Workspace } from "../workspace-manager/node/types.js";
 import { findPackagesFromPattern } from "../workspace-manager/node/utils.js";
+import type { Package, Workspace } from "../workspace-manager/types.js";
 import { getLocationInYamlScript } from "../yaml/location.js";
 import type { ChronusPackage, ChronusPackageState, ChronusWorkspace } from "./types.js";
 

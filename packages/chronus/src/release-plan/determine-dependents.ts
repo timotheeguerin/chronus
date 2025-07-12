@@ -1,6 +1,6 @@
 import semverSatisfies from "semver/functions/satisfies.js";
 import type { DependencyType, VersionType } from "../types.js";
-import type { PackageJson } from "../workspace-manager/node/types.js";
+import type { PackageJson } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";

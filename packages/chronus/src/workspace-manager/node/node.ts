@@ -1,6 +1,6 @@
 import { parse } from "yaml";
 import { ChronusError, joinPaths, type ChronusHost } from "../../utils/index.js";
-import type { Package, PackageJson, Workspace, WorkspaceManager } from "./types.js";
+import type { Package, PackageJson, Workspace, WorkspaceManager } from "../types.js";
 import { findPackagesFromPattern } from "./utils.js";
 
 const workspaceFileName = "package.json";

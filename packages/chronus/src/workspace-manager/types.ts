@@ -1,4 +1,4 @@
-import type { ChronusHost } from "../../utils/host.js";
+import type { ChronusHost } from "../utils/host.js";
 
 export interface Workspace {
   readonly type: string;

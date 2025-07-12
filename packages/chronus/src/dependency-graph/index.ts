@@ -1,4 +1,4 @@
-import type { Package } from "../workspace-manager/node/types.js";
+import type { Package } from "../workspace-manager/types.js";
 import { getDependencyGraph } from "./get-dependency-graph.js";
 
 export function getDependentsGraph(packages: Package[], opts?: { bumpVersionsWithWorkspaceProtocolOnly?: boolean }) {

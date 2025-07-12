@@ -1,7 +1,7 @@
 import micromatch from "micromatch";
 import type { GitRepository } from "../source-control/git.js";
 import type { ChronusHost } from "../utils/host.js";
-import type { Package } from "../workspace-manager/node/types.js";
+import type { Package } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { changesRelativeDir } from "./common.js";
 import { readChangeDescriptions } from "./read.js";

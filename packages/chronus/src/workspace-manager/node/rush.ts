@@ -1,6 +1,6 @@
 import { parse } from "yaml";
 import { ChronusError, isDefined, isPathAccessible, joinPaths, lookup, type ChronusHost } from "../../utils/index.js";
-import type { Package, Workspace, WorkspaceManager } from "./types.js";
+import type { Package, Workspace, WorkspaceManager } from "../types.js";
 import { tryLoadNodePackage } from "./utils.js";
 
 const workspaceFileName = "rush.json";

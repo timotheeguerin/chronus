@@ -1,6 +1,6 @@
 import { parse } from "yaml";
 import { ChronusError, isPathAccessible, joinPaths, type ChronusHost } from "../../utils/index.js";
-import type { Package, Workspace, WorkspaceManager } from "./types.js";
+import type { Package, Workspace, WorkspaceManager } from "../types.js";
 import { findPackagesFromPattern } from "./utils.js";
 
 const workspaceFileName = "pnpm-workspace.yaml";
