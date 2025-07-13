@@ -1,6 +1,6 @@
 import semverSatisfies from "semver/functions/satisfies.js";
 import type { DependencyType, VersionType } from "../types.js";
-import type { PackageJson } from "../workspace-manager/types.js";
+import type { Package } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
@@ -53,39 +53,22 @@ export function applyDependents({
         let type: VersionType | undefined;
 
         const dependent = dependentPackage.name;
-        const dependencyVersionRanges = getDependencyVersionRanges(dependentPackage.manifest, nextRelease);
+        const dependencyVersionRanges = getDependencyVersionRanges(dependentPackage, nextRelease);
 
         for (const { depType, versionRange } of dependencyVersionRanges) {
           if (nextRelease.type === "none") {
             continue;
           } else if (
-            shouldBumpMajor({
-              dependent,
-              depType,
-              versionRange,
-              actions: actions,
-              nextRelease,
-            })
-          ) {
-            // We only bump to minor for 0. version as they are already considered breaking in semver
-            if (dependentPackage.version.startsWith("0.")) {
-              type = "minor";
-            } else {
-              type = "major";
-            }
-          } else if (
             (!actions.has(dependent) || actions.get(dependent)!.type === "none") &&
             !willRangeBeValid(nextRelease, versionRange)
           ) {
             switch (depType) {
-              case "dependencies":
-              case "optionalDependencies":
-              case "peerDependencies":
+              case "prod":
                 if (type !== "major" && type !== "minor") {
                   type = "patch";
                 }
                 break;
-              case "devDependencies": {
+              case "dev": {
                 // We don't need a version bump if the package is only in the devDependencies of the dependent package
                 if (type !== "major" && type !== "minor" && type !== "patch") {
                   type = "none";
@@ -165,62 +148,35 @@ function willRangeBeValid(release: InternalReleaseAction, versionRange: string) 
   dependency lists. For example, a package that is both a peerDependencies and a devDependency.
 */
 function getDependencyVersionRanges(
-  dependentPkgJSON: PackageJson,
+  dependentPkg: Package,
   dependencyRelease: InternalReleaseAction,
 ): {
   depType: DependencyType;
   versionRange: string;
 }[] {
-  const DEPENDENCY_TYPES = ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"] as const;
   const dependencyVersionRanges: {
     depType: DependencyType;
     versionRange: string;
   }[] = [];
-  for (const type of DEPENDENCY_TYPES) {
-    const versionRange = dependentPkgJSON[type]?.[dependencyRelease.packageName];
-    if (!versionRange) continue;
-
-    if (versionRange.startsWith("workspace:")) {
+  const spec = dependentPkg.dependencies.get(dependencyRelease.packageName);
+  if (spec) {
+    if (spec.version.startsWith("workspace:")) {
       dependencyVersionRanges.push({
-        depType: type,
+        depType: spec.kind,
         versionRange:
           // intentionally keep other workspace ranges untouched
           // this has to be fixed but this should only be done when adding appropriate tests
-          versionRange === "workspace:*"
+          spec.version === "workspace:*"
             ? // workspace:* actually means the current exact version, and not a wildcard similar to a regular * range
               dependencyRelease.oldVersion
-            : versionRange.replace(/^workspace:/, ""),
+            : spec.version.replace(/^workspace:/, ""),
       });
     } else {
       dependencyVersionRanges.push({
-        depType: type,
-        versionRange,
+        depType: spec.kind, // TODO: ? just pass the entire spec?
+        versionRange: spec.version,
       });
     }
   }
   return dependencyVersionRanges;
-}
-
-function shouldBumpMajor({
-  dependent,
-  depType,
-  versionRange,
-  actions,
-  nextRelease,
-}: {
-  dependent: string;
-  depType: DependencyType;
-  versionRange: string;
-  actions: Map<string, InternalReleaseAction>;
-  nextRelease: InternalReleaseAction;
-}) {
-  // we check if it is a peerDependency because if it is, our dependent bump type might need to be major.
-  return (
-    depType === "peerDependencies" &&
-    nextRelease.type !== "none" &&
-    nextRelease.type !== "patch" &&
-    !semverSatisfies(incrementVersion(nextRelease), versionRange) &&
-    // bump major only if the dependent doesn't already has a major release.
-    (!actions.has(dependent) || (actions.has(dependent) && actions.get(dependent)!.type !== "major"))
-  );
 }
