@@ -5,6 +5,7 @@ import { createRushWorkspaceManager } from "./node/rush.js";
 import type { Workspace, WorkspaceManager } from "./types.js";
 
 const ecosystems = [createPnpmWorkspaceManager(), createRushWorkspaceManager(), createNodeWorkspaceManager()];
+const ecosystemMap = new Map<string, WorkspaceManager>(ecosystems.map((x) => [x.type, x]));
 
 async function findWorkspaceManager(host: ChronusHost, root: string): Promise<WorkspaceManager> {
   for (const ecosystem of ecosystems) {
@@ -38,4 +39,14 @@ export async function getWorkspaceManager(
 export async function loadWorkspace(host: ChronusHost, root: string, type?: string | "auto"): Promise<Workspace> {
   const manager = await getWorkspaceManager(host, root, type);
   return manager.load(host, root);
+}
+
+export function getEcosystem(type: string) {
+  const ecosystem = ecosystemMap.get(type);
+  if (!ecosystem) {
+    throw new ChronusError(
+      `Unknown ecosystem type: ${type}. Available types: ${ecosystems.map((e) => e.type).join(", ")}`,
+    );
+  }
+  return ecosystem;
 }

@@ -26,13 +26,13 @@ it("finds all packages", async () => {
   host.addFile("proj/packages/pkg-b/package.json", JSON.stringify({ name: "pkg-b", version: "1.2.0" }));
   const workspace = await pnpm.load(host.host, "proj");
   expect(workspace.packages).toHaveLength(2);
-  expect(workspace.packages[0]).toEqual({
+  expect(workspace.packages[0]).toMatchObject({
     name: "pkg-a",
     version: "1.0.0",
     relativePath: "packages/pkg-a",
     manifest: { name: "pkg-a", version: "1.0.0" },
   });
-  expect(workspace.packages[1]).toEqual({
+  expect(workspace.packages[1]).toMatchObject({
     name: "pkg-b",
     version: "1.2.0",
     relativePath: "packages/pkg-b",

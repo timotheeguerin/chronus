@@ -1,7 +1,11 @@
 import { parse } from "yaml";
-import { ChronusError, joinPaths, type ChronusHost } from "../../utils/index.js";
-import type { Package, PackageJson, Workspace, WorkspaceManager } from "../types.js";
+import { ChronusError, joinPaths, resolvePath, type ChronusHost, type Mutable } from "../../utils/index.js";
+import type { Package, PackageBase, PackageJson, PatchPackageVersion, Workspace, WorkspaceManager } from "../types.js";
 import { findPackagesFromPattern } from "./utils.js";
+
+export interface NodePackage extends PackageBase {
+  manifest: PackageJson;
+}
 
 const workspaceFileName = "package.json";
 
@@ -40,5 +44,43 @@ export function createNodeWorkspaceManager(): WorkspaceManager {
         packages,
       };
     },
+    async updateVersionsForPackage(
+      host: ChronusHost,
+      workspace: Workspace,
+      pkg: Package,
+      request: PatchPackageVersion,
+    ): Promise<void> {
+      const newPkgJson = getNewPackageJson(pkg as any as NodePackage, request);
+
+      await host.writeFile(
+        resolvePath(workspace.path, pkg.relativePath, "package.json"),
+        JSON.stringify(newPkgJson, null, 2) + "\n",
+      );
+    },
   };
+}
+
+export interface VersionAction {
+  readonly newVersion: string;
+}
+
+function getNewPackageJson(pkg: NodePackage, request: PatchPackageVersion): PackageJson {
+  const currentPkgJson: Mutable<PackageJson> = JSON.parse(JSON.stringify(pkg.manifest));
+  if (request.newVersion) {
+    currentPkgJson.version = request.newVersion;
+  }
+
+  for (const depType of ["dependencies", "devDependencies", "peerDependencies"] as const) {
+    const depObj = currentPkgJson[depType];
+    if (depObj) {
+      for (const dep of Object.keys(depObj)) {
+        const depAction = request.dependenciesVersions[dep];
+        if (depAction) {
+          depObj[dep] = depAction;
+        }
+      }
+    }
+  }
+
+  return currentPkgJson;
 }

@@ -1,24 +1,16 @@
 import { Range } from "semver";
 import { ChronusError } from "../utils/errors.js";
-import type { Package, PackageJson } from "../workspace-manager/types.js";
+import type { Package } from "../workspace-manager/types.js";
 
-const DEPENDENCY_TYPES = ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"] as const;
-
-const getAllDependencies = (config: PackageJson) => {
+const getAllDependencies = (config: Package) => {
   const allDependencies = new Map<string, string>();
 
-  for (const type of DEPENDENCY_TYPES) {
-    const deps = config[type];
-    if (!deps) continue;
-
-    for (const name of Object.keys(deps)) {
-      const depRange = deps[name];
-      if ((depRange.startsWith("link:") || depRange.startsWith("file:")) && type === "devDependencies") {
-        continue;
-      }
-
-      allDependencies.set(name, depRange);
+  for (const spec of config.dependencies.values()) {
+    if ((spec.version.startsWith("link:") || spec.version.startsWith("file:")) && spec.kind === "dev") {
+      continue;
     }
+
+    allDependencies.set(spec.name, spec.version);
   }
 
   return allDependencies;
@@ -62,7 +54,7 @@ export function getDependencyGraph(
   for (const pkg of queue) {
     const { name } = pkg;
     const dependencies = [];
-    const allDependencies = getAllDependencies(pkg.manifest);
+    const allDependencies = getAllDependencies(pkg);
 
     for (const [depName, originalDepRange] of allDependencies) {
       let repRange = originalDepRange;

@@ -3,8 +3,9 @@ import { deleteChangeDescription, writeChangeDescription } from "../change/write
 import { resolveChangelogGenerator, updateChangelog } from "../changelog/generate.js";
 import type { ReleaseAction, ReleasePlan, ReleasePlanChangeApplication } from "../release-plan/types.js";
 import type { ChronusHost } from "../utils/host.js";
+import { getEcosystem } from "../workspace-manager/auto-discover.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
-import { updatePackageJson, type VersionAction } from "./update-package-json.js";
+import { getManifestPatchRequest, type VersionAction } from "./update-package-json.js";
 
 export async function applyReleasePlan(
   host: ChronusHost,
@@ -38,7 +39,8 @@ export async function updatePackageVersions(
   dependencyUpdateMode?: "stable" | "prerelease",
 ) {
   for (const pkg of workspace.allPackages.filter((x) => x.state !== "ignored")) {
-    await updatePackageJson(host, workspace, pkg, actionForPackage, dependencyUpdateMode);
+    const patch = getManifestPatchRequest(workspace, pkg, actionForPackage, dependencyUpdateMode);
+    await getEcosystem(workspace.workspace.type).updateVersionsForPackage(host, workspace.workspace, pkg, patch);
   }
 }
 async function cleanChangeApplication(

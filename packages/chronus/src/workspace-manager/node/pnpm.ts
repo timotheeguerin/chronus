@@ -1,6 +1,7 @@
 import { parse } from "yaml";
 import { ChronusError, isPathAccessible, joinPaths, type ChronusHost } from "../../utils/index.js";
 import type { Package, Workspace, WorkspaceManager } from "../types.js";
+import { createNodeWorkspaceManager } from "./node.js";
 import { findPackagesFromPattern } from "./utils.js";
 
 const workspaceFileName = "pnpm-workspace.yaml";
@@ -10,6 +11,7 @@ interface PnpmWorkspaceConfig {
 
 export function createPnpmWorkspaceManager(): WorkspaceManager {
   return {
+    ...createNodeWorkspaceManager(),
     type: "node:pnpm",
     aliases: ["pnpm"],
     async is(host: ChronusHost, dir: string): Promise<boolean> {

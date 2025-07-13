@@ -4,22 +4,35 @@ import { isPathAccessible } from "../../utils/fs-utils.js";
 import type { ChronusHost } from "../../utils/host.js";
 import { isDefined } from "../../utils/misc-utils.js";
 import { joinPaths, resolvePath } from "../../utils/path-utils.js";
-import type { Package, Workspace } from "../types.js";
+import type { Package, PackageDependencySpec, PatchPackageVersion, Workspace, WorkspaceManager } from "../types.js";
+
 const cargoFile = "Cargo.toml";
 
 export interface CargoToml {
-  package?: {
+  "package"?: {
     name?: string;
     version?: string;
   };
-  workspace?: {
+  "workspace"?: {
     resolver?: string;
     members?: string[];
     exclude?: string[];
   };
+  "dependencies"?: Record<string, CargoDependency>;
+  "dev-dependencies"?: Record<string, CargoDependency>;
+  "build-dependencies"?: Record<string, CargoDependency>;
 }
 
-export class CargoWorkspaceManager {
+export type CargoDependency =
+  | string
+  | {
+      version?: string;
+      path?: string;
+      optional?: boolean;
+      features?: string[];
+    };
+
+export class CargoWorkspaceManager implements WorkspaceManager {
   type = "rust:cargo";
   aliases = ["cargo"];
 
@@ -40,7 +53,7 @@ export class CargoWorkspaceManager {
     // Parse the Cargo.toml to find packages
     const packages: Package[] = await findCratesFromPattern(host, root, [
       ...config.workspace.members,
-      ...(config.workspace.exclude || []),
+      ...(config.workspace.exclude || []).map((x) => `!${x}`),
     ]);
 
     return {
@@ -48,6 +61,15 @@ export class CargoWorkspaceManager {
       path: root,
       packages,
     };
+  }
+
+  updateVersionsForPackage(
+    host: ChronusHost,
+    workspace: Workspace,
+    pkg: Package,
+    patchRequest: PatchPackageVersion,
+  ): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 }
 
@@ -71,7 +93,7 @@ export async function tryLoadCargoToml(
   root: string,
   relativePath: string,
 ): Promise<Package | undefined> {
-  const filepath = resolvePath(root, relativePath, "Cargo.toml");
+  const filepath = resolvePath(root, relativePath, cargoFile);
   if (await isPathAccessible(host, filepath)) {
     const file = await host.readFile(filepath);
     const cargoToml = parse(file.content) as CargoToml;
@@ -85,9 +107,31 @@ export async function tryLoadCargoToml(
       name: cargoToml.package.name,
       version: cargoToml.package.version,
       relativePath: relativePath,
-      manifest: cargoToml as any, // TODO: manifest should be dropped
+      dependencies: new Map([
+        ...mapCargoDependencies(cargoToml.dependencies, "prod"),
+        ...mapCargoDependencies(cargoToml["dev-dependencies"], "dev"),
+        ...mapCargoDependencies(cargoToml["build-dependencies"], "dev"),
+      ]),
     };
   } else {
     return undefined;
   }
+}
+
+function mapCargoDependencies(
+  deps: Record<string, CargoDependency> | undefined,
+  kind: "prod" | "dev",
+): [string, PackageDependencySpec][] {
+  if (!deps) return [];
+  return Object.entries(deps).map(([name, dep]) => {
+    const version = typeof dep === "string" ? dep : (dep.version ?? dep.path);
+    return [
+      name,
+      {
+        name,
+        version: version ?? "*",
+        kind,
+      } as PackageDependencySpec,
+    ];
+  });
 }

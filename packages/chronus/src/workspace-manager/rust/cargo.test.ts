@@ -51,8 +51,8 @@ it("finds all packages", async () => {
 });
 
 it("doesn't included excluded packages", async () => {
-  host.addFile("proj/crates/pkg-a/Cargo.json", createCargoToml({ name: "pkg-a", version: "1.0.0" }));
-  host.addFile("proj/crates/pkg-excluded/Cargo.json", createCargoToml({ name: "pkg-excluded", version: "1.2.0" }));
+  host.addFile("proj/crates/pkg-a/Cargo.toml", createCargoToml({ name: "pkg-a", version: "1.0.0" }));
+  host.addFile("proj/crates/pkg-excluded/Cargo.toml", createCargoToml({ name: "pkg-excluded", version: "1.2.0" }));
   const workspace = await ws.load(host.host, "proj");
   expect(workspace.packages).toHaveLength(1);
   expect(workspace.packages[0]).toHaveProperty("name", "pkg-a");

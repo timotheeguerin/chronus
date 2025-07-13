@@ -1,6 +1,7 @@
 import { parse } from "yaml";
 import { ChronusError, isDefined, isPathAccessible, joinPaths, lookup, type ChronusHost } from "../../utils/index.js";
 import type { Package, Workspace, WorkspaceManager } from "../types.js";
+import { createNodeWorkspaceManager } from "./node.js";
 import { tryLoadNodePackage } from "./utils.js";
 
 const workspaceFileName = "rush.json";
@@ -17,6 +18,7 @@ interface RushProject {
 
 export function createRushWorkspaceManager(): WorkspaceManager {
   return {
+    ...createNodeWorkspaceManager(),
     type: "node:rush",
     aliases: ["rush"],
     async is(host: ChronusHost, dir: string): Promise<boolean> {

@@ -4,7 +4,7 @@ import { isCI } from "std-env";
 import { execAsync, type ExecResult } from "../utils/exec-async.js";
 import { NodeChronusHost, getDirectoryPath, getLastJsonObject, lookup } from "../utils/index.js";
 import { createPnpmWorkspaceManager } from "../workspace-manager/node/pnpm.js";
-import type { PackageBase } from "../workspace-manager/types.js";
+import type { PackageId } from "../workspace-manager/types.js";
 import type { PublishPackageResult } from "./types.js";
 
 export interface PublishPackageOptions {
@@ -37,7 +37,7 @@ async function isDir(path: string) {
 }
 
 export async function publishPackage(
-  pkg: PackageBase,
+  pkg: PackageId,
   pkgDir: string,
   options: PublishPackageOptions = {},
 ): Promise<PublishPackageResult> {
@@ -62,7 +62,7 @@ async function shouldUsePnpm(pkgDir: string, engine: "npm" | "pnpm" | undefined)
 }
 
 export async function publishPackageWithNpm(
-  pkg: PackageBase,
+  pkg: PackageId,
   pkgDir: string,
   options: PublishPackageOptions = {},
 ): Promise<PublishPackageResult> {
@@ -85,7 +85,7 @@ export async function publishPackageWithNpm(
 }
 
 export async function publishPackageWithPnpm(
-  pkg: PackageBase,
+  pkg: PackageId,
   pkgDir: string,
   options: PublishPackageOptions = {},
 ): Promise<PublishPackageResult> {
@@ -124,7 +124,7 @@ export async function publishPackageWithPnpm(
   }
 }
 
-function processError(pkg: PackageBase, result: ExecResult): PublishPackageResult {
+function processError(pkg: PackageId, result: ExecResult): PublishPackageResult {
   const json = getLastJsonObject(result.stderr.toString()) ?? getLastJsonObject(result.stdout.toString());
 
   if (json?.error) {

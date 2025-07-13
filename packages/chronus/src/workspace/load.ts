@@ -13,7 +13,7 @@ function getPackageState(config: ChronusResolvedConfig, pkg: Package): ChronusPa
   if (config.ignore && config.ignore.some((x) => micromatch.isMatch(pkg.name, x))) {
     return "ignored";
   }
-  if (pkg.manifest.private) {
+  if (pkg.private) {
     return "private";
   }
   return "versioned";
