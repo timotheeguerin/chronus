@@ -84,16 +84,30 @@ describe("getWorkspaceManager", () => {
       makeRushWorkspace();
       makePnpmWorkspace();
     });
-    it("finds pnpm workspace", async () => {
+
+    it("finds pnpm workspace with 'node:pnpm'", async () => {
+      makePnpmWorkspace();
+      const workspace = await loadWorkspace(host.host, "proj", "node:pnpm");
+      expect(workspace.type).toBe("pnpm");
+    });
+    it("finds pnpm workspace with 'pnpm'", async () => {
       makePnpmWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "pnpm");
       expect(workspace.type).toBe("pnpm");
     });
-    it("finds rush workspace", async () => {
+
+    it("finds rush workspace with 'node:rush'", async () => {
+      makeRushWorkspace();
+      const workspace = await loadWorkspace(host.host, "proj", "node:rush");
+      expect(workspace.type).toBe("rush");
+    });
+
+    it("finds rush workspace with 'rush'", async () => {
       makeRushWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "rush");
       expect(workspace.type).toBe("rush");
     });
+
     it("find npm workspace", async () => {
       makeNpmWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "npm");
