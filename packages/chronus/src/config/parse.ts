@@ -35,8 +35,8 @@ const schema = z
     additionalPackages: z.array(z.string()).optional(),
     versionPolicies: z.array(versionPolicySchema).optional(),
     ignore: z.array(z.string()).optional(),
-    changeKinds: z.record(changeKindsSchema).optional(),
-    changelog: z.union([z.string(), z.tuple([z.string(), z.record(z.unknown())])]).optional(),
+    changeKinds: z.record(z.string(), changeKindsSchema).optional(),
+    changelog: z.union([z.string(), z.tuple([z.string(), z.record(z.string(), z.unknown())])]).optional(),
     changedFiles: z.array(z.string()).optional(),
   })
   .strict();
