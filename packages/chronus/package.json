@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "cross-spawn": "^7.0.6",
-    "globby": "^14.1.0",
+    "globby": "^15.0.0",
     "is-unicode-supported": "^2.1.0",
     "micromatch": "^4.0.8",
     "pacote": "^21.0.1",
