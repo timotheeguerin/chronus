@@ -51,7 +51,7 @@
     "syncpack": "^13.0.4",
     "tsx": "^4.20.6",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.45.0",
+    "typescript-eslint": "^8.46.0",
     "vitest": "^3.2.4"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
