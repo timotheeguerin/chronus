@@ -62,18 +62,18 @@
   "devDependencies": {
     "@chronus/registry-mock": "workspace:*",
     "@types/cross-spawn": "^6.0.6",
-    "@types/micromatch": "^4.0.9",
-    "@types/node": "^24.5.2",
+    "@types/micromatch": "^4.0.10",
+    "@types/node": "^24.9.1",
     "@types/node-fetch": "^2.6.13",
     "@types/pacote": "^11.1.8",
     "@types/pluralize": "^0.0.33",
     "@types/prompts": "^2.4.9",
     "@types/semver": "^7.7.1",
     "@types/xml2js": "^0.4.14",
-    "@types/yargs": "^17.0.33",
+    "@types/yargs": "^17.0.34",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
