@@ -47,7 +47,7 @@ export function createRushWorkspaceManager(): WorkspaceManager {
         await Promise.all(config.projects.map((pattern) => tryLoadNodePackage(host, root, pattern.projectFolder)))
       ).filter(isDefined);
       return {
-        type: "rush",
+        type: "node:rush",
         path: root,
         packages,
       };

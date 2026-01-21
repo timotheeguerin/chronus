@@ -11,7 +11,7 @@ const workspaceFileName = "package.json";
 
 export function createNodeWorkspaceManager(): WorkspaceManager {
   return {
-    type: "node",
+    type: "node:npm",
     aliases: ["npm", "node:npm"],
     async is(host: ChronusHost, dir: string): Promise<boolean> {
       try {
@@ -39,7 +39,7 @@ export function createNodeWorkspaceManager(): WorkspaceManager {
         await Promise.all(pkgJson.workspaces.map((pattern) => findPackagesFromPattern(host, root, pattern)))
       ).flat();
       return {
-        type: "npm",
+        type: "node:npm",
         path: root,
         packages,
       };

@@ -17,6 +17,18 @@ describe("getWorkspaceManager", () => {
       }),
     );
   }
+  function makeCargoWorkspace() {
+    host.addFile(
+      "proj/Cargo.toml",
+      `
+[workspace]
+resolver = "2"
+
+members = ["crates/*"]
+exclude = ["crates/pkg-excluded/**"]
+    `,
+    );
+  }
 
   function makeRushWorkspace() {
     host.addFile(
@@ -50,31 +62,37 @@ describe("getWorkspaceManager", () => {
     it("finds pnpm workspace", async () => {
       makePnpmWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "auto");
-      expect(workspace.type).toBe("pnpm");
+      expect(workspace.type).toBe("node:pnpm");
     });
     it("finds rush workspace", async () => {
       makeRushWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "auto");
-      expect(workspace.type).toBe("rush");
+      expect(workspace.type).toBe("node:rush");
     });
     it("find npm workspace", async () => {
       makeNpmWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "auto");
-      expect(workspace.type).toBe("npm");
+      expect(workspace.type).toBe("node:npm");
     });
 
     it("finds pnpm workspace over npm workspace", async () => {
       makeNpmWorkspace();
       makePnpmWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "auto");
-      expect(workspace.type).toBe("pnpm");
+      expect(workspace.type).toBe("node:pnpm");
     });
 
     it("finds rush workspace over npm workspace", async () => {
       makeNpmWorkspace();
       makeRushWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "auto");
-      expect(workspace.type).toBe("rush");
+      expect(workspace.type).toBe("node:rush");
+    });
+
+    it("finds cargo workspace", async () => {
+      makeCargoWorkspace();
+      const workspace = await loadWorkspace(host.host, "proj", "auto");
+      expect(workspace.type).toBe("rust:cargo");
     });
   });
 
@@ -83,35 +101,48 @@ describe("getWorkspaceManager", () => {
       makeNpmWorkspace();
       makeRushWorkspace();
       makePnpmWorkspace();
+      makeCargoWorkspace();
     });
 
     it("finds pnpm workspace with 'node:pnpm'", async () => {
       makePnpmWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "node:pnpm");
-      expect(workspace.type).toBe("pnpm");
+      expect(workspace.type).toBe("node:pnpm");
     });
     it("finds pnpm workspace with 'pnpm'", async () => {
       makePnpmWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "pnpm");
-      expect(workspace.type).toBe("pnpm");
+      expect(workspace.type).toBe("node:pnpm");
     });
 
     it("finds rush workspace with 'node:rush'", async () => {
       makeRushWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "node:rush");
-      expect(workspace.type).toBe("rush");
+      expect(workspace.type).toBe("node:rush");
     });
 
     it("finds rush workspace with 'rush'", async () => {
       makeRushWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "rush");
-      expect(workspace.type).toBe("rush");
+      expect(workspace.type).toBe("node:rush");
     });
 
-    it("find npm workspace", async () => {
+    it("finds npm workspace", async () => {
       makeNpmWorkspace();
       const workspace = await loadWorkspace(host.host, "proj", "npm");
-      expect(workspace.type).toBe("npm");
+      expect(workspace.type).toBe("node:npm");
+    });
+
+    it("finds cargo workspace", async () => {
+      makeCargoWorkspace();
+      const workspace = await loadWorkspace(host.host, "proj", "cargo");
+      expect(workspace.type).toBe("rust:cargo");
+    });
+
+    it("finds cargo workspace with 'rust:cargo'", async () => {
+      makeCargoWorkspace();
+      const workspace = await loadWorkspace(host.host, "proj", "cargo");
+      expect(workspace.type).toBe("rust:cargo");
     });
   });
 });

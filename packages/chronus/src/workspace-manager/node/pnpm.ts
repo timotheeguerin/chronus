@@ -31,7 +31,7 @@ export function createPnpmWorkspaceManager(): WorkspaceManager {
       }
       const packages: Package[] = await findPackagesFromPattern(host, root, config.packages);
       return {
-        type: "pnpm",
+        type: "node:pnpm",
         path: root,
         packages,
       };
