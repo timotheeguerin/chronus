@@ -115,7 +115,6 @@ export class PipWorkspaceManager implements WorkspaceManager {
       if (await isPathAccessible(host, setupPyPath)) {
         const file = await host.readFile(setupPyPath);
         const packageInfo = parseSetupPy(file.content);
-
         // Update version in separate file if it exists
         if (patchRequest.newVersion && packageInfo.versionFile) {
           await updateVersionInFile(host, workspace.path, pkg.relativePath, pkg.name, patchRequest.newVersion);
@@ -348,12 +347,10 @@ interface SetupPyInfo {
  */
 function parseSetupPy(content: string): SetupPyInfo {
   const info: SetupPyInfo = {};
-
   // Extract name - check for both direct assignment and PACKAGE_NAME variable (Azure SDK)
   const directNameMatch = content.match(/name\s*=\s*["']([^"']+)["']/);
   const packageNameMatch = content.match(/PACKAGE_NAME\s*=\s*["']([^"']+)["']/);
   info.name = directNameMatch?.[1] ?? packageNameMatch?.[1];
-
   // Check if version is imported from a separate file (Azure SDK pattern)
   // Detects patterns like: with open(...'_version.py'...) or with open(...'version.py'...)
   // Prefer _version.py if both are mentioned (more common in Azure SDK)
@@ -367,7 +364,6 @@ function parseSetupPy(content: string): SetupPyInfo {
 
   // Extract version directly from setup.py
   info.version = content.match(/version\s*=\s*["']([^"']+)["']/)?.[1];
-
   // Extract install_requires
   const installRequiresMatch = content.match(/install_requires\s*=\s*\[([\s\S]*?)\]/);
   if (installRequiresMatch) {
