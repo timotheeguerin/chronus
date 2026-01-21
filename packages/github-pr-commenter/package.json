@@ -37,10 +37,10 @@
   },
   "dependencies": {
     "@chronus/github": "workspace:*",
-    "@octokit/rest": "^21.1.1"
+    "@octokit/rest": "^22.0.1"
   },
   "devDependencies": {
-    "@types/node": "^24.9.1",
+    "@types/node": "^25.0.9",
     "rimraf": "^6.0.1",
     "source-map-support": "^0.5.21",
     "typescript": "^5.9.3",

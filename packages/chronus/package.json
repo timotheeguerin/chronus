@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "cross-spawn": "^7.0.6",
-    "globby": "^15.0.0",
+    "globby": "^16.1.0",
     "is-unicode-supported": "^2.1.0",
     "micromatch": "^4.0.8",
     "pacote": "^21.0.1",
@@ -63,7 +63,7 @@
     "@chronus/registry-mock": "workspace:*",
     "@types/cross-spawn": "^6.0.6",
     "@types/micromatch": "^4.0.10",
-    "@types/node": "^24.9.1",
+    "@types/node": "^25.0.9",
     "@types/node-fetch": "^2.6.13",
     "@types/pacote": "^11.1.8",
     "@types/pluralize": "^0.0.33",
@@ -74,7 +74,7 @@
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "typescript": "^5.9.3",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.17"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
 }
