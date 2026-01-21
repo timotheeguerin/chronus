@@ -16,14 +16,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0 ## Needed for changelog
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
+      - uses: ./.github/actions/setup
 
-      - uses: pnpm/action-setup@v3
-        name: Install pnpm
-
+      - run: git fetch --force --no-tags origin ${{ github.event.pull_request.base.ref }}:${{ github.event.pull_request.base.ref }}
+        name: Get ${{ github.event.pull_request.base.ref }} ref for ${{ github.ref}}, evt ${{ github.event_name }}
+        
       - run: pnpm install
         name: Install dependencies
 
