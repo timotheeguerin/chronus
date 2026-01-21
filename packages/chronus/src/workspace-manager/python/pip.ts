@@ -87,16 +87,7 @@ export class PipWorkspaceManager implements WorkspaceManager {
         
         // Update version in _version.py if it's dynamic
         if (patchRequest.newVersion && isDynamicVersion) {
-          const packageFolderPath = pkg.name.replace(/-/g, "/");
-          for (const versionFileName of versionFiles) {
-            const versionFilePath = resolvePath(workspace.path, pkg.relativePath, packageFolderPath, versionFileName);
-            if (await isPathAccessible(host, versionFilePath)) {
-              const versionFile = await host.readFile(versionFilePath);
-              const updatedContent = updateVersionFile(versionFile.content, patchRequest.newVersion);
-              await host.writeFile(versionFilePath, updatedContent);
-              break;
-            }
-          }
+          await updateVersionInFile(host, workspace.path, pkg.relativePath, pkg.name, patchRequest.newVersion);
         }
         
         // Update pyproject.toml (version if not dynamic, and dependencies)
@@ -128,15 +119,9 @@ export class PipWorkspaceManager implements WorkspaceManager {
         const file = await host.readFile(setupPyPath);
         const packageInfo = parseSetupPy(file.content);
         
-        // Check if version is in a separate file (_version.py or version.py)
+        // Update version in separate file if it exists
         if (patchRequest.newVersion && packageInfo.versionFile) {
-          const packageFolderPath = pkg.name.replace(/-/g, "/");
-          const versionFilePath = resolvePath(workspace.path, pkg.relativePath, packageFolderPath, packageInfo.versionFile);
-          if (await isPathAccessible(host, versionFilePath)) {
-            const versionFile = await host.readFile(versionFilePath);
-            const updatedContent = updateVersionFile(versionFile.content, patchRequest.newVersion);
-            await host.writeFile(versionFilePath, updatedContent);
-          }
+          await updateVersionInFile(host, workspace.path, pkg.relativePath, pkg.name, patchRequest.newVersion);
         }
         
         // Update setup.py for version (if not in separate file) and dependencies
@@ -178,6 +163,52 @@ export async function findPackagesFromPattern(
   return packages.filter(isDefined);
 }
 
+/**
+ * Read version from _version.py or version.py file.
+ */
+async function readVersionFromFile(
+  host: ChronusHost,
+  root: string,
+  relativePath: string,
+  packageName: string,
+): Promise<string | undefined> {
+  const packageFolderPath = packageName.replace(/-/g, "/");
+  for (const versionFileName of versionFiles) {
+    const versionFilePath = resolvePath(root, relativePath, packageFolderPath, versionFileName);
+    if (await isPathAccessible(host, versionFilePath)) {
+      const versionFileContent = await host.readFile(versionFilePath);
+      const versionMatch = versionFileContent.content.match(/VERSION\s*=\s*["']([^"']+)["']/);
+      if (versionMatch) {
+        return versionMatch[1];
+      }
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Update version in _version.py or version.py file.
+ */
+async function updateVersionInFile(
+  host: ChronusHost,
+  root: string,
+  relativePath: string,
+  packageName: string,
+  newVersion: string,
+): Promise<boolean> {
+  const packageFolderPath = packageName.replace(/-/g, "/");
+  for (const versionFileName of versionFiles) {
+    const versionFilePath = resolvePath(root, relativePath, packageFolderPath, versionFileName);
+    if (await isPathAccessible(host, versionFilePath)) {
+      const versionFile = await host.readFile(versionFilePath);
+      const updatedContent = updateVersionFile(versionFile.content, newVersion);
+      await host.writeFile(versionFilePath, updatedContent);
+      return true;
+    }
+  }
+  return false;
+}
+
 export async function tryLoadPackage(
   host: ChronusHost,
   root: string,
@@ -197,19 +228,7 @@ export async function tryLoadPackage(
       // Check if version is marked as dynamic (Azure SDK pattern)
       const isDynamicVersion = project.dynamic?.includes("version");
       if (isDynamicVersion || !version) {
-        // Try to read version from _version.py or version.py
-        const packageFolderPath = project.name.replace(/-/g, "/");
-        for (const versionFileName of versionFiles) {
-          const versionFilePath = resolvePath(root, relativePath, packageFolderPath, versionFileName);
-          if (await isPathAccessible(host, versionFilePath)) {
-            const versionFileContent = await host.readFile(versionFilePath);
-            const versionMatch = versionFileContent.content.match(/VERSION\s*=\s*["']([^"']+)["']/);
-            if (versionMatch) {
-              version = versionMatch[1];
-              break;
-            }
-          }
-        }
+        version = await readVersionFromFile(host, root, relativePath, project.name);
       }
       
       if (version) {
@@ -218,9 +237,9 @@ export async function tryLoadPackage(
           version: version,
           relativePath: relativePath,
           dependencies: new Map([
-            ...mapPep621Dependencies(project.dependencies, "prod"),
+            ...parseDependencies(project.dependencies, "prod"),
             ...(project["optional-dependencies"]
-              ? Object.values(project["optional-dependencies"]).flatMap((deps) => mapPep621Dependencies(deps, "dev"))
+              ? Object.values(project["optional-dependencies"]).flatMap((deps) => parseDependencies(deps, "dev"))
               : []),
           ]),
         };
@@ -239,16 +258,7 @@ export async function tryLoadPackage(
     // If version is in a separate file (_version.py or version.py), read it
     let version = packageInfo.version;
     if (!version && packageInfo.versionFile && packageInfo.name) {
-      // Convert package name to folder path (e.g., "azure-mgmt-automanage" -> "azure/mgmt/automanage")
-      const packageFolderPath = packageInfo.name.replace(/-/g, "/");
-      const versionFilePath = resolvePath(root, relativePath, packageFolderPath, packageInfo.versionFile);
-      if (await isPathAccessible(host, versionFilePath)) {
-        const versionFileContent = await host.readFile(versionFilePath);
-        const versionMatch = versionFileContent.content.match(/VERSION\s*=\s*["']([^"']+)["']/);
-        if (versionMatch) {
-          version = versionMatch[1];
-        }
-      }
+      version = await readVersionFromFile(host, root, relativePath, packageInfo.name);
     }
     
     if (packageInfo.name && version) {
@@ -257,8 +267,8 @@ export async function tryLoadPackage(
         version: version,
         relativePath: relativePath,
         dependencies: new Map([
-          ...mapSetupPyDependencies(packageInfo.install_requires, "prod"),
-          ...mapSetupPyDependencies(packageInfo.extras_require?.dev, "dev"),
+          ...parseDependencies(packageInfo.install_requires, "prod"),
+          ...parseDependencies(packageInfo.extras_require?.dev, "dev"),
         ]),
       };
     }
@@ -267,18 +277,11 @@ export async function tryLoadPackage(
   return undefined;
 }
 
-function mapPep621Dependencies(deps: string[] | undefined, kind: "prod" | "dev"): [string, PackageDependencySpec][] {
-  return mapStringDependencies(deps, kind);
-}
-
-function mapSetupPyDependencies(deps: string[] | undefined, kind: "prod" | "dev"): [string, PackageDependencySpec][] {
-  return mapStringDependencies(deps, kind);
-}
-
 /**
- * Shared helper to parse Python dependency specifications from string arrays
+ * Parse Python dependency specifications from string arrays.
+ * Handles formats like "package>=1.0.0" or "package[extra]>=1.0.0".
  */
-function mapStringDependencies(deps: string[] | undefined, kind: "prod" | "dev"): [string, PackageDependencySpec][] {
+function parseDependencies(deps: string[] | undefined, kind: "prod" | "dev"): [string, PackageDependencySpec][] {
   if (!deps) return [];
   return deps.map((depSpec) => {
     // Parse dependency specification like "package>=1.0.0" or "package[extra]>=1.0.0"
@@ -308,38 +311,30 @@ interface SetupPyInfo {
 }
 
 /**
- * Parse setup.py to extract package information
+ * Parse setup.py to extract package information.
+ * Supports both standard setup() calls and Azure SDK patterns.
  */
 function parseSetupPy(content: string): SetupPyInfo {
   const info: SetupPyInfo = {};
   
-  // Extract name - check for both direct assignment and PACKAGE_NAME variable
-  let nameMatch = content.match(/name\s*=\s*["']([^"']+)["']/);
-  if (!nameMatch) {
-    // Try to find PACKAGE_NAME = "..." pattern (Azure SDK)
-    const packageNameMatch = content.match(/PACKAGE_NAME\s*=\s*["']([^"']+)["']/);
-    if (packageNameMatch) {
-      info.name = packageNameMatch[1];
-    }
-  } else {
-    info.name = nameMatch[1];
-  }
+  // Extract name - check for both direct assignment and PACKAGE_NAME variable (Azure SDK)
+  const directNameMatch = content.match(/name\s*=\s*["']([^"']+)["']/);
+  const packageNameMatch = content.match(/PACKAGE_NAME\s*=\s*["']([^"']+)["']/);
+  info.name = directNameMatch?.[1] ?? packageNameMatch?.[1];
   
   // Check if version is imported from a separate file (Azure SDK pattern)
-  // Patterns to detect:
-  // 1. with open(os.path.join(package_folder_path, '_version.py'), 'r') as fd:
-  // 2. with open(...'_version.py'...) or with open(...'version.py'...)
+  // Detects patterns like: with open(...'_version.py'...) or with open(...'version.py'...)
   // Prefer _version.py if both are mentioned (more common in Azure SDK)
-  const versionFileMatches = content.match(/["']((?:_)?version\.py)["']/g);
-  if (versionFileMatches && content.includes("with open")) {
-    // Look for _version.py first, otherwise use the first match
-    const preferredFile = versionFileMatches.find(m => m.includes("_version.py")) || versionFileMatches[0];
-    info.versionFile = preferredFile.replace(/["']/g, ""); // Remove quotes
+  if (content.includes("with open")) {
+    const versionFileMatches = content.match(/["']((?:_)?version\.py)["']/g);
+    if (versionFileMatches) {
+      const preferredFile = versionFileMatches.find(m => m.includes("_version.py")) ?? versionFileMatches[0];
+      info.versionFile = preferredFile.replace(/["']/g, "");
+    }
   }
   
   // Extract version directly from setup.py
-  const versionMatch = content.match(/version\s*=\s*["']([^"']+)["']/);
-  if (versionMatch) info.version = versionMatch[1];
+  info.version = content.match(/version\s*=\s*["']([^"']+)["']/)?.[1];
   
   // Extract install_requires
   const installRequiresMatch = content.match(/install_requires\s*=\s*\[([\s\S]*?)\]/);
