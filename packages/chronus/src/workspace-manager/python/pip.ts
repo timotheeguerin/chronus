@@ -168,14 +168,12 @@ async function readVersionFromFile(
   packageName: string,
 ): Promise<string | undefined> {
   const packageRoot = resolvePath(root, relativePath);
-
   // Try to find version files in the package directory
   for (const versionFileName of versionFiles) {
     const versionFiles = await host.glob(`**/${versionFileName}`, {
       baseDir: packageRoot,
       ignore: ["**/node_modules", "**/__pycache__", "**/venv", "**/.venv", "**/samples", "**/_vendor"],
     });
-
     // Use the first matching version file
     if (versionFiles.length > 0) {
       const versionFilePath = resolvePath(packageRoot, versionFiles[0]);
@@ -201,14 +199,12 @@ async function updateVersionInFile(
   newVersion: string,
 ): Promise<boolean> {
   const packageRoot = resolvePath(root, relativePath);
-
   // Try to find version files in the package directory
   for (const versionFileName of versionFiles) {
     const foundFiles = await host.glob(`**/${versionFileName}`, {
       baseDir: packageRoot,
       ignore: ["**/node_modules", "**/__pycache__", "**/venv", "**/.venv", "**/samples", "**/_vendor"],
     });
-
     // Use the first matching version file
     if (foundFiles.length > 0) {
       const versionFilePath = resolvePath(packageRoot, foundFiles[0]);
@@ -234,7 +230,6 @@ export async function tryLoadPackage(
   if (await isPathAccessible(host, pyprojectPath)) {
     const file = await host.readFile(pyprojectPath);
     const pyprojectToml = parse(file.content) as PyprojectToml;
-
     const project = pyprojectToml.project;
     if (project?.name) {
       let version = project.version;
