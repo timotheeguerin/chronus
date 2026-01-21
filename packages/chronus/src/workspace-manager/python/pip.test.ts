@@ -360,7 +360,6 @@ describe("Azure SDK pattern with _version.py", () => {
 line-length = 88
 `,
     });
-
     // Setup.py that reads version from _version.py
     azureHost.addFile(
       "proj/packages/azure-mgmt-compute/setup.py",
@@ -408,7 +407,6 @@ VERSION = "1.0.0"
 line-length = 88
 `,
     });
-
     azureHost.addFile(
       "proj/sdk/azure-mgmt-compute/setup.py",
       `from setuptools import setup

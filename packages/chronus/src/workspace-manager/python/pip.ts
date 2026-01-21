@@ -103,7 +103,6 @@ export class PipWorkspaceManager implements WorkspaceManager {
           pyprojectContent = updatePyprojectDependencyVersion(pyprojectContent, depName, newVersion);
           hasPyprojectChanges = true;
         }
-
         if (hasPyprojectChanges) {
           await host.writeFile(pyprojectTomlPath, pyprojectContent);
         }
@@ -137,7 +136,6 @@ export class PipWorkspaceManager implements WorkspaceManager {
           setupPyContent = updateSetupPyDependencyVersion(setupPyContent, depName, newVersion);
           hasSetupPyChanges = true;
         }
-
         if (hasSetupPyChanges) {
           await host.writeFile(setupPyPath, setupPyContent);
         }
@@ -274,7 +272,6 @@ export async function tryLoadPackage(
     // If pyproject.toml exists but doesn't have [project] section with name/version,
     // it's likely being used for tools only, so fall through to check setup.py
   }
-
   // Try setup.py - either pyproject.toml doesn't exist, or it's only used for tools
   const setupPyPath = resolvePath(root, relativePath, setupPyFile);
   if (await isPathAccessible(host, setupPyPath)) {
