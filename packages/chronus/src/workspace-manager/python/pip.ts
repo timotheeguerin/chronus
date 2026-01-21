@@ -156,6 +156,7 @@ export async function findPackagesFromPattern(
 
 /**
  * Read version from _version.py or version.py file.
+ * Searches for the version file in the package directory using glob patterns.
  */
 async function readVersionFromFile(
   host: ChronusHost,
@@ -163,10 +164,18 @@ async function readVersionFromFile(
   relativePath: string,
   packageName: string,
 ): Promise<string | undefined> {
-  const packageFolderPath = packageName.replace(/-/g, "/");
+  const packageRoot = resolvePath(root, relativePath);
+  
+  // Try to find version files in the package directory
   for (const versionFileName of versionFiles) {
-    const versionFilePath = resolvePath(root, relativePath, packageFolderPath, versionFileName);
-    if (await isPathAccessible(host, versionFilePath)) {
+    const versionFiles = await host.glob(`**/${versionFileName}`, {
+      baseDir: packageRoot,
+      ignore: ["**/node_modules", "**/__pycache__", "**/venv", "**/.venv", "**/samples", "**/_vendor"],
+    });
+    
+    // Use the first matching version file
+    if (versionFiles.length > 0) {
+      const versionFilePath = resolvePath(packageRoot, versionFiles[0]);
       const versionFileContent = await host.readFile(versionFilePath);
       const versionMatch = versionFileContent.content.match(/VERSION\s*=\s*["']([^"']+)["']/);
       if (versionMatch) {
@@ -188,10 +197,18 @@ async function updateVersionInFile(
   packageName: string,
   newVersion: string,
 ): Promise<boolean> {
-  const packageFolderPath = packageName.replace(/-/g, "/");
+  const packageRoot = resolvePath(root, relativePath);
+  
+  // Try to find version files in the package directory
   for (const versionFileName of versionFiles) {
-    const versionFilePath = resolvePath(root, relativePath, packageFolderPath, versionFileName);
-    if (await isPathAccessible(host, versionFilePath)) {
+    const foundFiles = await host.glob(`**/${versionFileName}`, {
+      baseDir: packageRoot,
+      ignore: ["**/node_modules", "**/__pycache__", "**/venv", "**/.venv", "**/samples", "**/_vendor"],
+    });
+    
+    // Use the first matching version file
+    if (foundFiles.length > 0) {
+      const versionFilePath = resolvePath(packageRoot, foundFiles[0]);
       const versionFile = await host.readFile(versionFilePath);
       const updatedContent = updateVersionFile(versionFile.content, newVersion);
       await host.writeFile(versionFilePath, updatedContent);
@@ -215,7 +232,6 @@ export async function tryLoadPackage(
     const file = await host.readFile(pyprojectPath);
     const pyprojectToml = parse(file.content) as PyprojectToml;
     
-    // PEP 621 format - pyproject.toml used for packaging
     const project = pyprojectToml.project;
     if (project?.name) {
       let version = project.version;
