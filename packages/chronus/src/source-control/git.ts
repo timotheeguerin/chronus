@@ -173,21 +173,15 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
   async function listChangedFilesFromBase(baseBranch: string, remote?: string) {
     let remoteBase: string | undefined;
     if (remote) {
-      console.log("GOt remote", remote);
       try {
-        remoteBase = await findRemoteFromUrl(remote);
-      console.log("GOt remote base", remoteBase);
-
+        const remoteName = await findRemoteFromUrl(remote);
+        remoteBase = `${remoteName}/${baseBranch}`;
       } catch {
         // ignore
       }
     } else {
-      console.log("GOt no remote", remote);
-
       try {
         remoteBase = await findRemoteForBranch(baseBranch);
-      console.log("GOt remote base", remoteBase);
-
       } catch {
         // ignore
       }
@@ -195,7 +189,6 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     if (remoteBase === undefined) {
       remoteBase = `refs/remotes/origin/${baseBranch}`;
     }
-    console.log("Using remote base", remoteBase);
     return await listChangedFilesSince(remoteBase);
   }
 
