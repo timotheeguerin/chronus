@@ -3,7 +3,7 @@ import { isPathAccessible } from "../../utils/fs-utils.js";
 import type { ChronusHost } from "../../utils/host.js";
 import { isDefined } from "../../utils/misc-utils.js";
 import { joinPaths, resolvePath } from "../../utils/path-utils.js";
-import type { Package, PackageDependencySpec, PatchPackageVersion, Workspace, WorkspaceManager } from "../types.js";
+import type { Package, PackageDependencySpec, PatchPackageVersion, Workspace, WorkspaceManager, WorkspaceManagerConfig } from "../types.js";
 
 const pyprojectFile = "pyproject.toml";
 const setupPyFile = "setup.py";
@@ -15,7 +15,7 @@ export interface PyprojectToml {
     version?: string;
     dependencies?: string[];
     "optional-dependencies"?: Record<string, string[]>;
-    dynamic?: string[]; // PEP 621: fields like "version" can be marked as dynamic
+    dynamic?: string[];
   };
 }
 
@@ -35,12 +35,12 @@ export class PipWorkspaceManager implements WorkspaceManager {
     return isPathAccessible(host, setupPyPath);
   }
 
-  async load(host: ChronusHost, root: string): Promise<Workspace> {
+  async load(host: ChronusHost, root: string, config?: WorkspaceManagerConfig): Promise<Workspace> {
     // Python pip doesn't have explicit workspace members, so we'll look for packages in common patterns
     const packages: Package[] = [];
     
-    // Try to find packages in common patterns
-    const possiblePackageDirs = ["sdk/*", "sdk/*/*"];
+    // Try to find packages using configured patterns, or fall back to common defaults
+    const possiblePackageDirs = config?.packagePatterns ?? ["packages/*", "libs/*", "apps/*", "sdk/*", "sdk/*/*"];
     
     for (const pattern of possiblePackageDirs) {
       const foundPackages = await findPackagesFromPattern(host, root, pattern);

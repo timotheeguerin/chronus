@@ -40,6 +40,13 @@ export interface ChronusUserConfig {
    * Using `!` will exclude that pattern.
    */
   readonly changedFiles?: readonly string[];
+
+  /**
+   * Glob patterns for finding packages in Python workspaces.
+   * Only used when workspaceType is pip or python:pip.
+   * Defaults to packages/ libs/ apps/ sdk/ sdk/../..
+   */
+  readonly packagePatterns?: readonly string[];
 }
 
 export type PackageOrWorkspaceConfig = { path: string; type?: string };
