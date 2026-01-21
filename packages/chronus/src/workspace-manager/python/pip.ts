@@ -187,6 +187,7 @@ async function readVersionFromFile(
 
 /**
  * Update version in _version.py or version.py file.
+ * Returns true if file was found and updated, false otherwise.
  */
 async function updateVersionInFile(
   host: ChronusHost,
@@ -205,6 +206,9 @@ async function updateVersionInFile(
       return true;
     }
   }
+  console.warn(
+    `Could not find version file for package ${packageName} at ${relativePath}. Tried: ${versionFiles.join(", ")}`,
+  );
   return false;
 }
 
@@ -227,7 +231,15 @@ export async function tryLoadPackage(
       // Check if version is marked as dynamic (Azure SDK pattern)
       const isDynamicVersion = project.dynamic?.includes("version");
       if (isDynamicVersion || !version) {
-        version = await readVersionFromFile(host, root, relativePath, project.name);
+        const versionFromFile = await readVersionFromFile(host, root, relativePath, project.name);
+        if (versionFromFile) {
+          version = versionFromFile;
+        } else if (isDynamicVersion) {
+          // Version is marked as dynamic but file not found - package may be misconfigured
+          console.warn(`Package ${project.name} at ${relativePath} has dynamic version but no version file found`);
+          return undefined;
+        }
+        // If !version and not dynamic, version stays undefined and package won't load
       }
       
       if (version) {
@@ -257,7 +269,16 @@ export async function tryLoadPackage(
     // If version is in a separate file (_version.py or version.py), read it
     let version = packageInfo.version;
     if (!version && packageInfo.versionFile && packageInfo.name) {
-      version = await readVersionFromFile(host, root, relativePath, packageInfo.name);
+      const versionFromFile = await readVersionFromFile(host, root, relativePath, packageInfo.name);
+      if (versionFromFile) {
+        version = versionFromFile;
+      } else {
+        // setup.py references a version file but it doesn't exist - package may be misconfigured
+        console.warn(
+          `Package ${packageInfo.name} at ${relativePath} references ${packageInfo.versionFile} but file not found`,
+        );
+        return undefined;
+      }
     }
     
     if (packageInfo.name && version) {
