@@ -174,27 +174,18 @@ export async function tryLoadPackage(
   return undefined;
 }
 
-function mapSetupPyDependencies(deps: string[] | undefined, kind: "prod" | "dev"): [string, PackageDependencySpec][] {
-  if (!deps) return [];
-  return deps.map((depSpec) => {
-    // Parse dependency specification like "package>=1.0.0" or "package[extra]>=1.0.0"
-    const match = depSpec.match(/^([a-zA-Z0-9._-]+)(?:\[[^\]]+\])?\s*(.*)$/);
-    if (!match) {
-      return [depSpec, { name: depSpec, version: "*", kind }];
-    }
-    const [, name, version] = match;
-    return [
-      name,
-      {
-        name,
-        version: version.trim() || "*",
-        kind,
-      } as PackageDependencySpec,
-    ];
-  });
+function mapPep621Dependencies(deps: string[] | undefined, kind: "prod" | "dev"): [string, PackageDependencySpec][] {
+  return mapStringDependencies(deps, kind);
 }
 
-function mapPep621Dependencies(deps: string[] | undefined, kind: "prod" | "dev"): [string, PackageDependencySpec][] {
+function mapSetupPyDependencies(deps: string[] | undefined, kind: "prod" | "dev"): [string, PackageDependencySpec][] {
+  return mapStringDependencies(deps, kind);
+}
+
+/**
+ * Shared helper to parse Python dependency specifications from string arrays
+ */
+function mapStringDependencies(deps: string[] | undefined, kind: "prod" | "dev"): [string, PackageDependencySpec][] {
   if (!deps) return [];
   return deps.map((depSpec) => {
     // Parse dependency specification like "package>=1.0.0" or "package[extra]>=1.0.0"
