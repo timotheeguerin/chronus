@@ -48,7 +48,6 @@ export class PipWorkspaceManager implements WorkspaceManager {
 
     // Try to find packages using configured patterns, or fall back to common defaults
     const possiblePackageDirs = config?.packagePatterns ?? ["."];
-
     for (const pattern of possiblePackageDirs) {
       const foundPackages = await findPackagesFromPattern(host, root, pattern);
       packages.push(...foundPackages);
