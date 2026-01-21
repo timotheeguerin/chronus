@@ -1,4 +1,4 @@
 export { getWorkspaceManager, loadPackages as loadWorkspace } from "./auto-discover.js";
 export { createPnpmWorkspaceManager } from "./node/pnpm.js";
 export { createRushWorkspaceManager } from "./node/rush.js";
-export { PoetryWorkspaceManager } from "./python/poetry.js";
+export { PipWorkspaceManager } from "./python/pip.js";
