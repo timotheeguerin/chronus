@@ -63,13 +63,27 @@ export class CargoWorkspaceManager implements WorkspaceManager {
     };
   }
 
-  updateVersionsForPackage(
+  async updateVersionsForPackage(
     host: ChronusHost,
     workspace: Workspace,
     pkg: Package,
     patchRequest: PatchPackageVersion,
   ): Promise<void> {
-    throw new ChronusError("Rust package version updating is not yet supported");
+    const cargoTomlPath = resolvePath(workspace.path, pkg.relativePath, cargoFile);
+    const file = await host.readFile(cargoTomlPath);
+    let content = file.content;
+
+    // Update package version
+    if (patchRequest.newVersion) {
+      content = updatePackageVersion(content, patchRequest.newVersion);
+    }
+
+    // Update dependency versions
+    for (const [depName, newVersion] of Object.entries(patchRequest.dependenciesVersions)) {
+      content = updateDependencyVersion(content, depName, newVersion);
+    }
+
+    await host.writeFile(cargoTomlPath, content);
   }
 }
 
@@ -134,4 +148,43 @@ function mapCargoDependencies(
       } as PackageDependencySpec,
     ];
   });
+}
+
+/**
+ * Update the package version in [package] section.
+ * Matches: version = "x.y.z"
+ */
+function updatePackageVersion(content: string, newVersion: string): string {
+  // Match version in [package] section - look for version = "..." after [package]
+  const packageSectionRegex = /(\[package\][\s\S]*?)(version\s*=\s*)"([^"]+)"/;
+  return content.replace(packageSectionRegex, `$1$2"${newVersion}"`);
+}
+
+/**
+ * Update a dependency version. Handles both forms:
+ * - Simple: dep = "version"
+ * - Object: dep = { version = "...", ... } or [dependencies.dep] version = "..."
+ */
+function updateDependencyVersion(content: string, depName: string, newVersion: string): string {
+  // Escape special regex characters in dependency name
+  const escapedName = depName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  // Pattern 1: Simple string version - dep = "version"
+  const simplePattern = new RegExp(`(^${escapedName}\\s*=\\s*)"([^"]+)"`, "gm");
+
+  // Pattern 2: Inline table with version - dep = { version = "...", ... }
+  const inlineTablePattern = new RegExp(`(^${escapedName}\\s*=\\s*\\{[^}]*version\\s*=\\s*)"([^"]+)"`, "gm");
+
+  // Pattern 3: Dotted key section - [*.dep] followed by version = "..."
+  const dottedKeyPattern = new RegExp(
+    `(\\[(?:dependencies|dev-dependencies|build-dependencies)\\.${escapedName}\\]\\s*(?:[^\\[]*?)?version\\s*=\\s*)"([^"]+)"`,
+    "gs",
+  );
+
+  let result = content;
+  result = result.replace(simplePattern, `$1"${newVersion}"`);
+  result = result.replace(inlineTablePattern, `$1"${newVersion}"`);
+  result = result.replace(dottedKeyPattern, `$1"${newVersion}"`);
+
+  return result;
 }
