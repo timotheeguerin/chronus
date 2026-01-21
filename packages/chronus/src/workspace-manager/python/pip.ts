@@ -40,8 +40,7 @@ export class PipWorkspaceManager implements WorkspaceManager {
     const packages: Package[] = [];
     
     // Try to find packages in common patterns
-    // Include both one-level and two-level nesting for sdk/ to support different repo structures
-    const possiblePackageDirs = ["packages/*", "libs/*", "apps/*", "sdk/*", "sdk/*/*"];
+    const possiblePackageDirs = ["sdk/*", "sdk/*/*"];
     
     for (const pattern of possiblePackageDirs) {
       const foundPackages = await findPackagesFromPattern(host, root, pattern);
