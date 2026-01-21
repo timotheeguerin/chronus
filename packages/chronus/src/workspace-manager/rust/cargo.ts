@@ -69,7 +69,7 @@ export class CargoWorkspaceManager implements WorkspaceManager {
     pkg: Package,
     patchRequest: PatchPackageVersion,
   ): Promise<void> {
-    throw new Error("Method not implemented.");
+    throw new ChronusError("Rust package version updating is not yet supported");
   }
 }
 
