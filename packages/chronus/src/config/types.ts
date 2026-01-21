@@ -1,5 +1,4 @@
 import type { VersionType } from "../types.js";
-import type { WorkspaceType } from "../workspace-manager/types.js";
 import type { YamlFile } from "../yaml/types.js";
 
 export interface ChronusUserConfig {
@@ -9,7 +8,7 @@ export interface ChronusUserConfig {
   /** Base remote to use to compare against. Set this to the upstream remote to support forks that don't point their main branch to the upstream remote */
   readonly baseRemote?: string;
   /** Workspace type: pnpm, npm, yarn or auto */
-  readonly workspaceType?: WorkspaceType | "auto";
+  readonly workspaceType?: string | "auto";
   /** Additional packages that do not belong the workspace */
   readonly additionalPackages?: string[];
   readonly versionPolicies?: VersionPolicy[];

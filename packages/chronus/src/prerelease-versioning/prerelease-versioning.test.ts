@@ -25,7 +25,7 @@ describe("Assemble Release Plan", () => {
   }
   function mkPkg(name: string, manifest: PackageJson): Package {
     const version = manifest.version ?? "1.0.0";
-    return { name, manifest: { ...manifest, version }, relativePath: `packages/${name}`, version };
+    return { name, relativePath: `packages/${name}`, version, dependencies: new Map() };
   }
   const workspace: Workspace = mkWorkspace([
     mkPkg("pkg-a", { version: "1.0.0" }),

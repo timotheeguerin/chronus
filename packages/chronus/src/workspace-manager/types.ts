@@ -1,19 +1,34 @@
-export type WorkspaceType = "npm" | "pnpm" | "rush";
+import type { ChronusHost } from "../utils/host.js";
 
 export interface Workspace {
-  readonly type: WorkspaceType;
+  readonly type: string;
   readonly path: string;
   readonly packages: Package[];
 }
 
-export interface PackageBase {
+export interface PackageId {
   /** Package name */
   readonly name: string;
-
   /** Package version */
   readonly version: string;
+}
+export interface PackageBase extends PackageId {
+  /** If package is private */
+  readonly private?: boolean;
 
-  readonly manifest: PackageJson;
+  /** Dependencies for this package */
+  readonly dependencies: Map<string, PackageDependencySpec>;
+}
+
+export interface PackageDependencySpec {
+  /** Dependency name */
+  readonly name: string;
+
+  /** Dependency version */
+  readonly version: string;
+
+  /** Dependency kind */
+  readonly kind: "prod" | "dev";
 }
 
 export interface Package extends PackageBase {
@@ -32,8 +47,20 @@ export interface PackageJson {
   readonly workspaces?: string[];
 }
 
+export interface PatchPackageVersion {
+  newVersion?: string;
+  dependenciesVersions: Record<string, string>;
+}
+
 export interface WorkspaceManager {
-  type: WorkspaceType;
-  is(dir: string): Promise<boolean>;
-  load(dir: string): Promise<Workspace>;
+  type: string;
+  aliases?: string[];
+  is(host: ChronusHost, dir: string): Promise<boolean>;
+  load(host: ChronusHost, dir: string): Promise<Workspace>;
+  updateVersionsForPackage(
+    host: ChronusHost,
+    workspace: Workspace,
+    pkg: Package,
+    patchRequest: PatchPackageVersion,
+  ): Promise<void>;
 }

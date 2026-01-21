@@ -1,6 +1,6 @@
 import pacote from "pacote";
 import type { ChronusWorkspace } from "../index.js";
-import type { Package, PackageBase } from "../workspace-manager/types.js";
+import type { Package, PackageId } from "../workspace-manager/types.js";
 
 export async function findUnpublishedWorkspacePackages(workspace: ChronusWorkspace): Promise<Package[]> {
   const data = await Promise.all(
@@ -10,14 +10,13 @@ export async function findUnpublishedWorkspacePackages(workspace: ChronusWorkspa
 }
 
 /** Find unpublished packages from tarballs */
-export async function findUnpublishedPackages(tarballs: string[]): Promise<(PackageBase & { tarballPath: string })[]> {
+export async function findUnpublishedPackages(tarballs: string[]): Promise<(PackageId & { tarballPath: string })[]> {
   const data = await Promise.all(
     tarballs.map(async (tarball) => {
       const manifest = await pacote.manifest(tarball);
-      const packageBase: PackageBase & { tarballPath: string } = {
+      const packageBase: PackageId & { tarballPath: string } = {
         name: manifest.name,
         version: manifest.version,
-        manifest,
         tarballPath: tarball,
       };
       return [packageBase, await isPackageVersionPublished(manifest.name, manifest.version)] as const;
