@@ -40,7 +40,7 @@ it("finds all packages", async () => {
   });
 });
 
-it("doesn't included excluded packages", async () => {
+it("doesn't include excluded packages", async () => {
   host.addFile("proj/packages/pkg-a/package.json", JSON.stringify({ name: "pkg-a", version: "1.0.0" }));
   host.addFile("proj/packages/pkg-excluded/package.json", JSON.stringify({ name: "pkg-excluded", version: "1.2.0" }));
   const workspace = await pnpm.load(host.host, "proj");

@@ -2,9 +2,15 @@ import { ChronusError, type ChronusHost } from "../utils/index.js";
 import { createNodeWorkspaceManager } from "./node/node.js";
 import { createPnpmWorkspaceManager } from "./node/pnpm.js";
 import { createRushWorkspaceManager } from "./node/rush.js";
+import { CargoWorkspaceManager } from "./rust/cargo.js";
 import type { Workspace, WorkspaceManager } from "./types.js";
 
-const ecosystems = [createPnpmWorkspaceManager(), createRushWorkspaceManager(), createNodeWorkspaceManager()];
+const ecosystems = [
+  createPnpmWorkspaceManager(),
+  createRushWorkspaceManager(),
+  createNodeWorkspaceManager(),
+  new CargoWorkspaceManager(),
+];
 const ecosystemMap = new Map<string, WorkspaceManager>(ecosystems.map((x) => [x.type, x]));
 
 async function findWorkspaceManager(host: ChronusHost, root: string): Promise<WorkspaceManager> {
