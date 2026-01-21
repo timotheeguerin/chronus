@@ -47,6 +47,7 @@ const schema = z
     changeKinds: z.record(z.string(), changeKindsSchema).optional(),
     changelog: z.union([z.string(), z.tuple([z.string(), z.record(z.string(), z.unknown())])]).optional(),
     changedFiles: z.array(z.string()).optional(),
+    packagePatterns: z.array(z.string()).optional(),
   })
   .strict()
   .superRefine((data, ctx) => {
