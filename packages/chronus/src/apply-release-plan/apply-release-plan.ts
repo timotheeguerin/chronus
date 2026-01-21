@@ -5,7 +5,7 @@ import type { ReleaseAction, ReleasePlan, ReleasePlanChangeApplication } from ".
 import type { ChronusHost } from "../utils/host.js";
 import { getEcosystem } from "../workspace-manager/auto-discover.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
-import { getManifestPatchRequest, type VersionAction } from "./update-package-json.js";
+import { getManifestPatchRequest, type VersionAction } from "./get-manifest-patch-request.js";
 
 export async function applyReleasePlan(
   host: ChronusHost,
