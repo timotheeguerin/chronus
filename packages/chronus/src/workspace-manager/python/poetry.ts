@@ -186,7 +186,7 @@ function mapPyprojectDependencies(
 ): [string, PackageDependencySpec][] {
   if (!deps) return [];
   return Object.entries(deps)
-    .filter(([name]) => name !== "python") // Skip Python version constraint
+    .filter(([name]) => name !== "python") // Skip Python version constraint (not a package dependency)
     .map(([name, dep]) => {
       const version = typeof dep === "string" ? dep : (dep.version ?? dep.path);
       return [
@@ -204,7 +204,8 @@ function mapPep621Dependencies(deps: string[] | undefined, kind: "prod" | "dev")
   if (!deps) return [];
   return deps.map((depSpec) => {
     // Parse dependency specification like "package>=1.0.0" or "package[extra]>=1.0.0"
-    const match = depSpec.match(/^([a-zA-Z0-9_-]+)(?:\[[^\]]+\])?\s*(.*)$/);
+    // Python package names can contain letters, numbers, dots, hyphens, and underscores
+    const match = depSpec.match(/^([a-zA-Z0-9._-]+)(?:\[[^\]]+\])?\s*(.*)$/);
     if (!match) {
       return [depSpec, { name: depSpec, version: "*", kind }];
     }
@@ -252,8 +253,10 @@ function updateDependencyVersion(content: string, depName: string, newVersion: s
   const inlineTablePattern = new RegExp(`(^${escapedName}\\s*=\\s*\\{[^}]*version\\s*=\\s*)"([^"]+)"`, "gm");
 
   // Pattern 3: Dotted key section - [*.dependencies.dep] followed by version = "..."
+  // This matches TOML sections like [tool.poetry.dependencies.dep] or [tool.poetry.group.dev.dependencies.dep]
+  // followed by a version = "..." line within that section
   const dottedKeyPattern = new RegExp(
-    `(\\[(?:tool\\.poetry\\.)?(?:dependencies|dev-dependencies|group\\.[^.]+\\.dependencies)\\.${escapedName}\\]\\s*(?:[^\\[]*?)?version\\s*=\\s*)"([^"]+)"`,
+    `(\\[(?:tool\\.poetry\\.)?(?:dependencies|dev-dependencies|group\\.[^.]+\\.dependencies)\\.${escapedName}\\][^\\[]*version\\s*=\\s*)"([^"]+)"`,
     "gs",
   );
 
