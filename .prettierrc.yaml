@@ -4,4 +4,4 @@ quoteProps: "consistent"
 endOfLine: lf
 arrowParens: always
 plugins:
-  - "./node_modules/prettier-plugin-organize-imports/index.js"
+  - prettier-plugin-organize-imports
