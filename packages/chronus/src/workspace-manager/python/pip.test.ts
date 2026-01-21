@@ -65,10 +65,10 @@ it("finds all packages with pyproject.toml", async () => {
   host.addFile("proj/packages/pkg-b/pyproject.toml", createPyprojectToml({ name: "pkg-b", version: "1.2.0" }));
   const workspace = await ws.load(host.host, "proj");
   expect(workspace.packages.length).toBeGreaterThanOrEqual(2);
-  
+
   const pkgA = workspace.packages.find((p) => p.name === "pkg-a");
   const pkgB = workspace.packages.find((p) => p.name === "pkg-b");
-  
+
   expect(pkgA).toMatchObject({
     name: "pkg-a",
     version: "1.0.0",
@@ -86,10 +86,10 @@ it("finds all packages with setup.py", async () => {
   host.addFile("proj/packages/pkg-b/setup.py", createSetupPy({ name: "pkg-b", version: "1.2.0" }));
   const workspace = await ws.load(host.host, "proj");
   expect(workspace.packages.length).toBeGreaterThanOrEqual(2);
-  
+
   const pkgA = workspace.packages.find((p) => p.name === "pkg-a");
   const pkgB = workspace.packages.find((p) => p.name === "pkg-b");
-  
+
   expect(pkgA).toMatchObject({
     name: "pkg-a",
     version: "1.0.0",
@@ -360,7 +360,7 @@ describe("Azure SDK pattern with _version.py", () => {
 line-length = 88
 `,
     });
-    
+
     // Setup.py that reads version from _version.py
     azureHost.addFile(
       "proj/packages/azure-mgmt-compute/setup.py",
@@ -408,7 +408,7 @@ VERSION = "1.0.0"
 line-length = 88
 `,
     });
-    
+
     azureHost.addFile(
       "proj/sdk/azure-mgmt-compute/setup.py",
       `from setuptools import setup
