@@ -174,7 +174,8 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     let remoteBase: string | undefined;
     if (remote) {
       try {
-        remoteBase = await findRemoteFromUrl(remote);
+        const remoteName = await findRemoteFromUrl(remote);
+        remoteBase = `${remoteName}/${baseBranch}`;
       } catch {
         // ignore
       }
