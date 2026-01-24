@@ -1,4 +1,5 @@
-import type { ChronusResolvedConfig } from "../config/types.js";
+import { stringify } from "yaml";
+import type { ChronusResolvedConfig, ChronusUserConfig } from "../config/types.js";
 import type { ChronusWorkspace } from "../index.js";
 import type { Package, PackageJson, Workspace } from "../workspace-manager/types.js";
 import { createChronusWorkspace } from "../workspace/load.js";
@@ -15,14 +16,19 @@ export const TestingChangeKinds = {
 function mkWorkspace(packages: Package[]): Workspace {
   return { type: "pnpm", path: "/", packages };
 }
+
 function mkPkg(name: string, manifest: Partial<PackageJson>): Package {
   const version = manifest.version ?? "1.0.0";
   return { name, relativePath: `packages/${name}`, version, dependencies: new Map() };
 }
 
+const baseUserConfig: ChronusUserConfig = {
+  baseBranch: "main",
+  changeKinds: TestingChangeKinds,
+};
 const baseConfig: ChronusResolvedConfig = {
   workspaceRoot: "proj",
-  baseBranch: "main",
+  ...baseUserConfig,
   changeKinds: TestingChangeKinds,
 };
 
@@ -37,4 +43,15 @@ export interface TestChronusWorkspaceOptions {
 export function createTestChronusWorkspace(options: TestChronusWorkspaceOptions): ChronusWorkspace {
   const pnpmWorkspace = mkWorkspace(Object.entries(options.packages).map(([name, manifest]) => mkPkg(name, manifest)));
   return createChronusWorkspace(pnpmWorkspace, options.config ? { ...baseConfig, ...options.config } : baseConfig);
+}
+
+export function mkChronusConfigFile(config: Partial<ChronusUserConfig> = {}): Partial<string> {
+  const resolved = { ...baseUserConfig, ...config };
+  return stringify(resolved);
+}
+
+export function mkPnpmWorkspaceFile(packagePaths: string[] = ["packages/*"]): string {
+  return stringify({
+    packages: packagePaths,
+  });
 }
