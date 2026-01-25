@@ -37,24 +37,24 @@ export async function changelog({ dir, ...options }: ChangelogOptions) {
   }
 
   // Generate changelogs for all requested items
-  const changelogs: string[] = [];
+  const changelogOutputs: string[] = [];
   
   for (const pkgName of packages) {
-    const changelog = await getPackageChangelog(workspace, changes, pkgName, interactive);
-    if (changelog) {
-      changelogs.push(changelog);
+    const result = await getPackageChangelog(workspace, changes, pkgName, interactive);
+    if (result) {
+      changelogOutputs.push(result);
     }
   }
 
   for (const policyName of policies) {
-    const changelog = await getPolicyChangelog(workspace, changes, policyName, interactive);
-    if (changelog) {
-      changelogs.push(changelog);
+    const result = await getPolicyChangelog(workspace, changes, policyName, interactive);
+    if (result) {
+      changelogOutputs.push(result);
     }
   }
 
   // Output all changelogs
-  const output = changelogs.join("\n\n");
+  const output = changelogOutputs.join("\n\n");
   log(output);
 }
 
