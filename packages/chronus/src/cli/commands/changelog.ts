@@ -12,8 +12,8 @@ import type { ChronusWorkspace } from "../../workspace/types.js";
 export interface ChangelogOptions {
   readonly reporter: Reporter;
   readonly dir: string;
-  readonly package?: string;
-  readonly policy?: string;
+  readonly package?: string | string[];
+  readonly policy?: string | string[];
 }
 
 function log(...args: any[]) {
@@ -27,16 +27,35 @@ export async function changelog({ dir, ...options }: ChangelogOptions) {
   const changes = await readChangeDescriptions(host, workspace);
   const interactive = process.stdout?.isTTY && !isCI;
 
-  let changelog: string;
-  if (options.package) {
-    changelog = await getPackageChangelog(workspace, changes, options.package, interactive);
-  } else if (options.policy) {
-    changelog = await getPolicyChangelog(workspace, changes, options.policy, interactive);
-  } else {
-    throw new ChronusUserError("Need to specify either a package or a policy to generate a changelog");
+  // Normalize inputs to arrays
+  const packages = options.package ? (Array.isArray(options.package) ? options.package : [options.package]) : [];
+  const policies = options.policy ? (Array.isArray(options.policy) ? options.policy : [options.policy]) : [];
+
+  // Validate at least one is specified
+  if (packages.length === 0 && policies.length === 0) {
+    throw new ChronusUserError("Need to specify at least one package or policy to generate a changelog");
   }
 
-  log(changelog);
+  // Generate changelogs for all requested items
+  const changelogs: string[] = [];
+  
+  for (const pkgName of packages) {
+    const changelog = await getPackageChangelog(workspace, changes, pkgName, interactive);
+    if (changelog) {
+      changelogs.push(changelog);
+    }
+  }
+
+  for (const policyName of policies) {
+    const changelog = await getPolicyChangelog(workspace, changes, policyName, interactive);
+    if (changelog) {
+      changelogs.push(changelog);
+    }
+  }
+
+  // Output all changelogs
+  const output = changelogs.join("\n\n");
+  log(output);
 }
 
 async function getPackageChangelog(

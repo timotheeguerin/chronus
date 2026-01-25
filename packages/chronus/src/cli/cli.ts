@@ -157,11 +157,13 @@ async function main() {
         cmd
           .option("package", {
             type: "string",
-            description: "Generate a change log for a specific package",
+            array: true,
+            description: "Generate a change log for specific package(s)",
           })
           .option("policy", {
             type: "string",
-            description: "Generate a change log for a specific policy",
+            array: true,
+            description: "Generate a change log for specific policy/policies",
           }),
       withErrorsAndReporter((args) =>
         changelog({
