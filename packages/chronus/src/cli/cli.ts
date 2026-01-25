@@ -57,8 +57,26 @@ async function main() {
             type: "string",
             description:
               "Verify since the the given branch. Default to the baseBranch configured in .chronus/config.yaml",
+          })
+          .option("kind", {
+            short: "k",
+            type: "string",
+            description: "Kind of change. If not provided, an interactive prompt will ask for it.",
+          })
+          .option("message", {
+            short: "m",
+            type: "string",
+            description: "Message describing the changes. If not provided, an interactive prompt will ask for it.",
           }),
-      withErrors((args) => addChangeset({ cwd: process.cwd(), packages: args.packages, since: args.since })),
+      withErrors((args) =>
+        addChangeset({
+          cwd: process.cwd(),
+          packages: args.packages,
+          since: args.since,
+          changeKind: args.kind,
+          message: args.message,
+        }),
+      ),
     )
     .command(
       "verify",

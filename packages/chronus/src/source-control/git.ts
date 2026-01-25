@@ -187,7 +187,14 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
       }
     }
     if (remoteBase === undefined) {
-      remoteBase = `refs/remotes/origin/${baseBranch}`;
+      // Try remote tracking branch first, fall back to local branch if no remote exists
+      try {
+        await execGit(["rev-parse", "--verify", `refs/remotes/origin/${baseBranch}`], { repositoryPath });
+        remoteBase = `refs/remotes/origin/${baseBranch}`;
+      } catch {
+        // No remote, use local branch
+        remoteBase = baseBranch;
+      }
     }
     return await listChangedFilesSince(remoteBase);
   }

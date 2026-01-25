@@ -5,6 +5,7 @@ import { findChangeStatus } from "../../change/index.js";
 import { writeChangeDescription } from "../../change/write.js";
 import type { ChangeKindResolvedConfig, ChronusResolvedConfig } from "../../config/types.js";
 import { createGitSourceControl } from "../../source-control/git.js";
+import { ChronusUserError } from "../../utils/errors.js";
 import { NodeChronusHost } from "../../utils/node-host.js";
 import type { Package } from "../../workspace-manager/types.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
@@ -19,6 +20,8 @@ export interface AddChangesetOptions {
   readonly cwd: string;
   readonly packages?: string[];
   readonly since?: string;
+  readonly changeKind?: string;
+  readonly message?: string;
 }
 
 async function resolvePackagesToInclude(
@@ -33,7 +36,8 @@ async function resolvePackagesToInclude(
     return workspace.getPackage(x);
   });
 }
-export async function addChangeset({ cwd, since, packages }: AddChangesetOptions): Promise<void> {
+
+export async function addChangeset({ cwd, since, packages, message, changeKind }: AddChangesetOptions): Promise<void> {
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
   const sourceControl = createGitSourceControl(workspace.path);
@@ -48,12 +52,14 @@ export async function addChangeset({ cwd, since, packages }: AddChangesetOptions
     log("No package selected. Exiting.\n");
     return;
   }
-  const changeKind = await promptChangeKind(workspace.config);
-  if (changeKind === undefined) {
+  const resolvedChangeKind = changeKind
+    ? await findChangeKindConfig(changeKind, workspace.config)
+    : await promptChangeKind(workspace.config);
+  if (resolvedChangeKind === undefined) {
     log("No change kind selected, cancelling.");
     return;
   }
-  const changesetContent = await promptForContent();
+  const changesetContent = message ?? (await promptForContent());
   if (changesetContent === undefined) {
     log("No change content, cancelling.");
     return;
@@ -62,7 +68,7 @@ export async function addChangeset({ cwd, since, packages }: AddChangesetOptions
     id: getChangesetId(await sourceControl.getCurrentBranch()),
     content: changesetContent,
     packages: packageToInclude.map((x) => x.name),
-    changeKind,
+    changeKind: resolvedChangeKind,
   });
   log("Wrote change", pc.cyan(result));
 }
@@ -93,6 +99,19 @@ async function promptForPackages(status: ChangeStatus): Promise<Package[] | unde
     ],
   });
   return response.value;
+}
+
+async function findChangeKindConfig(
+  changeKind: string,
+  config: ChronusResolvedConfig,
+): Promise<ChangeKindResolvedConfig | undefined> {
+  const found = Object.entries(config.changeKinds).find(([key]) => key === changeKind)?.[1];
+  if (found === undefined) {
+    throw new ChronusUserError(
+      `Change kind '${changeKind}' is not defined in the configuration. Available kinds are: ${Object.keys(config.changeKinds).join(", ")}`,
+    );
+  }
+  return found;
 }
 
 async function promptChangeKind(config: ChronusResolvedConfig): Promise<ChangeKindResolvedConfig | undefined> {
