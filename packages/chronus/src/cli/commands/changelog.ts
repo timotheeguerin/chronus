@@ -5,7 +5,7 @@ import { resolveChangelogGenerator } from "../../changelog/generate.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { Reporter } from "../../reporters/index.js";
 import { ChronusUserError } from "../../utils/errors.js";
-import { NodeChronusHost } from "../../utils/index.js";
+import { type ChronusHost } from "../../utils/index.js";
 import { loadChronusWorkspace } from "../../workspace/index.js";
 import type { ChronusWorkspace } from "../../workspace/types.js";
 
@@ -16,29 +16,20 @@ export interface ChangelogOptions {
   readonly policy?: string | string[];
 }
 
-function log(...args: any[]) {
-  // eslint-disable-next-line no-console
-  console.log(...args);
-}
-
-export async function changelog({ dir, ...options }: ChangelogOptions) {
-  const host = NodeChronusHost;
+export async function changelog(host: ChronusHost, { dir, reporter, ...options }: ChangelogOptions) {
   const workspace = await loadChronusWorkspace(host, dir);
   const changes = await readChangeDescriptions(host, workspace);
   const interactive = process.stdout?.isTTY && !isCI;
 
-  // Normalize inputs to arrays
   const packages = options.package ? (Array.isArray(options.package) ? options.package : [options.package]) : [];
   const policies = options.policy ? (Array.isArray(options.policy) ? options.policy : [options.policy]) : [];
 
-  // Validate at least one is specified
   if (packages.length === 0 && policies.length === 0) {
     throw new ChronusUserError("Need to specify at least one package or policy to generate a changelog");
   }
 
-  // Generate changelogs for all requested items
   const changelogOutputs: string[] = [];
-  
+
   for (const pkgName of packages) {
     const result = await getPackageChangelog(workspace, changes, pkgName, interactive);
     if (result) {
@@ -55,7 +46,7 @@ export async function changelog({ dir, ...options }: ChangelogOptions) {
 
   // Output all changelogs
   const output = changelogOutputs.join("\n\n");
-  log(output);
+  reporter.log(output);
 }
 
 async function getPackageChangelog(
