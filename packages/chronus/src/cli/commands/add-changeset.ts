@@ -22,6 +22,8 @@ export interface AddChangesetOptions {
   readonly since?: string;
   readonly changeKind?: string;
   readonly message?: string;
+  readonly commit?: boolean;
+  readonly stage?: boolean;
 }
 
 async function resolvePackagesToInclude(
@@ -37,7 +39,15 @@ async function resolvePackagesToInclude(
   });
 }
 
-export async function addChangeset({ cwd, since, packages, message, changeKind }: AddChangesetOptions): Promise<void> {
+export async function addChangeset({
+  cwd,
+  since,
+  packages,
+  message,
+  changeKind,
+  commit,
+  stage,
+}: AddChangesetOptions): Promise<void> {
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
   const sourceControl = createGitSourceControl(workspace.path);
@@ -71,6 +81,13 @@ export async function addChangeset({ cwd, since, packages, message, changeKind }
     changeKind: resolvedChangeKind,
   });
   log("Wrote change", pc.cyan(result));
+
+  if (stage || commit) {
+    await sourceControl.add(result);
+  }
+  if (commit) {
+    await sourceControl.commit("Add changelog.");
+  }
 }
 
 async function promptForPackages(status: ChangeStatus): Promise<Package[] | undefined> {

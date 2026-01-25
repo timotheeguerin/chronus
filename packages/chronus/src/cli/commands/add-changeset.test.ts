@@ -1,6 +1,6 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createGitSourceControl, type GitRepository } from "../../source-control/git.js";
 import { createTestDir, type TestDir } from "../../testing/index.js";
 import { mkChronusConfigFile, mkPnpmWorkspaceFile } from "../../testing/test-chronus-workspace.js";
@@ -34,6 +34,10 @@ async function setupWorkspace() {
   await git.commit("Initial commit");
 }
 
+beforeEach(async () => {
+  await setupWorkspace();
+});
+
 async function createFeatureBranchWithChanges(packages: string[]) {
   // Create a feature branch
   await execAsync("git", ["checkout", "-b", "feature-branch"], { cwd });
@@ -48,7 +52,6 @@ async function createFeatureBranchWithChanges(packages: string[]) {
 
 describe("with all options provided", () => {
   it("creates a changeset file with specified packages, changeKind, and message", async () => {
-    await setupWorkspace();
     await createFeatureBranchWithChanges(["pkg-a"]);
 
     await addChangeset({
@@ -73,7 +76,6 @@ describe("with all options provided", () => {
   });
 
   it("creates a changeset with multiple packages", async () => {
-    await setupWorkspace();
     await createFeatureBranchWithChanges(["pkg-a", "pkg-b"]);
 
     await addChangeset({
@@ -95,7 +97,6 @@ describe("with all options provided", () => {
   });
 
   it("throws error when changeKind is not defined in config", async () => {
-    await setupWorkspace();
     await createFeatureBranchWithChanges(["pkg-a"]);
 
     await expect(
@@ -106,5 +107,48 @@ describe("with all options provided", () => {
         message: "Some message",
       }),
     ).rejects.toThrow(/Change kind 'nonexistent' is not defined in the configuration/);
+  });
+
+  it("stages the changeset file when --stage flag is provided", async () => {
+    await createFeatureBranchWithChanges(["pkg-a"]);
+
+    await addChangeset({
+      cwd,
+      packages: ["pkg-a"],
+      changeKind: "minor",
+      message: "Add new feature",
+      stage: true,
+    });
+
+    // Verify changeset file was created
+    const changeDir = join(cwd, ".chronus/changes");
+    const files = await readdir(changeDir);
+    expect(files).toHaveLength(1);
+
+    // Verify file is staged
+    const { stdout } = await execAsync("git", ["diff", "--cached", "--name-only"], { cwd });
+    expect(stdout.toString()).toContain(".chronus/changes/");
+  });
+
+  it("commits the changeset file when --commit flag is provided", async () => {
+    await createFeatureBranchWithChanges(["pkg-a"]);
+
+    await addChangeset({
+      cwd,
+      packages: ["pkg-a"],
+      changeKind: "minor",
+      message: "Add new feature",
+      commit: true,
+    });
+
+    // Verify changeset file was created
+    const changeDir = join(cwd, ".chronus/changes");
+    const files = await readdir(changeDir);
+    expect(files).toHaveLength(1);
+
+    // Verify commit was made with the changeset file
+    const { stdout } = await execAsync("git", ["log", "-1", "--name-only", "--format=%s"], { cwd });
+    expect(stdout.toString()).toContain("Add changelog.");
+    expect(stdout.toString()).toContain(".chronus/changes/");
   });
 });

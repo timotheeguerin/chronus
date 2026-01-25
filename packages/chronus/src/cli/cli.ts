@@ -67,6 +67,14 @@ async function main() {
             short: "m",
             type: "string",
             description: "Message describing the changes. If not provided, an interactive prompt will ask for it.",
+          })
+          .option("commit", {
+            type: "boolean",
+            description: "Commit the changeset file after creating it.",
+          })
+          .option("stage", {
+            type: "boolean",
+            description: "Stage the changeset file after creating it.",
           }),
       withErrors((args) =>
         addChangeset({
@@ -75,6 +83,8 @@ async function main() {
           since: args.since,
           changeKind: args.kind,
           message: args.message,
+          commit: args.commit,
+          stage: args.stage,
         }),
       ),
     )
