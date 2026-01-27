@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import "source-map-support/register.js";
 import yargs from "yargs";
+import { NodeChronusHost } from "../utils/node-host.js";
 import { resolvePath } from "../utils/path-utils.js";
 import { addChangeset } from "./commands/add-changeset.js";
 import { bumpVersions } from "./commands/bump-versions.js";
@@ -157,14 +158,16 @@ async function main() {
         cmd
           .option("package", {
             type: "string",
-            description: "Generate a change log for a specific package",
+            array: true,
+            description: "Generate a change log for specific package(s)",
           })
           .option("policy", {
             type: "string",
-            description: "Generate a change log for a specific policy",
+            array: true,
+            description: "Generate a change log for specific policy/policies",
           }),
       withErrorsAndReporter((args) =>
-        changelog({
+        changelog(NodeChronusHost, {
           reporter: args.reporter,
           dir: process.cwd(),
           package: args.package,

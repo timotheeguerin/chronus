@@ -5,38 +5,48 @@ import { resolveChangelogGenerator } from "../../changelog/generate.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { Reporter } from "../../reporters/index.js";
 import { ChronusUserError } from "../../utils/errors.js";
-import { NodeChronusHost } from "../../utils/index.js";
+import { type ChronusHost } from "../../utils/index.js";
 import { loadChronusWorkspace } from "../../workspace/index.js";
 import type { ChronusWorkspace } from "../../workspace/types.js";
 
 export interface ChangelogOptions {
   readonly reporter: Reporter;
   readonly dir: string;
-  readonly package?: string;
-  readonly policy?: string;
+  readonly package?: string | string[];
+  readonly policy?: string | string[];
 }
 
-function log(...args: any[]) {
-  // eslint-disable-next-line no-console
-  console.log(...args);
-}
-
-export async function changelog({ dir, ...options }: ChangelogOptions) {
-  const host = NodeChronusHost;
+export async function changelog(host: ChronusHost, { dir, reporter, ...options }: ChangelogOptions) {
   const workspace = await loadChronusWorkspace(host, dir);
   const changes = await readChangeDescriptions(host, workspace);
   const interactive = process.stdout?.isTTY && !isCI;
 
-  let changelog: string;
-  if (options.package) {
-    changelog = await getPackageChangelog(workspace, changes, options.package, interactive);
-  } else if (options.policy) {
-    changelog = await getPolicyChangelog(workspace, changes, options.policy, interactive);
-  } else {
-    throw new ChronusUserError("Need to specify either a package or a policy to generate a changelog");
+  const packages = options.package ? (Array.isArray(options.package) ? options.package : [options.package]) : [];
+  const policies = options.policy ? (Array.isArray(options.policy) ? options.policy : [options.policy]) : [];
+
+  if (packages.length === 0 && policies.length === 0) {
+    throw new ChronusUserError("Need to specify at least one package or policy to generate a changelog");
   }
 
-  log(changelog);
+  const changelogOutputs: string[] = [];
+
+  for (const pkgName of packages) {
+    const result = await getPackageChangelog(workspace, changes, pkgName, interactive);
+    if (result) {
+      changelogOutputs.push(result);
+    }
+  }
+
+  for (const policyName of policies) {
+    const result = await getPolicyChangelog(workspace, changes, policyName, interactive);
+    if (result) {
+      changelogOutputs.push(result);
+    }
+  }
+
+  // Output all changelogs
+  const output = changelogOutputs.join("\n\n");
+  reporter.log(output);
 }
 
 async function getPackageChangelog(

@@ -1,6 +1,7 @@
 import { stringify } from "yaml";
 import type { ChronusResolvedConfig, ChronusUserConfig } from "../config/types.js";
 import type { ChronusWorkspace } from "../index.js";
+import type { VersionType } from "../types.js";
 import type { Package, PackageJson, Workspace } from "../workspace-manager/types.js";
 import { createChronusWorkspace } from "../workspace/load.js";
 
@@ -54,4 +55,18 @@ export function mkPnpmWorkspaceFile(packagePaths: string[] = ["packages/*"]): st
   return stringify({
     packages: packagePaths,
   });
+}
+
+export function mkChangeFile(pkg: string | string[], type: VersionType, message?: string): string {
+  message ??= `This is a ${type} change for ${Array.isArray(pkg) ? pkg.join(", ") : pkg}.`;
+
+  return [
+    "---",
+    `changeKind: ${type}`,
+    "packages:",
+    ...(Array.isArray(pkg) ? pkg.map((p) => `  - ${p}`) : [`  - ${pkg}`]),
+    "---",
+    "",
+    message,
+  ].join("\n");
 }
