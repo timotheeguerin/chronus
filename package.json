@@ -33,7 +33,7 @@
     "cspell": "cspell --no-progress ."
   },
   "devDependencies": {
-    "@actions/github": "^7.0.0",
+    "@actions/github": "^8.0.0",
     "@chronus/github": "workspace:*",
     "@eslint/js": "^9.38.0",
     "@types/node": "^25.0.9",
