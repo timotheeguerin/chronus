@@ -12,7 +12,6 @@ export function getManifestPatchRequest(
   actionForPackage: Map<string, VersionAction>,
   dependencyUpdateMode: "stable" | "prerelease" = "stable",
 ): PatchPackageVersion {
-  console.log("Get manifest patch request", pkg, actionForPackage);
   const patch: PatchPackageVersion = { dependenciesVersions: {} };
   const action = actionForPackage.get(pkg.name);
   if (action) {
@@ -24,7 +23,6 @@ export function getManifestPatchRequest(
     for (const dep of pkg.dependencies.values()) {
       const depAction = actionForPackage.get(dep.name);
       if (depAction) {
-        console.log("WIll update", patch.dependenciesVersions);
         patch.dependenciesVersions[dep.name] = updateDependencyVersion(
           dep.version,
           { newVersion: depAction.newVersion, oldVersion: workspace.getPackage(dep.name).version },
