@@ -17,6 +17,7 @@ export interface BumpVersionOptions {
   readonly prerelease?: boolean | string;
   readonly only?: string[];
   readonly exclude?: string[];
+  readonly dryRun?: boolean;
 }
 
 export async function bumpVersions(cwd: string, options?: BumpVersionOptions): Promise<void> {
@@ -33,7 +34,9 @@ export async function bumpVersions(cwd: string, options?: BumpVersionOptions): P
   } else {
     const releasePlan = await resolveReleasePlan(host, workspace, options);
     const interactive = process.stdout?.isTTY && !isCI;
-    await applyReleasePlan(host, workspace, releasePlan, interactive);
+    if (!options?.dryRun) {
+      await applyReleasePlan(host, workspace, releasePlan, interactive);
+    }
   }
 }
 
