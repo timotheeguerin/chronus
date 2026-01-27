@@ -24,7 +24,7 @@ export function getManifestPatchRequest(
       const depAction = actionForPackage.get(dep.name);
       if (depAction) {
         patch.dependenciesVersions[dep.name] = updateDependencyVersion(
-          patch.dependenciesVersions[dep.name],
+          dep.version,
           { newVersion: depAction.newVersion, oldVersion: workspace.getPackage(dep.name).version },
           dependencyUpdateMode,
         );

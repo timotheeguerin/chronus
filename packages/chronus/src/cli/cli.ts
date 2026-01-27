@@ -110,6 +110,11 @@ async function main() {
             description: "Ignore versioning policies and bump each package independently",
             default: false,
           })
+          .option("dry-run", {
+            type: "boolean",
+            description: "Do not write any file, just simulate the version bump",
+            default: false,
+          })
           .option(filteringOptions)
           .option("prerelease", {
             type: "string",
@@ -120,6 +125,7 @@ async function main() {
         bumpVersions(process.cwd(), {
           ignorePolicies: args.ignorePolicies,
           only: args.only,
+          dryRun: args.dryRun,
           exclude: args.exclude,
           prerelease: args.prerelease,
         }),
