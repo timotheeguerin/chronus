@@ -1,5 +1,9 @@
 # @chronus/github-pr-commenter
 
+## 1.0.4
+
+No changes, version bump only.
+
 ## 1.0.3
 
 No changes, version bump only.

@@ -1,5 +1,24 @@
 # @chronus/chronus
 
+## 1.2.0
+
+### Bug Fixes
+
+- [#508](https://github.com/timotheeguerin/chronus/pull/508) Fix remote base not working with some version of git
+
+### Features
+
+- [#511](https://github.com/timotheeguerin/chronus/pull/511) Add `--message`/`-m` and `--kind`/`-k` option to `chronus add` command.
+  
+  ```
+  chronus add -m "Add rocket booster capabilities" -k minor 
+  ```
+- [#512](https://github.com/timotheeguerin/chronus/pull/512) Add `--commit` and `--stage` option to `chronus add` to automatically commit or stage the newly created file
+- [#519](https://github.com/timotheeguerin/chronus/pull/519) Add support for multiple `--policy` or `--package` in `chronus changelog`
+- [#457](https://github.com/timotheeguerin/chronus/pull/457) Add support for rust cargo crate monorepo with workspace type `rust:cargo`/`cargo`
+- [#457](https://github.com/timotheeguerin/chronus/pull/457) Add support for non node monorepo. Updated workspace type to have category prefix(e.g. `npm` -> `node:npm`) Old name kept as alias for backward compatibility
+
+
 ## 1.1.0
 
 ### Features
