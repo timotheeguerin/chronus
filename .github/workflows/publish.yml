@@ -10,16 +10,13 @@ on:
 
   workflow_dispatch: {}
 
-permissions:
-  contents: read
-  id-token: write # Required for OIDC to publish to npm
-
 jobs:
   build:
     runs-on: ubuntu-latest
     environment: npm
     permissions:
       contents: write
+      id-token: write # Required for OIDC to publish to npm
 
     steps:
       - uses: actions/checkout@v4
@@ -53,14 +50,13 @@ jobs:
       - run: node ./packages/chronus/cmd/cli.mjs pack --pack-destination ./artifacts
         name: Pack
 
-      - run: NODE_AUTH_TOKEN="" npm publish --tag next
-        working-directory: ./packages/dummy/
-
+      # - run: NODE_AUTH_TOKEN="" npm publish --tag next
+      #   working-directory: ./packages/dummy/
       # Have to use npm as pnpm doesn't respect access.
       - run: NODE_AUTH_TOKEN="" node ./packages/chronus/cmd/cli.mjs publish "./artifacts/*.tgz" --access public --engine npm --report-summary ./publish-summary.json
         name: Publish
-        env:
-          NPM_CONFIG_PROVENANCE: true
+        # env:
+        #   NPM_CONFIG_PROVENANCE: true
 
       # To pack and publish as one step
       - run: NODE_AUTH_TOKEN="" node ./packages/chronus/cmd/cli.mjs publish --access public  --report-summary ./publish-summary.json
