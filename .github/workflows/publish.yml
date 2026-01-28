@@ -55,7 +55,7 @@ jobs:
         name: Pack
 
       # Have to use npm as pnpm doesn't respect access.
-      - run: NODE_AUTH_TOKEN="" node ./packages/chronus/cmd/cli.mjs publish "./artifacts/*.tgz" --access public --engine npm --report-summary ./publish-summary.json
+      - run: node ./packages/chronus/cmd/cli.mjs publish "./artifacts/*.tgz" --access public --engine npm --report-summary ./publish-summary.json
         name: Publish
 
       # To pack and publish as one step
