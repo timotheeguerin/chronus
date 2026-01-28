@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - fix/oidc-3
 
   workflow_dispatch: {}
 
