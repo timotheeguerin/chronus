@@ -52,11 +52,15 @@ export interface PatchPackageVersion {
   dependenciesVersions: Record<string, string>;
 }
 
+export interface WorkspaceManagerConfig {
+  readonly packagePatterns?: readonly string[];
+}
+
 export interface WorkspaceManager {
   type: string;
   aliases?: string[];
   is(host: ChronusHost, dir: string): Promise<boolean>;
-  load(host: ChronusHost, dir: string): Promise<Workspace>;
+  load(host: ChronusHost, dir: string, config?: WorkspaceManagerConfig): Promise<Workspace>;
   updateVersionsForPackage(
     host: ChronusHost,
     workspace: Workspace,

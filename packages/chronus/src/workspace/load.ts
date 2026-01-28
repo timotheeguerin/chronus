@@ -22,7 +22,7 @@ function getPackageState(config: ChronusResolvedConfig, pkg: Package): ChronusPa
 export async function loadChronusWorkspace(host: ChronusHost, dir: string): Promise<ChronusWorkspace> {
   const config = await resolveConfig(host, dir);
   const additionalPackages: Package[] = await loadStandalonePackages(host, config);
-  const workspace: Workspace = await loadWorkspace(host, config.workspaceRoot, config.workspaceType);
+  const workspace: Workspace = await loadWorkspace(host, config.workspaceRoot, config.workspaceType, config);
   validateConfigWithWorkspace(config, workspace, additionalPackages);
   return createChronusWorkspace(workspace, config, additionalPackages);
 }

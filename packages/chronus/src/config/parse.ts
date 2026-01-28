@@ -31,13 +31,14 @@ const schema = z
   .object({
     baseBranch: z.string(),
     baseRemote: z.string().url().optional(),
-    workspaceType: z.enum(["auto", "npm", "pnpm", "rush"]).optional(),
+    workspaceType: z.enum(["auto", "npm", "pnpm", "rush", "pip"]).optional(),
     additionalPackages: z.array(z.string()).optional(),
     versionPolicies: z.array(versionPolicySchema).optional(),
     ignore: z.array(z.string()).optional(),
     changeKinds: z.record(z.string(), changeKindsSchema).optional(),
     changelog: z.union([z.string(), z.tuple([z.string(), z.record(z.string(), z.unknown())])]).optional(),
     changedFiles: z.array(z.string()).optional(),
+    packagePatterns: z.array(z.string()).optional(),
   })
   .strict();
 
