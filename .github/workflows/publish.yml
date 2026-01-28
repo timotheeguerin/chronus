@@ -29,7 +29,6 @@ jobs:
         with:
           node-version: "24.x"
           registry-url: "https://registry.npmjs.org"
-          token: false
 
       - uses: pnpm/action-setup@v3
         name: Install pnpm
@@ -55,12 +54,12 @@ jobs:
         name: Pack
 
       # Have to use npm as pnpm doesn't respect access.
-      - run: node ./packages/chronus/cmd/cli.mjs publish "./artifacts/*.tgz" --access public --engine npm --report-summary ./publish-summary.json
-        name: Publish
+      # - run: NODE_AUTH_TOKEN="" node ./packages/chronus/cmd/cli.mjs publish "./artifacts/*.tgz" --access public --engine npm --report-summary ./publish-summary.json
+      #   name: Publish
 
       # To pack and publish as one step
-      # - run: node ./packages/chronus/cmd/cli.mjs publish --access public
-      #   name: Publish
+      - run: node ./packages/chronus/cmd/cli.mjs publish --access public  --report-summary ./publish-summary.json
+        name: Publish
 
       - run: |
           echo "Publish summary:"
