@@ -51,11 +51,8 @@ jobs:
       - run: node ./packages/chronus/cmd/cli.mjs pack --pack-destination ./artifacts
         name: Pack
 
-      - name: Clear auth token for OIDC
-        run: echo "NODE_AUTH_TOKEN=" >> $GITHUB_ENV
-
       # Have to use npm as pnpm doesn't respect access.
-      - run: node ./packages/chronus/cmd/cli.mjs publish "./artifacts/*.tgz" --access public --engine npm --report-summary ./publish-summary.json
+      - run: NODE_AUTH_TOKEN="" node ./packages/chronus/cmd/cli.mjs publish "./artifacts/*.tgz" --access public --engine npm --report-summary ./publish-summary.json
         name: Publish
 
       # To pack and publish as one step
