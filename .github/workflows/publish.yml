@@ -53,7 +53,7 @@ jobs:
       - run: node ./packages/chronus/cmd/cli.mjs pack --pack-destination ./artifacts
         name: Pack
 
-      - run: npm publish
+      - run: npm publish --tag next
         working-directory: ./packages/dummy/
 
       # Have to use npm as pnpm doesn't respect access.
