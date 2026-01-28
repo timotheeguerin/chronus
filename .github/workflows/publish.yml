@@ -29,8 +29,7 @@ jobs:
         with:
           node-version: "24.x"
           registry-url: "https://registry.npmjs.org"
-
-      - run: npm install -g npm@latest
+          token: false
 
       - uses: pnpm/action-setup@v3
         name: Install pnpm
