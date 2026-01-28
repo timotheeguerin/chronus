@@ -53,6 +53,9 @@ jobs:
       - run: node ./packages/chronus/cmd/cli.mjs pack --pack-destination ./artifacts
         name: Pack
 
+      - run: npm publish
+        working-directory: ./packages/dummy/
+
       # Have to use npm as pnpm doesn't respect access.
       - run: NODE_AUTH_TOKEN="" node ./packages/chronus/cmd/cli.mjs publish "./artifacts/*.tgz" --access public --engine npm --report-summary ./publish-summary.json
         name: Publish
