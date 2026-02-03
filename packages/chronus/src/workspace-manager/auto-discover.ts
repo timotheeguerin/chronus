@@ -62,7 +62,7 @@ async function loadPackagesForConfig(
     return ecosystem.loadPattern(host, root, pkgConfig.path);
   }
   const ecosystem = await getWorkspaceManager(host, resolvePath(root, pkgConfig.path), pkgConfig.type);
-  return await ecosystem.load(host, root);
+  return await ecosystem.load(host, resolvePath(root, pkgConfig.path));
 }
 
 /** Get the ecosystem by name */

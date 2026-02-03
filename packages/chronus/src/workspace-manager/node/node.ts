@@ -1,7 +1,7 @@
 import { parse } from "yaml";
 import { ChronusError, joinPaths, resolvePath, type ChronusHost, type Mutable } from "../../utils/index.js";
 import type { Ecosystem, Package, PackageBase, PackageJson, PatchPackageVersion } from "../types.js";
-import { findPackagesFromPattern } from "./utils.js";
+import { findPackagesFromPattern, tryLoadNodePackage } from "./utils.js";
 
 export interface NodePackage extends PackageBase {
   manifest: PackageJson;
@@ -32,8 +32,10 @@ export function createNodeWorkspaceManager(): Ecosystem {
       const file = await host.readFile(workspaceFilePath);
       const pkgJson: PackageJson = parse(file.content) as any;
 
+      // If no workspaces defined, load as a single package
       if (pkgJson.workspaces === undefined) {
-        throw new ChronusError(`workspaces entry missing in ${workspaceFileName}`);
+        const pkg = await tryLoadNodePackage(host, root, root === root ? "." : root.slice(root.length + 1), "node:npm");
+        return pkg ? [pkg] : [];
       }
       if (Array.isArray(pkgJson.workspaces) === false) {
         throw new ChronusError(`workspaces is not an array in ${workspaceFileName}`);

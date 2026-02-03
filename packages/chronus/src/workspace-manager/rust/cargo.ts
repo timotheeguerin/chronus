@@ -48,8 +48,11 @@ export class CargoWorkspaceManager implements Ecosystem {
     const workspaceFilePath = joinPaths(root, cargoFile);
     const file = await host.readFile(workspaceFilePath);
     const config = parse(file.content) as CargoToml;
+
+    // If no workspace section, load as single package
     if (config.workspace === undefined) {
-      throw new ChronusError(`workspace entry missing in ${cargoFile}`);
+      const pkg = await tryLoadCargoToml(host, root, root === root ? "." : root.slice(root.length + 1));
+      return pkg ? [pkg] : [];
     }
     if (!config.workspace.members) {
       throw new ChronusError(`workspace.members entry missing in ${cargoFile}`);
