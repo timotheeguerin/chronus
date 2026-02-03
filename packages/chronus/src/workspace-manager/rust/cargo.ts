@@ -44,24 +44,23 @@ export class CargoWorkspaceManager implements Ecosystem {
     return await findCratesFromPattern(host, root, pattern);
   }
 
-  async load(host: ChronusHost, root: string): Promise<Package[]> {
-    const workspaceFilePath = joinPaths(root, cargoFile);
+  async load(host: ChronusHost, root: string, relativePath: string): Promise<Package[]> {
+    const workspaceFilePath = resolvePath(root, relativePath, cargoFile);
     const file = await host.readFile(workspaceFilePath);
     const config = parse(file.content) as CargoToml;
 
     // If no workspace section, load as single package
     if (config.workspace === undefined) {
-      const pkg = await tryLoadCargoToml(host, root, root === root ? "." : root.slice(root.length + 1));
+      const pkg = await tryLoadCargoToml(host, root, relativePath);
       return pkg ? [pkg] : [];
     }
     if (!config.workspace.members) {
       throw new ChronusError(`workspace.members entry missing in ${cargoFile}`);
     }
-    // Parse the Cargo.toml to find packages
-    const packages: Package[] = await findCratesFromPattern(host, root, [
-      ...config.workspace.members,
-      ...(config.workspace.exclude || []).map((x) => `!${x}`),
-    ]);
+    // Parse the Cargo.toml to find packages - prefix patterns with dir relative to root
+    const prefixedMembers = config.workspace.members.map((p) => resolvePath(relativePath, p));
+    const prefixedExcludes = (config.workspace.exclude || []).map((x) => `!${resolvePath(relativePath, x)}`);
+    const packages: Package[] = await findCratesFromPattern(host, root, [...prefixedMembers, ...prefixedExcludes]);
 
     return packages;
   }

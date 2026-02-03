@@ -19,7 +19,7 @@ it("finds 0 packages when workspace has none", async () => {
       projects: [],
     }),
   );
-  const packages = await rush.load(host.host, "proj");
+  const packages = await rush.load(host.host, "proj", ".");
   expect(packages).toEqual([]);
 });
 
@@ -43,7 +43,7 @@ it("finds all packages", async () => {
   );
   host.addFile("proj/packages/pkg-a/package.json", JSON.stringify({ name: "pkg-a", version: "1.0.0" }));
   host.addFile("proj/packages/pkg-b/package.json", JSON.stringify({ name: "pkg-b", version: "1.2.0" }));
-  const packages = await rush.load(host.host, "proj");
+  const packages = await rush.load(host.host, "proj", ".");
   expect(packages).toHaveLength(2);
   expect(packages[0]).toMatchObject({
     name: "pkg-a",

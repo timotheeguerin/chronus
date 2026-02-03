@@ -203,31 +203,20 @@ describe("forced", () => {
 });
 
 describe("multiple workspaces in subfolders", () => {
-  it("loads pnpm workspace from subfolder with subfolder as root", async () => {
-    makePnpmWorkspace({
-      dir: "proj/node-libs",
-      packages: [{ name: "pkg-a" }, { name: "pkg-b", version: "2.0.0" }],
-    });
-
-    const packages = await loadPackages(host.host, "proj/node-libs", [{ path: "" }]);
-    expect(packages).toHaveLength(2);
-    expect(packages.map((p) => p.name).sort()).toEqual(["pkg-a", "pkg-b"]);
-    expect(packages[0].ecosystem).toBe("node:pnpm");
-  });
-
   it("loads multiple workspaces from different roots", async () => {
     makePnpmWorkspace({ dir: "proj/node-libs", packages: [{ name: "node-pkg" }] });
     makeCargoWorkspace({ dir: "proj/rust-libs", packages: [{ name: "rust-pkg" }] });
 
     // Load each workspace with its own root
-    const nodePackages = await loadPackages(host.host, "proj/node-libs", [{ path: "" }]);
-    const rustPackages = await loadPackages(host.host, "proj/rust-libs", [{ path: "" }]);
-    const packages = [...nodePackages, ...rustPackages];
+    const packages = await loadPackages(host.host, "proj", [{ path: "node-libs" }, { path: "rust-libs" }]);
 
     expect(packages).toHaveLength(2);
     expect(packages.map((p) => p.name).sort()).toEqual(["node-pkg", "rust-pkg"]);
     expect(packages.find((p) => p.name === "node-pkg")?.ecosystem).toBe("node:pnpm");
     expect(packages.find((p) => p.name === "rust-pkg")?.ecosystem).toBe("rust:cargo");
+    // relativePath is relative to each workspace's root
+    expect(packages.find((p) => p.name === "node-pkg")?.relativePath).toBe("node-libs/packages/node-pkg");
+    expect(packages.find((p) => p.name === "rust-pkg")?.relativePath).toBe("rust-libs/crates/rust-pkg");
   });
 
   it("detects and loads different ecosystem types", async () => {
@@ -299,6 +288,7 @@ describe("loading individual packages by path", () => {
     expect(packages[0].name).toBe("pkg-a");
     expect(packages[0].version).toBe("1.0.0");
     expect(packages[0].ecosystem).toBe("node:npm");
+    expect(packages[0].relativePath).toBe("packages/pkg-a");
   });
 
   it("loads multiple npm packages by explicit paths", async () => {

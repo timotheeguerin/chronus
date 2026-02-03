@@ -7,7 +7,7 @@ import { loadChronusWorkspace } from "./load.js";
 
 function makeHost(options: { config?: Partial<ChronusUserConfig>; packages?: Record<string, PackageJson> } = {}) {
   return createTestHost({
-    "proj/package.json": stringify({
+    "proj/package.json": JSON.stringify({
       workspaces: ["packages/*"],
     }),
     "proj/.chronus/config.yaml": stringify({

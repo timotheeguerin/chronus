@@ -17,14 +17,14 @@ beforeEach(async () => {
 });
 
 it("finds 0 packages when workspace has none", async () => {
-  const packages = await pnpm.load(host.host, "proj");
+  const packages = await pnpm.load(host.host, "proj", ".");
   expect(packages).toEqual([]);
 });
 
 it("finds all packages", async () => {
   host.addFile("proj/packages/pkg-a/package.json", JSON.stringify({ name: "pkg-a", version: "1.0.0" }));
   host.addFile("proj/packages/pkg-b/package.json", JSON.stringify({ name: "pkg-b", version: "1.2.0" }));
-  const packages = await pnpm.load(host.host, "proj");
+  const packages = await pnpm.load(host.host, "proj", ".");
   expect(packages).toHaveLength(2);
   expect(packages[0]).toMatchObject({
     name: "pkg-a",
@@ -43,7 +43,7 @@ it("finds all packages", async () => {
 it("doesn't include excluded packages", async () => {
   host.addFile("proj/packages/pkg-a/package.json", JSON.stringify({ name: "pkg-a", version: "1.0.0" }));
   host.addFile("proj/packages/pkg-excluded/package.json", JSON.stringify({ name: "pkg-excluded", version: "1.2.0" }));
-  const packages = await pnpm.load(host.host, "proj");
+  const packages = await pnpm.load(host.host, "proj", ".");
   expect(packages).toHaveLength(1);
   expect(packages[0]).toHaveProperty("name", "pkg-a");
 });

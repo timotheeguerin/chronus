@@ -25,7 +25,7 @@ async function findEcosystem(host: ChronusHost, root: string): Promise<Ecosystem
     }
   }
 
-  throw new ChronusError("Couldn't figure out the workspace type.");
+  throw new ChronusError(`Cannot auto-discover ecosystem in ${root}. Please specify the ecosystem type explicitly.`);
 }
 
 export async function getWorkspaceManager(host: ChronusHost, root: string, type?: string | "auto"): Promise<Ecosystem> {
@@ -62,7 +62,7 @@ async function loadPackagesForConfig(
     return ecosystem.loadPattern(host, root, pkgConfig.path);
   }
   const ecosystem = await getWorkspaceManager(host, resolvePath(root, pkgConfig.path), pkgConfig.type);
-  return await ecosystem.load(host, resolvePath(root, pkgConfig.path));
+  return await ecosystem.load(host, root, pkgConfig.path);
 }
 
 /** Get the ecosystem by name */

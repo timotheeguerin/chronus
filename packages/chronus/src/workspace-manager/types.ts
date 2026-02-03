@@ -53,7 +53,7 @@ export interface Ecosystem {
   aliases?: string[];
   is(host: ChronusHost, dir: string): Promise<boolean>;
   loadPattern(host: ChronusHost, workspaceRoot: string, pattern: string): Promise<Package[]>;
-  load(host: ChronusHost, dir: string): Promise<Package[]>;
+  load(host: ChronusHost, root: string, dir: string): Promise<Package[]>;
   updateVersionsForPackage(
     host: ChronusHost,
     workspaceRoot: string,

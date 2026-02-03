@@ -1,5 +1,5 @@
 import { parse } from "yaml";
-import { ChronusError, isPathAccessible, joinPaths, type ChronusHost } from "../../utils/index.js";
+import { ChronusError, isPathAccessible, joinPaths, resolvePath, type ChronusHost } from "../../utils/index.js";
 import type { Ecosystem, Package } from "../types.js";
 import { createNodeWorkspaceManager } from "./node.js";
 import { findPackagesFromPattern, tryLoadNodePackage } from "./utils.js";
@@ -20,15 +20,15 @@ export function createPnpmWorkspaceManager(): Ecosystem {
     async loadPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
       return findPackagesFromPattern(host, root, pattern, "node:pnpm");
     },
-    async load(host: ChronusHost, dir: string): Promise<Package[]> {
-      const workspaceFilePath = joinPaths(dir, workspaceFileName);
+    async load(host: ChronusHost, root: string, relativePath: string): Promise<Package[]> {
+      const workspaceFilePath = resolvePath(root, relativePath, workspaceFileName);
 
       let file;
       try {
         file = await host.readFile(workspaceFilePath);
       } catch {
         // No pnpm-workspace.yaml found, load as single package
-        const pkg = await tryLoadNodePackage(host, dir, dir === dir ? "." : dir.slice(dir.length + 1), "node:pnpm");
+        const pkg = await tryLoadNodePackage(host, root, relativePath, "node:pnpm");
         return pkg ? [pkg] : [];
       }
       const config: PnpmWorkspaceConfig = parse(file.content) as any;
@@ -39,7 +39,11 @@ export function createPnpmWorkspaceManager(): Ecosystem {
       if (Array.isArray(config.packages) === false) {
         throw new ChronusError(`packages is not an array in ${workspaceFileName}`);
       }
-      const packages: Package[] = await findPackagesFromPattern(host, dir, config.packages, "node:pnpm");
+      // Prefix patterns with the dir relative to root
+      const prefixedPatterns = config.packages.map((p) =>
+        relativePath && relativePath !== "." ? joinPaths(relativePath, p) : p,
+      );
+      const packages: Package[] = await findPackagesFromPattern(host, root, prefixedPatterns, "node:pnpm");
       return packages;
     },
   };

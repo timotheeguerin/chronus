@@ -29,14 +29,14 @@ edition = "2021"
 }
 
 it("finds 0 packages when workspace has none", async () => {
-  const packages = await ws.load(host.host, "proj");
+  const packages = await ws.load(host.host, "proj", ".");
   expect(packages).toEqual([]);
 });
 
 it("finds all packages", async () => {
   host.addFile("proj/crates/pkg-a/Cargo.toml", createCargoToml({ name: "pkg-a", version: "1.0.0" }));
   host.addFile("proj/crates/pkg-b/Cargo.toml", createCargoToml({ name: "pkg-b", version: "1.2.0" }));
-  const packages = await ws.load(host.host, "proj");
+  const packages = await ws.load(host.host, "proj", ".");
   expect(packages).toHaveLength(2);
   expect(packages[0]).toMatchObject({
     name: "pkg-a",
@@ -53,7 +53,7 @@ it("finds all packages", async () => {
 it("doesn't include excluded packages", async () => {
   host.addFile("proj/crates/pkg-a/Cargo.toml", createCargoToml({ name: "pkg-a", version: "1.0.0" }));
   host.addFile("proj/crates/pkg-excluded/Cargo.toml", createCargoToml({ name: "pkg-excluded", version: "1.2.0" }));
-  const packages = await ws.load(host.host, "proj");
+  const packages = await ws.load(host.host, "proj", ".");
   expect(packages).toHaveLength(1);
   expect(packages[0]).toHaveProperty("name", "pkg-a");
 });
@@ -61,7 +61,7 @@ it("doesn't include excluded packages", async () => {
 describe("updateVersionsForPackage", () => {
   it("updates the package version", async () => {
     host.addFile("proj/crates/pkg-a/Cargo.toml", createCargoToml({ name: "pkg-a", version: "1.0.0" }));
-    const packages = await ws.load(host.host, "proj");
+    const packages = await ws.load(host.host, "proj", ".");
     const pkg = packages[0];
 
     await ws.updateVersionsForPackage(host.host, "proj", pkg, {
@@ -90,7 +90,7 @@ pkg-b = "1.0.0"
 tokio = "1.0.0"
 `,
     );
-    const packages = await ws.load(host.host, "proj");
+    const packages = await ws.load(host.host, "proj", ".");
     const pkg = packages[0];
 
     await ws.updateVersionsForPackage(host.host, "proj", pkg, {
@@ -121,7 +121,7 @@ edition = "2021"
 pkg-b = { version = "1.0.0", features = ["derive"] }
 `,
     );
-    const packages = await ws.load(host.host, "proj");
+    const packages = await ws.load(host.host, "proj", ".");
     const pkg = packages[0];
 
     await ws.updateVersionsForPackage(host.host, "proj", pkg, {
@@ -151,7 +151,7 @@ edition = "2021"
 proptest = "1.0.0"
 `,
     );
-    const packages = await ws.load(host.host, "proj");
+    const packages = await ws.load(host.host, "proj", ".");
     const pkg = packages[0];
 
     await ws.updateVersionsForPackage(host.host, "proj", pkg, {
@@ -181,7 +181,7 @@ edition = "2021"
 cc = "1.0.0"
 `,
     );
-    const packages = await ws.load(host.host, "proj");
+    const packages = await ws.load(host.host, "proj", ".");
     const pkg = packages[0];
 
     await ws.updateVersionsForPackage(host.host, "proj", pkg, {
@@ -214,7 +214,7 @@ pkg-b = "1.0.0"
 pkg-c = { version = "1.0.0", features = ["full"] }
 `,
     );
-    const packages = await ws.load(host.host, "proj");
+    const packages = await ws.load(host.host, "proj", ".");
     const pkg = packages[0];
 
     await ws.updateVersionsForPackage(host.host, "proj", pkg, {
