@@ -1,11 +1,5 @@
 import type { ChronusHost } from "../utils/host.js";
 
-export interface Workspace {
-  readonly type: string;
-  readonly path: string;
-  readonly packages: Package[];
-}
-
 export interface PackageId {
   /** Package name */
   readonly name: string;
@@ -13,6 +7,8 @@ export interface PackageId {
   readonly version: string;
 }
 export interface PackageBase extends PackageId {
+  /** Ecosystem for this package */
+  readonly ecosystem: string;
   /** If package is private */
   readonly private?: boolean;
 
@@ -32,7 +28,7 @@ export interface PackageDependencySpec {
 }
 
 export interface Package extends PackageBase {
-  /** Relative path of the package to the workspace root */
+  /** Relative path of the package to the chronus workspace root */
   readonly relativePath: string;
 }
 
@@ -52,14 +48,15 @@ export interface PatchPackageVersion {
   dependenciesVersions: Record<string, string>;
 }
 
-export interface WorkspaceManager {
+export interface Ecosystem {
   type: string;
   aliases?: string[];
   is(host: ChronusHost, dir: string): Promise<boolean>;
-  load(host: ChronusHost, dir: string): Promise<Workspace>;
+  loadPattern(host: ChronusHost, workspaceRoot: string, pattern: string): Promise<Package[]>;
+  load(host: ChronusHost, dir: string): Promise<Package[]>;
   updateVersionsForPackage(
     host: ChronusHost,
-    workspace: Workspace,
+    workspaceRoot: string,
     pkg: Package,
     patchRequest: PatchPackageVersion,
   ): Promise<void>;

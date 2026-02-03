@@ -1,6 +1,6 @@
 import { parse } from "yaml";
 import { ChronusError, joinPaths, resolvePath, type ChronusHost, type Mutable } from "../../utils/index.js";
-import type { Package, PackageBase, PackageJson, PatchPackageVersion, Workspace, WorkspaceManager } from "../types.js";
+import type { Ecosystem, Package, PackageBase, PackageJson, PatchPackageVersion } from "../types.js";
 import { findPackagesFromPattern } from "./utils.js";
 
 export interface NodePackage extends PackageBase {
@@ -9,7 +9,7 @@ export interface NodePackage extends PackageBase {
 
 const workspaceFileName = "package.json";
 
-export function createNodeWorkspaceManager(): WorkspaceManager {
+export function createNodeWorkspaceManager(): Ecosystem {
   return {
     type: "node:npm",
     aliases: ["npm", "node:npm"],
@@ -23,7 +23,10 @@ export function createNodeWorkspaceManager(): WorkspaceManager {
         return false;
       }
     },
-    async load(host: ChronusHost, root: string): Promise<Workspace> {
+    async loadPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
+      return findPackagesFromPattern(host, root, pattern, "node:npm");
+    },
+    async load(host: ChronusHost, root: string): Promise<Package[]> {
       const workspaceFilePath = joinPaths(root, workspaceFileName);
 
       const file = await host.readFile(workspaceFilePath);
@@ -36,24 +39,20 @@ export function createNodeWorkspaceManager(): WorkspaceManager {
         throw new ChronusError(`workspaces is not an array in ${workspaceFileName}`);
       }
       const packages: Package[] = (
-        await Promise.all(pkgJson.workspaces.map((pattern) => findPackagesFromPattern(host, root, pattern)))
+        await Promise.all(pkgJson.workspaces.map((pattern) => findPackagesFromPattern(host, root, pattern, "node:npm")))
       ).flat();
-      return {
-        type: "node:npm",
-        path: root,
-        packages,
-      };
+      return packages;
     },
     async updateVersionsForPackage(
       host: ChronusHost,
-      workspace: Workspace,
+      workspaceRoot: string,
       pkg: Package,
       request: PatchPackageVersion,
     ): Promise<void> {
       const newPkgJson = getNewPackageJson(pkg as any as NodePackage, request);
 
       await host.writeFile(
-        resolvePath(workspace.path, pkg.relativePath, "package.json"),
+        resolvePath(workspaceRoot, pkg.relativePath, "package.json"),
         JSON.stringify(newPkgJson, null, 2) + "\n",
       );
     },

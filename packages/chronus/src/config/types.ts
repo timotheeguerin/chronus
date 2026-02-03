@@ -42,7 +42,7 @@ export interface ChronusUserConfig {
   readonly changedFiles?: readonly string[];
 }
 
-export type PackageOrWorkspaceConfig = { path: string; kind?: string };
+export type PackageOrWorkspaceConfig = { path: string; type?: string };
 
 export interface ChangeKindUserConfig {
   /** What should this change do regarding to versioning. */
@@ -60,6 +60,8 @@ export interface ChangeKindResolvedConfig extends ChangeKindUserConfig {
 export interface ChronusResolvedConfig extends ChronusUserConfig {
   readonly workspaceRoot: string;
   readonly changeKinds: Record<string, ChangeKindResolvedConfig>;
+  /** Normalized list of package sources (from packages, workspaceType, and additionalPackages) */
+  readonly resolvedPackages: PackageOrWorkspaceConfig[];
 }
 
 export type VersionPolicyType = "lockstep" | "independent";

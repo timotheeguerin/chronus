@@ -10,7 +10,7 @@ describe("resolveCurrentLockStepVersion()", () => {
     const workspacePackages = Object.entries(packages).map(([name, version]) => {
       return { name, manifest: { version }, relativePath: `packages/${name}`, version };
     });
-    return createChronusWorkspace({ type: "pnpm", path: "/", packages: workspacePackages }, {} as any);
+    return createChronusWorkspace(workspacePackages as any, { workspaceRoot: "/" } as any);
   }
 
   function mkLockStepPolicy(step: Omit<VersionType, "none">): LockstepVersionPolicy {

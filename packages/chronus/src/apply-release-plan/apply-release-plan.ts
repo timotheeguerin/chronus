@@ -40,7 +40,7 @@ export async function updatePackageVersions(
 ) {
   for (const pkg of workspace.allPackages.filter((x) => x.state !== "ignored")) {
     const patch = getManifestPatchRequest(workspace, pkg, actionForPackage, dependencyUpdateMode);
-    await getEcosystem(workspace.workspace.type).updateVersionsForPackage(host, workspace.workspace, pkg, patch);
+    await getEcosystem(pkg.ecosystem).updateVersionsForPackage(host, workspace.path, pkg, patch);
   }
 }
 async function cleanChangeApplication(

@@ -1,6 +1,6 @@
 import { parse } from "yaml";
 import { ChronusError, isDefined, isPathAccessible, joinPaths, lookup, type ChronusHost } from "../../utils/index.js";
-import type { Package, Workspace, WorkspaceManager } from "../types.js";
+import type { Ecosystem, Package } from "../types.js";
 import { createNodeWorkspaceManager } from "./node.js";
 import { tryLoadNodePackage } from "./utils.js";
 
@@ -16,7 +16,7 @@ interface RushProject {
   readonly shouldPublish?: boolean;
 }
 
-export function createRushWorkspaceManager(): WorkspaceManager {
+export function createRushWorkspaceManager(): Ecosystem {
   return {
     ...createNodeWorkspaceManager(),
     type: "node:rush",
@@ -24,7 +24,7 @@ export function createRushWorkspaceManager(): WorkspaceManager {
     async is(host: ChronusHost, dir: string): Promise<boolean> {
       return isPathAccessible(host, joinPaths(dir, workspaceFileName));
     },
-    async load(host: ChronusHost, dir: string): Promise<Workspace> {
+    async load(host: ChronusHost, dir: string): Promise<Package[]> {
       const root = await lookup(dir, (current) => {
         const path = joinPaths(current, workspaceFileName);
         return isPathAccessible(host, path);
@@ -44,13 +44,11 @@ export function createRushWorkspaceManager(): WorkspaceManager {
         throw new ChronusError(`projects is not an array in ${workspaceFileName}`);
       }
       const packages: Package[] = (
-        await Promise.all(config.projects.map((pattern) => tryLoadNodePackage(host, root, pattern.projectFolder)))
+        await Promise.all(
+          config.projects.map((pattern) => tryLoadNodePackage(host, root, pattern.projectFolder, "node:rush")),
+        )
       ).filter(isDefined);
-      return {
-        type: "node:rush",
-        path: root,
-        packages,
-      };
+      return packages;
     },
   };
 }

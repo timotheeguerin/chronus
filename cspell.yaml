@@ -12,6 +12,7 @@ words:
   - onwarn
   - pacote
   - picocolors
+  - smol
   - timotheeguerin
 ignorePaths:
   - "**/node_modules/**"

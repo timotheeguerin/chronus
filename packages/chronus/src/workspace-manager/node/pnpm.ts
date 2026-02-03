@@ -1,6 +1,6 @@
 import { parse } from "yaml";
 import { ChronusError, isPathAccessible, joinPaths, type ChronusHost } from "../../utils/index.js";
-import type { Package, Workspace, WorkspaceManager } from "../types.js";
+import type { Ecosystem, Package } from "../types.js";
 import { createNodeWorkspaceManager } from "./node.js";
 import { findPackagesFromPattern } from "./utils.js";
 
@@ -9,7 +9,7 @@ interface PnpmWorkspaceConfig {
   packages: string[];
 }
 
-export function createPnpmWorkspaceManager(): WorkspaceManager {
+export function createPnpmWorkspaceManager(): Ecosystem {
   return {
     ...createNodeWorkspaceManager(),
     type: "node:pnpm",
@@ -17,7 +17,10 @@ export function createPnpmWorkspaceManager(): WorkspaceManager {
     async is(host: ChronusHost, dir: string): Promise<boolean> {
       return isPathAccessible(host, joinPaths(dir, workspaceFileName));
     },
-    async load(host: ChronusHost, root: string): Promise<Workspace> {
+    async loadPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
+      return findPackagesFromPattern(host, root, pattern, "node:pnpm");
+    },
+    async load(host: ChronusHost, root: string): Promise<Package[]> {
       const workspaceFilePath = joinPaths(root, workspaceFileName);
 
       const file = await host.readFile(workspaceFilePath);
@@ -29,12 +32,8 @@ export function createPnpmWorkspaceManager(): WorkspaceManager {
       if (Array.isArray(config.packages) === false) {
         throw new ChronusError(`packages is not an array in ${workspaceFileName}`);
       }
-      const packages: Package[] = await findPackagesFromPattern(host, root, config.packages);
-      return {
-        type: "node:pnpm",
-        path: root,
-        packages,
-      };
+      const packages: Package[] = await findPackagesFromPattern(host, root, config.packages, "node:pnpm");
+      return packages;
     },
   };
 }

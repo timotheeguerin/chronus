@@ -54,7 +54,7 @@ it("doesn't include private packages", async () => {
   expect(workspace.packages[0].name).toBe("a");
 });
 
-it("includes additionalPackages", async () => {
+it("(LEGACY) includes additionalPackages", async () => {
   const host = makeHost({
     config: {
       additionalPackages: ["extra/*"],
