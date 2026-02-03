@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import { execa, type Result } from "execa";
 import { readdir } from "fs/promises";
-import { repoRoot } from "./common.js";
+import { repoRoot } from "./common.ts";
 
 const files = await listChangedFilesSince(`origin/main`, { repositoryPath: repoRoot });
 
