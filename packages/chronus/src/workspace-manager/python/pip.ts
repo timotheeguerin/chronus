@@ -78,14 +78,7 @@ export class PipWorkspaceManager implements Ecosystem {
     }
 
     // Update dependencies
-    if (Object.keys(patchRequest.dependenciesVersions).length > 0) {
-      let content = await host.readFile(pyprojectPath).then((f) => f.content);
-      for (const [dep, ver] of Object.entries(patchRequest.dependenciesVersions)) {
-        const escaped = dep.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        content = content.replace(new RegExp(`"${escaped}[^"]*"`, "g"), `"${dep}>=${ver}"`);
-      }
-      await host.writeFile(pyprojectPath, content);
-    }
+    await updateDependencyVersions(host, pyprojectPath, patchRequest.dependenciesVersions);
   }
 }
 
@@ -207,4 +200,20 @@ function parseDeps(
     const version = match?.[2]?.trim() || "*";
     return [name, { name, version, kind }];
   });
+}
+
+/** Update dependency versions in a pyproject.toml file. */
+export async function updateDependencyVersions(
+  host: ChronusHost,
+  pyprojectPath: string,
+  dependenciesVersions: Record<string, string>,
+): Promise<void> {
+  if (Object.keys(dependenciesVersions).length === 0) return;
+
+  let content = (await host.readFile(pyprojectPath)).content;
+  for (const [dep, ver] of Object.entries(dependenciesVersions)) {
+    const escaped = dep.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    content = content.replace(new RegExp(`"${escaped}[^"]*"`, "g"), `"${dep}>=${ver}"`);
+  }
+  await host.writeFile(pyprojectPath, content);
 }
