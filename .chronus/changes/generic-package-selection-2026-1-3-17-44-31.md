@@ -10,9 +10,8 @@ Addition of `packages` field in the config to provide a more generic way of spec
 Example of a repo with a pnpm workspace in `node-pkgs` and a cargo workspace in `rust-pkgs` and some standalone node packages in `others`
 ```yaml
 packages:
-  - path: "node-pkgs"
-    type: pnpm
-  - path: "rust-pkgs"
+  - "node-ws"
+  - path: "rust-ws"
     type: cargo
   - path: "others/*"
     type: npm

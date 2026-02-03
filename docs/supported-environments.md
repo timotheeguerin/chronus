@@ -20,6 +20,9 @@ packages:
   - path: "."
     type: auto
 
+# Explicit packages
+packages: ["pkgs/pkg-a",  "pkgs/pkg-b"]
+
 # This represent a monorepo with multiple ecosystems(A node npm workspace, a rust cargo workspace, and some standalone npm packages)
 packages:
   - path: "node-pkgs"
