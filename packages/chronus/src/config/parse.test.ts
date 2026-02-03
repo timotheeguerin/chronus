@@ -18,10 +18,10 @@ packages:
 baseBranch: main
 packages:
   - path: "pnpm-workspace.yaml"
-    kind: "pnpm"
+    type: "pnpm"
   - path: "other/*"
 `);
-    expect(config.packages).toEqual([{ path: "pnpm-workspace.yaml", kind: "pnpm" }, { path: "other/*" }]);
+    expect(config.packages).toEqual([{ path: "pnpm-workspace.yaml", type: "pnpm" }, { path: "other/*" }]);
   });
 
   it("accepts mixed packages array", () => {
@@ -29,10 +29,10 @@ packages:
 baseBranch: main
 packages:
   - path: "pnpm-workspace.yaml"
-    kind: "pnpm"
+    type: "pnpm"
   - "additional/*"
 `);
-    expect(config.packages).toEqual([{ path: "pnpm-workspace.yaml", kind: "pnpm" }, "additional/*"]);
+    expect(config.packages).toEqual([{ path: "pnpm-workspace.yaml", type: "pnpm" }, "additional/*"]);
   });
 });
 
