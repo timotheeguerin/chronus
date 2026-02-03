@@ -47,8 +47,8 @@ export async function resolveConfig(host: ChronusHost, dir: string): Promise<Chr
 /**
  * Normalizes the packages configuration from various sources into a unified list.
  * Handles:
- * - New `packages` field (array of strings or {path, kind} objects)
- * - Legacy `workspaceType` field (converted to {path: ".", kind: workspaceType})
+ * - New `packages` field (array of strings or {path, type} objects)
+ * - Legacy `workspaceType` field (converted to {path: ".", type: workspaceType})
  * - Legacy `additionalPackages` field (converted to string patterns)
  */
 export function normalizePackagesConfig(config: ChronusUserConfig): PackageOrWorkspaceConfig[] {

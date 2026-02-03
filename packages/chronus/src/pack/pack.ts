@@ -30,7 +30,7 @@ export async function packPackage(
 
   switch (pkg.ecosystem) {
     // calling pnpm seperately because it will replace `workspace:` protocol with the actual version in the tarball
-    case "pnpm":
+    case "node:pnpm":
       return packPackageWithPnpm(pkg, pkgDir, packDestination);
     case "npm":
     default:
