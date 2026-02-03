@@ -50,8 +50,8 @@ export class GitError extends Error {
 }
 
 function splitStdoutLines(result: Result): string[] {
-  return result.stdout!
-    .toString()
+  return result
+    .stdout!.toString()
     .split("\n")
     .filter((a) => a);
 }
