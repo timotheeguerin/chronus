@@ -10,7 +10,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +27,7 @@ jobs:
       - run: pnpm run build
         name: Build
             
-      - run: node eng/tsp-core/pkg-pr-new.ts
+      - run: node eng/pkg-pr-new.ts
       
       - run: pnpm run test
         name: Test
