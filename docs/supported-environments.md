@@ -1,13 +1,33 @@
 # Supported Environments
 
-Chronus supports multiple monorepo environments across different ecosystems. The workspace type can be configured via the `workspaceType` option in the chronus config or auto-detected.
+Chronus supports multiple monorepo environments across different ecosystems.
 
 ## Configuration
 
-In your `.chronus/config.yaml`, you can specify the workspace type:
+In your `.chronus/config.yaml`, you can specify where packages and workspaces are located as well as the ecosytem type:
+
+1. Simple case a single workspace at the top level
 
 ```yaml
 workspaceType: auto # or a specific type like "pnpm", "rush", "cargo", etc.
+```
+
+2. More complex case with multiple workspace/no workspace mangers but many packages
+
+```yaml
+# Equivalent to the default
+packages:
+  - path: "."
+    type: auto
+
+# This represnet a monorepo with multiple ecosystems(A node npm workspace, a rust cargo workspace, and some standalone npm packages)
+packages:
+  - path: "node-pkgs"
+    type: npm
+  - path: "rust-pkgs"
+    type: cargo
+  - path: "others/*"
+    type: npm
 ```
 
 When set to `auto` (default), Chronus will attempt to detect the workspace type based on the files present in the repository root.
