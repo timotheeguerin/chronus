@@ -30,7 +30,9 @@ jobs:
 
       - run: pnpm run build
         name: Build
-
+            
+      - run: pnpm tsx eng/tsp-core/pkg-pr-new.ts
+      
       - run: pnpm run test
         name: Test
 

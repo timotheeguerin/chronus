@@ -19,6 +19,8 @@ export interface PackPackageResult {
   readonly unpackedSize: number;
 }
 
+console.log("TESTING")
+
 export async function packPackage(
   workspace: ChronusWorkspace,
   pkg: Package,
