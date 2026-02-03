@@ -9,14 +9,10 @@ on:
     branches: ["main"]
   workflow_dispatch: {}
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  test:
-    # The type of runner that the job will run on
+  build:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v4
 
@@ -31,7 +27,7 @@ jobs:
       - run: pnpm run build
         name: Build
             
-      - run: pnpm tsx eng/tsp-core/pkg-pr-new.ts
+      - run: node eng/tsp-core/pkg-pr-new.ts
       
       - run: pnpm run test
         name: Test
