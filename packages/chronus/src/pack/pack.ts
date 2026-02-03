@@ -29,10 +29,10 @@ export async function packPackage(
   await mkdir(packDestination, { recursive: true }); // Not using the ChronusHost here because it doesn't matter as we need to call npm after.
 
   switch (pkg.ecosystem) {
-    // calling pnpm seperately because it will replace `workspace:` protocol with the actual version in the tarball
+    // calling pnpm separately because it will replace `workspace:` protocol with the actual version in the tarball
     case "node:pnpm":
       return packPackageWithPnpm(pkg, pkgDir, packDestination);
-    case "npm":
+    case "node:npm":
     default:
       return packPackageWithNpm(pkg, pkgDir, packDestination);
   }
