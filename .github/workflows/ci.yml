@@ -28,9 +28,9 @@ jobs:
 
       - run: pnpm run build
         name: Build
-            
+
       - run: node eng/pkg-pr-new.ts
-      
+
       - run: pnpm run test
         name: Test
 
