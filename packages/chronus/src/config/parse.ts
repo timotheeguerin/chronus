@@ -40,7 +40,7 @@ const schema = z
     baseBranch: z.string(),
     baseRemote: z.string().url().optional(),
     packages: z.array(packageOrWorkspaceSchema).optional(),
-    workspaceType: z.enum(["auto", "npm", "pnpm", "rush"]).optional(),
+    workspaceType: z.string().optional(),
     additionalPackages: z.array(z.string()).optional(),
     versionPolicies: z.array(versionPolicySchema).optional(),
     ignore: z.array(z.string()).optional(),

@@ -12,7 +12,7 @@ In your `.chronus/config.yaml`, you can specify where packages and workspaces ar
 workspaceType: auto # or a specific type like "pnpm", "rush", "cargo", etc.
 ```
 
-2. More complex case with multiple workspace/no workspace mangers but many packages
+2. More complex case with multiple workspaces/no workspace managers but many packages
 
 ```yaml
 # Equivalent to the default
@@ -20,7 +20,7 @@ packages:
   - path: "."
     type: auto
 
-# This represent a monorepo with multiple ecosystems(A node npm workspace, a rust cargo workspace, and some standalone npm packages)
+# This represents a monorepo with multiple ecosystems(A node npm workspace, a rust cargo workspace, and some standalone npm packages)
 packages:
   - path: "node-pkgs"
     type: npm
