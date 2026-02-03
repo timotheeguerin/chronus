@@ -3,14 +3,7 @@ import { isPathAccessible } from "../../utils/fs-utils.js";
 import type { ChronusHost } from "../../utils/host.js";
 import { isDefined } from "../../utils/misc-utils.js";
 import { joinPaths, resolvePath } from "../../utils/path-utils.js";
-import type {
-  Package,
-  PackageDependencySpec,
-  PatchPackageVersion,
-  Workspace,
-  WorkspaceManager,
-  WorkspaceManagerConfig,
-} from "../types.js";
+import type { Ecosystem, Package, PackageDependencySpec, PatchPackageVersion } from "../types.js";
 
 const pyprojectFile = "pyproject.toml";
 const setupPyFile = "setup.py";
@@ -26,7 +19,7 @@ export interface PyprojectToml {
   };
 }
 
-export class PipWorkspaceManager implements WorkspaceManager {
+export class PipWorkspaceManager implements Ecosystem {
   type = "python:pip";
   aliases = ["pip"];
 
@@ -42,33 +35,25 @@ export class PipWorkspaceManager implements WorkspaceManager {
     return isPathAccessible(host, setupPyPath);
   }
 
-  async load(host: ChronusHost, root: string, config?: WorkspaceManagerConfig): Promise<Workspace> {
-    // Python pip doesn't have explicit workspace members, so we'll look for packages in common patterns
-    const packages: Package[] = [];
+  async loadPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
+    return await findPackagesFromPattern(host, root, pattern);
+  }
 
-    // Try to find packages using configured patterns, or fall back to common defaults
-    const possiblePackageDirs = config?.packagePatterns ?? ["."];
-    for (const pattern of possiblePackageDirs) {
-      const foundPackages = await findPackagesFromPattern(host, root, pattern);
-      packages.push(...foundPackages);
-    }
-
-    return {
-      type: "python:pip",
-      path: root,
-      packages,
-    };
+  async load(host: ChronusHost, root: string, relativePath: string): Promise<Package[]> {
+    // Load packages from the specified directory
+    const pkg = await tryLoadPackage(host, root, relativePath);
+    return pkg ? [pkg] : [];
   }
 
   async updateVersionsForPackage(
     host: ChronusHost,
-    workspace: Workspace,
+    workspaceRoot: string,
     pkg: Package,
     patchRequest: PatchPackageVersion,
   ): Promise<void> {
     // Determine which file contains the packaging configuration
     // Check pyproject.toml first to see if it has [project] section with packaging info
-    const pyprojectTomlPath = resolvePath(workspace.path, pkg.relativePath, pyprojectFile);
+    const pyprojectTomlPath = resolvePath(workspaceRoot, pkg.relativePath, pyprojectFile);
     let usesPyprojectForPackaging = false;
 
     if (await isPathAccessible(host, pyprojectTomlPath)) {
@@ -84,7 +69,7 @@ export class PipWorkspaceManager implements WorkspaceManager {
 
         // Update version in _version.py if it's dynamic
         if (patchRequest.newVersion && isDynamicVersion) {
-          await updateVersionInFile(host, workspace.path, pkg.relativePath, pkg.name, patchRequest.newVersion);
+          await updateVersionInFile(host, workspaceRoot, pkg.relativePath, pkg.name, patchRequest.newVersion);
         }
 
         // Update pyproject.toml (version if not dynamic, and dependencies)
@@ -110,13 +95,13 @@ export class PipWorkspaceManager implements WorkspaceManager {
 
     // If pyproject.toml doesn't have packaging info, update setup.py
     if (!usesPyprojectForPackaging) {
-      const setupPyPath = resolvePath(workspace.path, pkg.relativePath, setupPyFile);
+      const setupPyPath = resolvePath(workspaceRoot, pkg.relativePath, setupPyFile);
       if (await isPathAccessible(host, setupPyPath)) {
         const file = await host.readFile(setupPyPath);
         const packageInfo = parseSetupPy(file.content);
         // Update version in separate file if it exists
         if (patchRequest.newVersion && packageInfo.versionFile) {
-          await updateVersionInFile(host, workspace.path, pkg.relativePath, pkg.name, patchRequest.newVersion);
+          await updateVersionInFile(host, workspaceRoot, pkg.relativePath, pkg.name, patchRequest.newVersion);
         }
 
         // Update setup.py for version (if not in separate file) and dependencies
@@ -252,6 +237,7 @@ export async function tryLoadPackage(
         return {
           name: project.name,
           version: version,
+          ecosystem: "python:pip",
           relativePath: relativePath,
           dependencies: new Map([
             ...parseDependencies(project.dependencies, "prod"),
@@ -290,6 +276,7 @@ export async function tryLoadPackage(
       return {
         name: packageInfo.name,
         version: version,
+        ecosystem: "python:pip",
         relativePath: relativePath,
         dependencies: new Map([
           ...parseDependencies(packageInfo.install_requires, "prod"),
