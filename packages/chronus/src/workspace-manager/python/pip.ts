@@ -6,7 +6,15 @@ import { joinPaths, resolvePath } from "../../utils/path-utils.js";
 import type { Ecosystem, Package, PackageDependencySpec, PatchPackageVersion } from "../types.js";
 
 const pyprojectFile = "pyproject.toml";
-const defaultIgnorePatterns = ["**/node_modules", "**/__pycache__", "**/venv", "**/.venv", "**/samples", "**/_vendor"];
+const defaultIgnorePatterns = [
+  "**/node_modules",
+  "**/__pycache__",
+  "**/venv",
+  "**/.venv",
+  "**/samples",
+  "**/_vendor",
+  "**/_generated",
+];
 
 export interface PyprojectToml {
   project?: {
@@ -76,9 +84,6 @@ export class PipWorkspaceManager implements Ecosystem {
         await host.writeFile(pyprojectPath, updated);
       }
     }
-
-    // Update dependencies
-    await updateDependencyVersions(host, pyprojectPath, patchRequest.dependenciesVersions);
   }
 }
 
@@ -200,20 +205,4 @@ function parseDeps(
     const version = match?.[2]?.trim() || "*";
     return [name, { name, version, kind }];
   });
-}
-
-/** Update dependency versions in a pyproject.toml file. */
-export async function updateDependencyVersions(
-  host: ChronusHost,
-  pyprojectPath: string,
-  dependenciesVersions: Record<string, string>,
-): Promise<void> {
-  if (Object.keys(dependenciesVersions).length === 0) return;
-
-  let content = (await host.readFile(pyprojectPath)).content;
-  for (const [dep, ver] of Object.entries(dependenciesVersions)) {
-    const escaped = dep.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    content = content.replace(new RegExp(`"${escaped}[^"]*"`, "g"), `"${dep}>=${ver}"`);
-  }
-  await host.writeFile(pyprojectPath, content);
 }
