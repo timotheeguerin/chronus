@@ -55,14 +55,14 @@ const schema = z
         ctx.addIssue({
           code: "custom",
           path: ["workspaceType"],
-          message: `Cannot use 'workspaceType' when 'packages' is defined. Migrate by removing 'workspaceType' and adding a workspace entry to 'packages' instead. For example: packages: [{path: "pnpm-workspace.yaml", kind: "pnpm"}, ...additionalPackages]`,
+          message: `Cannot use 'workspaceType' when 'packages' is defined. Migrate by removing 'workspaceType' and adding a workspace entry to 'packages' instead. For example: packages: [{path: "pnpm-workspace.yaml", type: "pnpm"}, ...additionalPackages]`,
         });
       }
       if (data.additionalPackages !== undefined) {
         ctx.addIssue({
           code: "custom",
           path: ["additionalPackages"],
-          message: `Cannot use 'additionalPackages' when 'packages' is defined. Migrate by moving all entries from 'additionalPackages' directly into the 'packages' array. For example: packages: [{path: "pnpm-workspace.yaml", kind: "pnpm"}, ...additionalPackages]`,
+          message: `Cannot use 'additionalPackages' when 'packages' is defined. Migrate by moving all entries from 'additionalPackages' directly into the 'packages' array. For example: packages: [{path: "pnpm-workspace.yaml", type: "pnpm"}, ...additionalPackages]`,
         });
       }
     }

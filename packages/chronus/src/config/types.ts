@@ -11,7 +11,7 @@ export interface ChronusUserConfig {
   /**
    * Explicit list of packages/workspace to include
    * @example ["packages/*", "libs/*", "tools/my-tool"]
-   * @example [{path: "pnpm-workspace.yaml", kind: "pnpm"}, "others/*"]
+   * @example [{path: "pnpm-workspace.yaml", type: "pnpm"}, "others/*"]
    */
   readonly packages?: (string | PackageOrWorkspaceConfig)[];
   /** Workspace type: pnpm, npm, yarn or auto */

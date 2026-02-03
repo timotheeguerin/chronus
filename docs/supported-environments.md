@@ -4,7 +4,7 @@ Chronus supports multiple monorepo environments across different ecosystems.
 
 ## Configuration
 
-In your `.chronus/config.yaml`, you can specify where packages and workspaces are located as well as the ecosytem type:
+In your `.chronus/config.yaml`, you can specify where packages and workspaces are located as well as the ecosystem type:
 
 1. Simple case a single workspace at the top level
 
@@ -20,7 +20,7 @@ packages:
   - path: "."
     type: auto
 
-# This represnet a monorepo with multiple ecosystems(A node npm workspace, a rust cargo workspace, and some standalone npm packages)
+# This represent a monorepo with multiple ecosystems(A node npm workspace, a rust cargo workspace, and some standalone npm packages)
 packages:
   - path: "node-pkgs"
     type: npm
