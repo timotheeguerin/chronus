@@ -7,7 +7,8 @@ import type { Ecosystem, Package, PackageDependencySpec, PatchPackageVersion } f
 
 const pyprojectFile = "pyproject.toml";
 const setupPyFile = "setup.py";
-const versionFiles = ["_version.py", "version.py"];
+const versionFileNames = ["_version.py", "version.py"];
+const defaultIgnorePatterns = ["**/node_modules", "**/__pycache__", "**/venv", "**/.venv", "**/samples", "**/_vendor"];
 
 export interface PyprojectToml {
   project?: {
@@ -19,20 +20,35 @@ export interface PyprojectToml {
   };
 }
 
+interface PythonPackageInfo {
+  name: string;
+  version: string;
+  dependencies: string[];
+  devDependencies: string[];
+}
+
+interface SetupPyInfo {
+  name?: string;
+  version?: string;
+  versionFile?: string;
+  install_requires?: string[];
+  extras_require?: Record<string, string[]>;
+}
+
 export class PipWorkspaceManager implements Ecosystem {
   type = "python:pip";
   aliases = ["pip"];
 
   async is(host: ChronusHost, dir: string): Promise<boolean> {
-    // Check for pyproject.toml
+    const setupPyPath = joinPaths(dir, setupPyFile);
+    if (await isPathAccessible(host, setupPyPath)) {
+      return true;
+    }
     const pyprojectPath = joinPaths(dir, pyprojectFile);
     if (await isPathAccessible(host, pyprojectPath)) {
       return true;
     }
-
-    // Check for setup.py
-    const setupPyPath = joinPaths(dir, setupPyFile);
-    return isPathAccessible(host, setupPyPath);
+    return false;
   }
 
   async loadPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
@@ -40,7 +56,6 @@ export class PipWorkspaceManager implements Ecosystem {
   }
 
   async load(host: ChronusHost, root: string, relativePath: string): Promise<Package[]> {
-    // Load packages from the specified directory
     const pkg = await tryLoadPackage(host, root, relativePath);
     return pkg ? [pkg] : [];
   }
@@ -51,8 +66,6 @@ export class PipWorkspaceManager implements Ecosystem {
     pkg: Package,
     patchRequest: PatchPackageVersion,
   ): Promise<void> {
-    // Determine which file contains the packaging configuration
-    // Check pyproject.toml first to see if it has [project] section with packaging info
     const pyprojectTomlPath = resolvePath(workspaceRoot, pkg.relativePath, pyprojectFile);
     let usesPyprojectForPackaging = false;
 
@@ -60,65 +73,56 @@ export class PipWorkspaceManager implements Ecosystem {
       const file = await host.readFile(pyprojectTomlPath);
       const pyprojectToml = parse(file.content) as PyprojectToml;
 
-      // If pyproject.toml has [project] section with name, it's used for packaging
       if (pyprojectToml.project?.name) {
         usesPyprojectForPackaging = true;
-
-        // Check if version is marked as dynamic (Azure SDK pattern)
         const isDynamicVersion = pyprojectToml.project?.dynamic?.includes("version");
 
-        // Update version in _version.py if it's dynamic
         if (patchRequest.newVersion && isDynamicVersion) {
-          await updateVersionInFile(host, workspaceRoot, pkg.relativePath, pkg.name, patchRequest.newVersion);
+          await updateVersionInFile(host, workspaceRoot, pkg.relativePath, patchRequest.newVersion);
         }
 
-        // Update pyproject.toml (version if not dynamic, and dependencies)
         let pyprojectContent = file.content;
         let hasPyprojectChanges = false;
 
-        // Update version in pyproject.toml if it's not dynamic
         if (patchRequest.newVersion && !isDynamicVersion) {
           pyprojectContent = updatePyprojectVersion(pyprojectContent, patchRequest.newVersion);
           hasPyprojectChanges = true;
         }
 
-        // Update dependency versions in pyproject.toml
         for (const [depName, newVersion] of Object.entries(patchRequest.dependenciesVersions)) {
           pyprojectContent = updatePyprojectDependencyVersion(pyprojectContent, depName, newVersion);
           hasPyprojectChanges = true;
         }
+
         if (hasPyprojectChanges) {
           await host.writeFile(pyprojectTomlPath, pyprojectContent);
         }
       }
     }
 
-    // If pyproject.toml doesn't have packaging info, update setup.py
     if (!usesPyprojectForPackaging) {
       const setupPyPath = resolvePath(workspaceRoot, pkg.relativePath, setupPyFile);
       if (await isPathAccessible(host, setupPyPath)) {
         const file = await host.readFile(setupPyPath);
         const packageInfo = parseSetupPy(file.content);
-        // Update version in separate file if it exists
+
         if (patchRequest.newVersion && packageInfo.versionFile) {
-          await updateVersionInFile(host, workspaceRoot, pkg.relativePath, pkg.name, patchRequest.newVersion);
+          await updateVersionInFile(host, workspaceRoot, pkg.relativePath, patchRequest.newVersion);
         }
 
-        // Update setup.py for version (if not in separate file) and dependencies
         let setupPyContent = file.content;
         let hasSetupPyChanges = false;
 
-        // Update version in setup.py if it's not in a separate file
         if (patchRequest.newVersion && !packageInfo.versionFile) {
           setupPyContent = updateSetupPyVersion(setupPyContent, patchRequest.newVersion);
           hasSetupPyChanges = true;
         }
 
-        // Update dependency versions in setup.py
         for (const [depName, newVersion] of Object.entries(patchRequest.dependenciesVersions)) {
           setupPyContent = updateSetupPyDependencyVersion(setupPyContent, depName, newVersion);
           hasSetupPyChanges = true;
         }
+
         if (hasSetupPyChanges) {
           await host.writeFile(setupPyPath, setupPyContent);
         }
@@ -135,34 +139,23 @@ export async function findPackagesFromPattern(
   const packageRoots = await host.glob(pattern, {
     baseDir: root,
     onlyDirectories: true,
-    ignore: ["**/node_modules", "**/__pycache__", "**/venv", "**/.venv"],
+    ignore: defaultIgnorePatterns,
   });
 
   const packages = await Promise.all(packageRoots.map((x) => tryLoadPackage(host, root, x)));
   return packages.filter(isDefined);
 }
 
-/**
- * Read version from _version.py or version.py file.
- * Searches for the version file in the package directory using glob patterns.
- */
-async function readVersionFromFile(
-  host: ChronusHost,
-  root: string,
-  relativePath: string,
-  packageName: string,
-): Promise<string | undefined> {
+/** Read version from _version.py or version.py file. */
+async function readVersionFromFile(host: ChronusHost, root: string, relativePath: string): Promise<string | undefined> {
   const packageRoot = resolvePath(root, relativePath);
-  // Try to find version files in the package directory
-  for (const versionFileName of versionFiles) {
-    const versionFiles = await host.glob(`**/${versionFileName}`, {
+  for (const versionFileName of versionFileNames) {
+    const foundFiles = await host.glob(`**/${versionFileName}`, {
       baseDir: packageRoot,
-      ignore: ["**/node_modules", "**/__pycache__", "**/venv", "**/.venv", "**/samples", "**/_vendor"],
+      ignore: defaultIgnorePatterns,
     });
-    // Use the first matching version file
-    if (versionFiles.length > 0) {
-      const versionFilePath = resolvePath(packageRoot, versionFiles[0]);
-      const versionFileContent = await host.readFile(versionFilePath);
+    if (foundFiles.length > 0) {
+      const versionFileContent = await host.readFile(resolvePath(packageRoot, foundFiles[0]));
       const versionMatch = versionFileContent.content.match(/VERSION\s*=\s*["']([^"']+)["']/);
       if (versionMatch) {
         return versionMatch[1];
@@ -172,36 +165,27 @@ async function readVersionFromFile(
   return undefined;
 }
 
-/**
- * Update version in _version.py or version.py file.
- * Returns true if file was found and updated, false otherwise.
- */
+/** Update version in _version.py or version.py file. */
 async function updateVersionInFile(
   host: ChronusHost,
   root: string,
   relativePath: string,
-  packageName: string,
   newVersion: string,
 ): Promise<boolean> {
   const packageRoot = resolvePath(root, relativePath);
-  // Try to find version files in the package directory
-  for (const versionFileName of versionFiles) {
+  for (const versionFileName of versionFileNames) {
     const foundFiles = await host.glob(`**/${versionFileName}`, {
       baseDir: packageRoot,
-      ignore: ["**/node_modules", "**/__pycache__", "**/venv", "**/.venv", "**/samples", "**/_vendor"],
+      ignore: defaultIgnorePatterns,
     });
-    // Use the first matching version file
     if (foundFiles.length > 0) {
       const versionFilePath = resolvePath(packageRoot, foundFiles[0]);
       const versionFile = await host.readFile(versionFilePath);
-      const updatedContent = updateVersionFile(versionFile.content, newVersion);
+      const updatedContent = versionFile.content.replace(/VERSION\s*=\s*["']([^"']+)["']/, `VERSION = "${newVersion}"`);
       await host.writeFile(versionFilePath, updatedContent);
       return true;
     }
   }
-  console.warn(
-    `Could not find version file for package ${packageName} at ${relativePath}. Tried: ${versionFiles.join(", ")}`,
-  );
   return false;
 }
 
@@ -210,94 +194,113 @@ export async function tryLoadPackage(
   root: string,
   relativePath: string,
 ): Promise<Package | undefined> {
-  // Try pyproject.toml first - check if it has packaging info in [project] section
-  const pyprojectPath = resolvePath(root, relativePath, pyprojectFile);
-  if (await isPathAccessible(host, pyprojectPath)) {
-    const file = await host.readFile(pyprojectPath);
-    const pyprojectToml = parse(file.content) as PyprojectToml;
-    const project = pyprojectToml.project;
-    if (project?.name) {
-      let version = project.version;
+  const info =
+    (await tryLoadFromPyproject(host, root, relativePath)) ?? (await tryLoadFromSetupPy(host, root, relativePath));
 
-      // Check if version is marked as dynamic (Azure SDK pattern)
-      const isDynamicVersion = project.dynamic?.includes("version");
-      if (isDynamicVersion || !version) {
-        const versionFromFile = await readVersionFromFile(host, root, relativePath, project.name);
-        if (versionFromFile) {
-          version = versionFromFile;
-        } else if (isDynamicVersion) {
-          // Version is marked as dynamic but file not found - package may be misconfigured
-          console.warn(`Package ${project.name} at ${relativePath} has dynamic version but no version file found`);
-          return undefined;
-        }
-        // If !version and not dynamic, version stays undefined and package won't load
-      }
-
-      if (version) {
-        return {
-          name: project.name,
-          version: version,
-          ecosystem: "python:pip",
-          relativePath: relativePath,
-          dependencies: new Map([
-            ...parseDependencies(project.dependencies, "prod"),
-            ...(project["optional-dependencies"]
-              ? Object.values(project["optional-dependencies"]).flatMap((deps) => parseDependencies(deps, "dev"))
-              : []),
-          ]),
-        };
-      }
-    }
-    // If pyproject.toml exists but doesn't have [project] section with name/version,
-    // it's likely being used for tools only, so fall through to check setup.py
-  }
-  // Try setup.py - either pyproject.toml doesn't exist, or it's only used for tools
-  const setupPyPath = resolvePath(root, relativePath, setupPyFile);
-  if (await isPathAccessible(host, setupPyPath)) {
-    const file = await host.readFile(setupPyPath);
-    const packageInfo = parseSetupPy(file.content);
-
-    // If version is in a separate file (_version.py or version.py), read it
-    let version = packageInfo.version;
-    if (!version && packageInfo.versionFile && packageInfo.name) {
-      const versionFromFile = await readVersionFromFile(host, root, relativePath, packageInfo.name);
-      if (versionFromFile) {
-        version = versionFromFile;
-      } else {
-        // setup.py references a version file but it doesn't exist - package may be misconfigured
-        console.warn(
-          `Package ${packageInfo.name} at ${relativePath} references ${packageInfo.versionFile} but file not found`,
-        );
-        return undefined;
-      }
-    }
-
-    if (packageInfo.name && version) {
-      return {
-        name: packageInfo.name,
-        version: version,
-        ecosystem: "python:pip",
-        relativePath: relativePath,
-        dependencies: new Map([
-          ...parseDependencies(packageInfo.install_requires, "prod"),
-          ...parseDependencies(packageInfo.extras_require?.dev, "dev"),
-        ]),
-      };
-    }
+  if (!info) {
+    return undefined;
   }
 
-  return undefined;
+  return {
+    name: info.name,
+    version: info.version,
+    ecosystem: "python:pip",
+    relativePath: relativePath,
+    dependencies: new Map([
+      ...parseDependencies(info.dependencies, "prod"),
+      ...parseDependencies(info.devDependencies, "dev"),
+    ]),
+  };
 }
 
-/**
- * Parse Python dependency specifications from string arrays.
- * Handles formats like "package>=1.0.0" or "package[extra]>=1.0.0".
- */
+async function tryLoadFromPyproject(
+  host: ChronusHost,
+  root: string,
+  relativePath: string,
+): Promise<PythonPackageInfo | undefined> {
+  const pyprojectPath = resolvePath(root, relativePath, pyprojectFile);
+  if (!(await isPathAccessible(host, pyprojectPath))) {
+    return undefined;
+  }
+
+  const file = await host.readFile(pyprojectPath);
+  const pyprojectToml = parse(file.content) as PyprojectToml;
+  const project = pyprojectToml.project;
+  if (!project?.name) {
+    return undefined;
+  }
+
+  let version = project.version;
+  const isDynamicVersion = project.dynamic?.includes("version");
+
+  if (isDynamicVersion || !version) {
+    const versionFromFile = await readVersionFromFile(host, root, relativePath);
+    if (versionFromFile) {
+      version = versionFromFile;
+    } else if (isDynamicVersion) {
+      console.warn(`Package ${project.name} at ${relativePath} has dynamic version but no version file found`);
+      return undefined;
+    }
+  }
+
+  if (!version) {
+    return undefined;
+  }
+
+  return {
+    name: project.name,
+    version,
+    dependencies: project.dependencies ?? [],
+    devDependencies: project["optional-dependencies"] ? Object.values(project["optional-dependencies"]).flat() : [],
+  };
+}
+
+async function tryLoadFromSetupPy(
+  host: ChronusHost,
+  root: string,
+  relativePath: string,
+): Promise<PythonPackageInfo | undefined> {
+  const setupPyPath = resolvePath(root, relativePath, setupPyFile);
+  if (!(await isPathAccessible(host, setupPyPath))) {
+    return undefined;
+  }
+
+  const file = await host.readFile(setupPyPath);
+  const packageInfo = parseSetupPy(file.content);
+
+  if (!packageInfo.name) {
+    return undefined;
+  }
+
+  let version = packageInfo.version;
+  if (!version && packageInfo.versionFile) {
+    const versionFromFile = await readVersionFromFile(host, root, relativePath);
+    if (versionFromFile) {
+      version = versionFromFile;
+    } else {
+      console.warn(
+        `Package ${packageInfo.name} at ${relativePath} references ${packageInfo.versionFile} but file not found`,
+      );
+      return undefined;
+    }
+  }
+
+  if (!version) {
+    return undefined;
+  }
+
+  return {
+    name: packageInfo.name,
+    version,
+    dependencies: packageInfo.install_requires ?? [],
+    devDependencies: packageInfo.extras_require?.dev ?? [],
+  };
+}
+
+/** Parse Python dependency specifications (e.g. "package>=1.0.0"). */
 function parseDependencies(deps: string[] | undefined, kind: "prod" | "dev"): [string, PackageDependencySpec][] {
   if (!deps) return [];
   return deps.map((depSpec) => {
-    // Parse dependency specification like "package>=1.0.0" or "package[extra]>=1.0.0"
-    // Python package names can contain letters, numbers, dots, hyphens, and underscores
     const match = depSpec.match(/^([a-zA-Z0-9._-]+)(?:\[[^\]]+\])?\s*(.*)$/);
     if (!match) {
       return [depSpec, { name: depSpec, version: "*", kind }];
@@ -314,27 +317,14 @@ function parseDependencies(deps: string[] | undefined, kind: "prod" | "dev"): [s
   });
 }
 
-interface SetupPyInfo {
-  name?: string;
-  version?: string;
-  versionFile?: string; // Path to _version.py or version.py if version is imported from there
-  install_requires?: string[];
-  extras_require?: Record<string, string[]>;
-}
-
-/**
- * Parse setup.py to extract package information.
- * Supports both standard setup() calls and Azure SDK patterns.
- */
+/** Parse setup.py to extract package information. */
 function parseSetupPy(content: string): SetupPyInfo {
   const info: SetupPyInfo = {};
-  // Extract name - check for both direct assignment and PACKAGE_NAME variable (Azure SDK)
+
   const directNameMatch = content.match(/name\s*=\s*["']([^"']+)["']/);
   const packageNameMatch = content.match(/PACKAGE_NAME\s*=\s*["']([^"']+)["']/);
   info.name = directNameMatch?.[1] ?? packageNameMatch?.[1];
-  // Check if version is imported from a separate file (Azure SDK pattern)
-  // Detects patterns like: with open(...'_version.py'...) or with open(...'version.py'...)
-  // Prefer _version.py if both are mentioned (more common in Azure SDK)
+
   if (content.includes("with open")) {
     const versionFileMatches = content.match(/["']((?:_)?version\.py)["']/g);
     if (versionFileMatches) {
@@ -343,9 +333,8 @@ function parseSetupPy(content: string): SetupPyInfo {
     }
   }
 
-  // Extract version directly from setup.py
   info.version = content.match(/version\s*=\s*["']([^"']+)["']/)?.[1];
-  // Extract install_requires
+
   const installRequiresMatch = content.match(/install_requires\s*=\s*\[([\s\S]*?)\]/);
   if (installRequiresMatch) {
     info.install_requires = installRequiresMatch[1]
@@ -354,7 +343,6 @@ function parseSetupPy(content: string): SetupPyInfo {
       .filter((dep) => dep.length > 0);
   }
 
-  // Extract extras_require
   const extrasRequireMatch = content.match(/extras_require\s*=\s*\{([\s\S]*?)\}/);
   if (extrasRequireMatch) {
     info.extras_require = {};
@@ -373,48 +361,27 @@ function parseSetupPy(content: string): SetupPyInfo {
   return info;
 }
 
-/**
- * Update the package version in pyproject.toml [project] section.
- */
+/** Update the package version in pyproject.toml. */
 function updatePyprojectVersion(content: string, newVersion: string): string {
   const projectSectionRegex = /(\[project\][\s\S]*?)(version\s*=\s*)"([^"]+)"/;
   return content.replace(projectSectionRegex, `$1$2"${newVersion}"`);
 }
 
-/**
- * Update a dependency version in pyproject.toml
- */
+/** Update a dependency version in pyproject.toml. */
 function updatePyprojectDependencyVersion(content: string, depName: string, newVersion: string): string {
-  // Escape special regex characters in dependency name
   const escapedName = depName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-  // Match dependencies array entries like "package>=1.0.0" or "package[extra]>=1.0.0"
   const depPattern = new RegExp(`"${escapedName}(?:\\[[^\\]]+\\])?[^"]*"`, "g");
   return content.replace(depPattern, `"${depName}>=${newVersion}"`);
 }
 
-/**
- * Update the package version in setup.py
- */
+/** Update the package version in setup.py. */
 function updateSetupPyVersion(content: string, newVersion: string): string {
   return content.replace(/version\s*=\s*["']([^"']+)["']/, `version="${newVersion}"`);
 }
 
-/**
- * Update a dependency version in setup.py
- */
+/** Update a dependency version in setup.py. */
 function updateSetupPyDependencyVersion(content: string, depName: string, newVersion: string): string {
-  // Escape special regex characters in dependency name
   const escapedName = depName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-  // Match dependencies like "package>=1.0.0" or 'package>=1.0.0'
   const depPattern = new RegExp(`["']${escapedName}(?:\\[[^\\]]+\\])?[^"']*["']`, "g");
   return content.replace(depPattern, `"${depName}>=${newVersion}"`);
-}
-
-/**
- * Update the VERSION variable in _version.py or version.py files
- */
-function updateVersionFile(content: string, newVersion: string): string {
-  return content.replace(/VERSION\s*=\s*["']([^"']+)["']/, `VERSION = "${newVersion}"`);
 }
