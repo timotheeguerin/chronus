@@ -7,9 +7,9 @@ import type { Ecosystem, Package, PackageDependencySpec, PatchPackageVersion } f
 
 const pyprojectFile = "pyproject.toml";
 const setupPyFile = "setup.py";
-const versionFileNames = ["_version.py", "version.py"];
 const defaultIgnorePatterns = ["**/node_modules", "**/__pycache__", "**/venv", "**/.venv", "**/samples", "**/_vendor"];
 
+// Supports Setuptools backend
 export interface PyprojectToml {
   project?: {
     "name"?: string;
@@ -17,6 +17,13 @@ export interface PyprojectToml {
     "dependencies"?: string[];
     "optional-dependencies"?: Record<string, string[]>;
     "dynamic"?: string[];
+  };
+  tool?: {
+    setuptools?: {
+      dynamic?: {
+        version?: { attr?: string; file?: string | string[] };
+      };
+    };
   };
 }
 
@@ -66,7 +73,8 @@ export class PipWorkspaceManager implements Ecosystem {
     pkg: Package,
     patchRequest: PatchPackageVersion,
   ): Promise<void> {
-    const pyprojectTomlPath = resolvePath(workspaceRoot, pkg.relativePath, pyprojectFile);
+    const packageRoot = resolvePath(workspaceRoot, pkg.relativePath);
+    const pyprojectTomlPath = resolvePath(packageRoot, pyprojectFile);
     let usesPyprojectForPackaging = false;
 
     if (await isPathAccessible(host, pyprojectTomlPath)) {
@@ -76,9 +84,10 @@ export class PipWorkspaceManager implements Ecosystem {
       if (pyprojectToml.project?.name) {
         usesPyprojectForPackaging = true;
         const isDynamicVersion = pyprojectToml.project?.dynamic?.includes("version");
+        const versionFilePath = getVersionFileFromPyproject(pyprojectToml);
 
         if (patchRequest.newVersion && isDynamicVersion) {
-          await updateVersionInFile(host, workspaceRoot, pkg.relativePath, patchRequest.newVersion);
+          await updateVersionInFile(host, packageRoot, versionFilePath, patchRequest.newVersion);
         }
 
         let pyprojectContent = file.content;
@@ -101,13 +110,13 @@ export class PipWorkspaceManager implements Ecosystem {
     }
 
     if (!usesPyprojectForPackaging) {
-      const setupPyPath = resolvePath(workspaceRoot, pkg.relativePath, setupPyFile);
+      const setupPyPath = resolvePath(packageRoot, setupPyFile);
       if (await isPathAccessible(host, setupPyPath)) {
         const file = await host.readFile(setupPyPath);
         const packageInfo = parseSetupPy(file.content);
 
         if (patchRequest.newVersion && packageInfo.versionFile) {
-          await updateVersionInFile(host, workspaceRoot, pkg.relativePath, patchRequest.newVersion);
+          await updateVersionInFile(host, packageRoot, packageInfo.versionFile, patchRequest.newVersion);
         }
 
         let setupPyContent = file.content;
@@ -146,43 +155,71 @@ export async function findPackagesFromPattern(
   return packages.filter(isDefined);
 }
 
-/** Read version from _version.py or version.py file. */
-async function readVersionFromFile(host: ChronusHost, root: string, relativePath: string): Promise<string | undefined> {
-  const packageRoot = resolvePath(root, relativePath);
-  for (const versionFileName of versionFileNames) {
-    const foundFiles = await host.glob(`**/${versionFileName}`, {
+/** Get the version file path from pyproject.toml tool configuration. */
+function getVersionFileFromPyproject(pyproject: PyprojectToml): string | undefined {
+  // Check setuptools dynamic version config
+  const setuptools = pyproject.tool?.setuptools?.dynamic?.version;
+  if (setuptools?.file) {
+    return Array.isArray(setuptools.file) ? setuptools.file[0] : setuptools.file;
+  }
+  if (setuptools?.attr) {
+    // Convert "package._version.VERSION" to "package/_version.py"
+    const parts = setuptools.attr.split(".");
+    parts.pop(); // Remove the variable name (e.g., "VERSION")
+    return parts.join("/") + ".py";
+  }
+
+  // Check hatch version config
+  if (pyproject.tool?.hatch?.version?.path) {
+    return pyproject.tool.hatch.version.path;
+  }
+
+  return undefined;
+}
+
+/** Read version from a Python version file. */
+async function readVersionFromFile(
+  host: ChronusHost,
+  packageRoot: string,
+  versionFilePath: string | undefined,
+): Promise<string | undefined> {
+  const patterns = versionFilePath ? [versionFilePath] : ["**/_version.py", "**/version.py"];
+
+  for (const pattern of patterns) {
+    const foundFiles = await host.glob(pattern, {
       baseDir: packageRoot,
       ignore: defaultIgnorePatterns,
     });
     if (foundFiles.length > 0) {
-      const versionFileContent = await host.readFile(resolvePath(packageRoot, foundFiles[0]));
-      const versionMatch = versionFileContent.content.match(/VERSION\s*=\s*["']([^"']+)["']/);
-      if (versionMatch) {
-        return versionMatch[1];
+      const content = await host.readFile(resolvePath(packageRoot, foundFiles[0]));
+      const match = content.content.match(/VERSION\s*=\s*["']([^"']+)["']/);
+      if (match) {
+        return match[1];
       }
     }
   }
   return undefined;
 }
 
-/** Update version in _version.py or version.py file. */
+/** Update version in a Python version file. */
 async function updateVersionInFile(
   host: ChronusHost,
-  root: string,
-  relativePath: string,
+  packageRoot: string,
+  versionFilePath: string | undefined,
   newVersion: string,
 ): Promise<boolean> {
-  const packageRoot = resolvePath(root, relativePath);
-  for (const versionFileName of versionFileNames) {
-    const foundFiles = await host.glob(`**/${versionFileName}`, {
+  const patterns = versionFilePath ? [versionFilePath] : ["**/_version.py", "**/version.py"];
+
+  for (const pattern of patterns) {
+    const foundFiles = await host.glob(pattern, {
       baseDir: packageRoot,
       ignore: defaultIgnorePatterns,
     });
     if (foundFiles.length > 0) {
-      const versionFilePath = resolvePath(packageRoot, foundFiles[0]);
-      const versionFile = await host.readFile(versionFilePath);
-      const updatedContent = versionFile.content.replace(/VERSION\s*=\s*["']([^"']+)["']/, `VERSION = "${newVersion}"`);
-      await host.writeFile(versionFilePath, updatedContent);
+      const filePath = resolvePath(packageRoot, foundFiles[0]);
+      const file = await host.readFile(filePath);
+      const updatedContent = file.content.replace(/VERSION\s*=\s*["']([^"']+)["']/, `VERSION = "${newVersion}"`);
+      await host.writeFile(filePath, updatedContent);
       return true;
     }
   }
@@ -234,11 +271,12 @@ async function tryLoadFromPyproject(
   const isDynamicVersion = project.dynamic?.includes("version");
 
   if (isDynamicVersion || !version) {
-    const versionFromFile = await readVersionFromFile(host, root, relativePath);
+    const packageRoot = resolvePath(root, relativePath);
+    const versionFilePath = getVersionFileFromPyproject(pyprojectToml);
+    const versionFromFile = await readVersionFromFile(host, packageRoot, versionFilePath);
     if (versionFromFile) {
       version = versionFromFile;
     } else if (isDynamicVersion) {
-      console.warn(`Package ${project.name} at ${relativePath} has dynamic version but no version file found`);
       return undefined;
     }
   }
@@ -274,13 +312,11 @@ async function tryLoadFromSetupPy(
 
   let version = packageInfo.version;
   if (!version && packageInfo.versionFile) {
-    const versionFromFile = await readVersionFromFile(host, root, relativePath);
+    const packageRoot = resolvePath(root, relativePath);
+    const versionFromFile = await readVersionFromFile(host, packageRoot, packageInfo.versionFile);
     if (versionFromFile) {
       version = versionFromFile;
     } else {
-      console.warn(
-        `Package ${packageInfo.name} at ${relativePath} references ${packageInfo.versionFile} but file not found`,
-      );
       return undefined;
     }
   }
