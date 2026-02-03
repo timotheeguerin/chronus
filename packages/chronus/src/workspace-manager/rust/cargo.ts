@@ -4,7 +4,7 @@ import { isPathAccessible } from "../../utils/fs-utils.js";
 import type { ChronusHost } from "../../utils/host.js";
 import { isDefined } from "../../utils/misc-utils.js";
 import { joinPaths, resolvePath } from "../../utils/path-utils.js";
-import type { Package, PackageDependencySpec, PatchPackageVersion, Workspace, WorkspaceManager } from "../types.js";
+import type { Ecosystem, Package, PackageDependencySpec, PatchPackageVersion } from "../types.js";
 
 const cargoFile = "Cargo.toml";
 
@@ -32,7 +32,7 @@ export type CargoDependency =
       features?: string[];
     };
 
-export class CargoWorkspaceManager implements WorkspaceManager {
+export class CargoWorkspaceManager implements Ecosystem {
   type = "rust:cargo";
   aliases = ["cargo"];
 
@@ -40,36 +40,38 @@ export class CargoWorkspaceManager implements WorkspaceManager {
     return isPathAccessible(host, joinPaths(dir, cargoFile));
   }
 
-  async load(host: ChronusHost, root: string): Promise<Workspace> {
-    const workspaceFilePath = joinPaths(root, cargoFile);
+  async loadPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
+    return await findCratesFromPattern(host, root, pattern);
+  }
+
+  async load(host: ChronusHost, root: string, relativePath: string): Promise<Package[]> {
+    const workspaceFilePath = resolvePath(root, relativePath, cargoFile);
     const file = await host.readFile(workspaceFilePath);
     const config = parse(file.content) as CargoToml;
+
+    // If no workspace section, load as single package
     if (config.workspace === undefined) {
-      throw new ChronusError(`workspace entry missing in ${cargoFile}`);
+      const pkg = await tryLoadCargoToml(host, root, relativePath);
+      return pkg ? [pkg] : [];
     }
     if (!config.workspace.members) {
       throw new ChronusError(`workspace.members entry missing in ${cargoFile}`);
     }
-    // Parse the Cargo.toml to find packages
-    const packages: Package[] = await findCratesFromPattern(host, root, [
-      ...config.workspace.members,
-      ...(config.workspace.exclude || []).map((x) => `!${x}`),
-    ]);
+    // Parse the Cargo.toml to find packages - prefix patterns with dir relative to root
+    const prefixedMembers = config.workspace.members.map((p) => resolvePath(relativePath, p));
+    const prefixedExcludes = (config.workspace.exclude || []).map((x) => `!${resolvePath(relativePath, x)}`);
+    const packages: Package[] = await findCratesFromPattern(host, root, [...prefixedMembers, ...prefixedExcludes]);
 
-    return {
-      type: "rust:cargo",
-      path: root,
-      packages,
-    };
+    return packages;
   }
 
   async updateVersionsForPackage(
     host: ChronusHost,
-    workspace: Workspace,
+    workspaceRoot: string,
     pkg: Package,
     patchRequest: PatchPackageVersion,
   ): Promise<void> {
-    const cargoTomlPath = resolvePath(workspace.path, pkg.relativePath, cargoFile);
+    const cargoTomlPath = resolvePath(workspaceRoot, pkg.relativePath, cargoFile);
     const file = await host.readFile(cargoTomlPath);
     let content = file.content;
 
@@ -118,6 +120,7 @@ export async function tryLoadCargoToml(
       throw new ChronusError(`Cargo.toml at ${filepath} is missing package name or version`);
     }
     return {
+      ecosystem: "rust:cargo",
       name: cargoToml.package.name,
       version: cargoToml.package.version,
       relativePath: relativePath,

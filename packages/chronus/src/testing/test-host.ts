@@ -1,5 +1,6 @@
 import micromatch from "micromatch";
 import { createTextFile } from "../file/create-file.js";
+import { ChronusError } from "../utils/errors.js";
 import type { ChronusHost, GlobOptions, MkdirOptions, RmOptions } from "../utils/host.js";
 import { getDirectoryPath } from "../utils/path-utils.js";
 
@@ -14,6 +15,9 @@ export function createTestHost(files: Record<string, string> = {}): TestHost {
   const host: ChronusHost = {
     readFile: (path: string) => {
       const content = fs[path];
+      if (content === undefined) {
+        throw new ChronusError(`VFS: File ${path} does not exist`);
+      }
       return Promise.resolve(createTextFile(content, path));
     },
     writeFile: (path: string, content: string) => {

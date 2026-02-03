@@ -7,10 +7,21 @@ export interface ChronusUserConfig {
   readonly baseBranch: string;
   /** Base remote to use to compare against. Set this to the upstream remote to support forks that don't point their main branch to the upstream remote */
   readonly baseRemote?: string;
+
+  /**
+   * Explicit list of packages/workspace to include
+   * @example ["packages/*", "libs/*", "tools/my-tool"]
+   * @example [{path: "pnpm-workspace.yaml", type: "pnpm"}, "others/*"]
+   */
+  readonly packages?: (string | PackageOrWorkspaceConfig)[];
   /** Workspace type: pnpm, npm, yarn or auto */
   readonly workspaceType?: string | "auto";
-  /** Additional packages that do not belong the workspace */
+  /**
+   * Additional packages that do not belong the workspace
+   * @deprecated use `packages` instead
+   */
   readonly additionalPackages?: string[];
+  /** Versioning policies to apply to packages */
   readonly versionPolicies?: VersionPolicy[];
   /** Projects or pattern of package name to ignore. By default all private: true packages are ignored. */
   readonly ignore?: string[];
@@ -31,6 +42,8 @@ export interface ChronusUserConfig {
   readonly changedFiles?: readonly string[];
 }
 
+export type PackageOrWorkspaceConfig = { path: string; type?: string };
+
 export interface ChangeKindUserConfig {
   /** What should this change do regarding to versioning. */
   readonly versionType: VersionType;
@@ -47,6 +60,8 @@ export interface ChangeKindResolvedConfig extends ChangeKindUserConfig {
 export interface ChronusResolvedConfig extends ChronusUserConfig {
   readonly workspaceRoot: string;
   readonly changeKinds: Record<string, ChangeKindResolvedConfig>;
+  /** Normalized list of package sources (from packages, workspaceType, and additionalPackages) */
+  readonly resolvedPackages: PackageOrWorkspaceConfig[];
 }
 
 export type VersionPolicyType = "lockstep" | "independent";

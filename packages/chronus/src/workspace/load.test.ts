@@ -7,7 +7,7 @@ import { loadChronusWorkspace } from "./load.js";
 
 function makeHost(options: { config?: Partial<ChronusUserConfig>; packages?: Record<string, PackageJson> } = {}) {
   return createTestHost({
-    "proj/package.json": stringify({
+    "proj/package.json": JSON.stringify({
       workspaces: ["packages/*"],
     }),
     "proj/.chronus/config.yaml": stringify({
@@ -54,7 +54,7 @@ it("doesn't include private packages", async () => {
   expect(workspace.packages[0].name).toBe("a");
 });
 
-it("includes additionalPackages", async () => {
+it("(LEGACY) includes additionalPackages", async () => {
   const host = makeHost({
     config: {
       additionalPackages: ["extra/*"],

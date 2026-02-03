@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createTestHost, type TestHost } from "../../testing/test-host.js";
-import type { WorkspaceManager } from "../types.js";
+import type { Ecosystem } from "../types.js";
 import { CargoWorkspaceManager } from "./cargo.js";
 
 let host: TestHost;
-let ws: WorkspaceManager;
+let ws: Ecosystem;
 
 beforeEach(async () => {
   host = createTestHost({
@@ -29,21 +29,21 @@ edition = "2021"
 }
 
 it("finds 0 packages when workspace has none", async () => {
-  const workspace = await ws.load(host.host, "proj");
-  expect(workspace.packages).toEqual([]);
+  const packages = await ws.load(host.host, "proj", ".");
+  expect(packages).toEqual([]);
 });
 
 it("finds all packages", async () => {
   host.addFile("proj/crates/pkg-a/Cargo.toml", createCargoToml({ name: "pkg-a", version: "1.0.0" }));
   host.addFile("proj/crates/pkg-b/Cargo.toml", createCargoToml({ name: "pkg-b", version: "1.2.0" }));
-  const workspace = await ws.load(host.host, "proj");
-  expect(workspace.packages).toHaveLength(2);
-  expect(workspace.packages[0]).toMatchObject({
+  const packages = await ws.load(host.host, "proj", ".");
+  expect(packages).toHaveLength(2);
+  expect(packages[0]).toMatchObject({
     name: "pkg-a",
     version: "1.0.0",
     relativePath: "crates/pkg-a",
   });
-  expect(workspace.packages[1]).toMatchObject({
+  expect(packages[1]).toMatchObject({
     name: "pkg-b",
     version: "1.2.0",
     relativePath: "crates/pkg-b",
@@ -53,18 +53,18 @@ it("finds all packages", async () => {
 it("doesn't include excluded packages", async () => {
   host.addFile("proj/crates/pkg-a/Cargo.toml", createCargoToml({ name: "pkg-a", version: "1.0.0" }));
   host.addFile("proj/crates/pkg-excluded/Cargo.toml", createCargoToml({ name: "pkg-excluded", version: "1.2.0" }));
-  const workspace = await ws.load(host.host, "proj");
-  expect(workspace.packages).toHaveLength(1);
-  expect(workspace.packages[0]).toHaveProperty("name", "pkg-a");
+  const packages = await ws.load(host.host, "proj", ".");
+  expect(packages).toHaveLength(1);
+  expect(packages[0]).toHaveProperty("name", "pkg-a");
 });
 
 describe("updateVersionsForPackage", () => {
   it("updates the package version", async () => {
     host.addFile("proj/crates/pkg-a/Cargo.toml", createCargoToml({ name: "pkg-a", version: "1.0.0" }));
-    const workspace = await ws.load(host.host, "proj");
-    const pkg = workspace.packages[0];
+    const packages = await ws.load(host.host, "proj", ".");
+    const pkg = packages[0];
 
-    await ws.updateVersionsForPackage(host.host, workspace, pkg, {
+    await ws.updateVersionsForPackage(host.host, "proj", pkg, {
       newVersion: "2.0.0",
       dependenciesVersions: {},
     });
@@ -90,10 +90,10 @@ pkg-b = "1.0.0"
 tokio = "1.0.0"
 `,
     );
-    const workspace = await ws.load(host.host, "proj");
-    const pkg = workspace.packages[0];
+    const packages = await ws.load(host.host, "proj", ".");
+    const pkg = packages[0];
 
-    await ws.updateVersionsForPackage(host.host, workspace, pkg, {
+    await ws.updateVersionsForPackage(host.host, "proj", pkg, {
       dependenciesVersions: { "pkg-b": "2.0.0" },
     });
 
@@ -121,10 +121,10 @@ edition = "2021"
 pkg-b = { version = "1.0.0", features = ["derive"] }
 `,
     );
-    const workspace = await ws.load(host.host, "proj");
-    const pkg = workspace.packages[0];
+    const packages = await ws.load(host.host, "proj", ".");
+    const pkg = packages[0];
 
-    await ws.updateVersionsForPackage(host.host, workspace, pkg, {
+    await ws.updateVersionsForPackage(host.host, "proj", pkg, {
       dependenciesVersions: { "pkg-b": "2.0.0" },
     });
 
@@ -151,10 +151,10 @@ edition = "2021"
 proptest = "1.0.0"
 `,
     );
-    const workspace = await ws.load(host.host, "proj");
-    const pkg = workspace.packages[0];
+    const packages = await ws.load(host.host, "proj", ".");
+    const pkg = packages[0];
 
-    await ws.updateVersionsForPackage(host.host, workspace, pkg, {
+    await ws.updateVersionsForPackage(host.host, "proj", pkg, {
       dependenciesVersions: { proptest: "2.0.0" },
     });
 
@@ -181,10 +181,10 @@ edition = "2021"
 cc = "1.0.0"
 `,
     );
-    const workspace = await ws.load(host.host, "proj");
-    const pkg = workspace.packages[0];
+    const packages = await ws.load(host.host, "proj", ".");
+    const pkg = packages[0];
 
-    await ws.updateVersionsForPackage(host.host, workspace, pkg, {
+    await ws.updateVersionsForPackage(host.host, "proj", pkg, {
       dependenciesVersions: { cc: "2.0.0" },
     });
 
@@ -214,10 +214,10 @@ pkg-b = "1.0.0"
 pkg-c = { version = "1.0.0", features = ["full"] }
 `,
     );
-    const workspace = await ws.load(host.host, "proj");
-    const pkg = workspace.packages[0];
+    const packages = await ws.load(host.host, "proj", ".");
+    const pkg = packages[0];
 
-    await ws.updateVersionsForPackage(host.host, workspace, pkg, {
+    await ws.updateVersionsForPackage(host.host, "proj", pkg, {
       newVersion: "2.0.0",
       dependenciesVersions: { "pkg-b": "1.5.0", "pkg-c": "1.25.0" },
     });

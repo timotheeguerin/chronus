@@ -8,6 +8,7 @@ export async function findPackagesFromPattern(
   host: ChronusHost,
   root: string,
   pattern: string | string[],
+  ecosystem: string,
 ): Promise<Package[]> {
   const packageRoots = await host.glob(pattern, {
     baseDir: root,
@@ -15,7 +16,7 @@ export async function findPackagesFromPattern(
     ignore: ["**/node_modules"],
   });
 
-  const packages = await Promise.all(packageRoots.map((x) => tryLoadNodePackage(host, root, x)));
+  const packages = await Promise.all(packageRoots.map((x) => tryLoadNodePackage(host, root, x, ecosystem)));
   return packages.filter(isDefined);
 }
 
@@ -23,13 +24,14 @@ export async function tryLoadNodePackage(
   host: ChronusHost,
   root: string,
   relativePath: string,
+  ecosystem: string,
 ): Promise<Package | undefined> {
   const pkgJsonPath = resolvePath(root, relativePath, "package.json");
   if (await isPathAccessible(host, pkgJsonPath)) {
     const file = await host.readFile(pkgJsonPath);
     const pkgJson = JSON.parse(file.content);
     return {
-      ...createPackageFromPackageJson(pkgJson),
+      ...createPackageFromPackageJson(pkgJson, ecosystem),
       relativePath,
     } as Package;
   } else {
@@ -37,8 +39,9 @@ export async function tryLoadNodePackage(
   }
 }
 
-export function createPackageFromPackageJson(pkgJson: PackageJson): NodePackage {
+export function createPackageFromPackageJson(pkgJson: PackageJson, ecosystem: string): NodePackage {
   return {
+    ecosystem,
     name: pkgJson.name!,
     version: pkgJson.version!,
     private: pkgJson.private,

@@ -3,7 +3,7 @@ import type { ChangeDescription } from "../change/types.js";
 import { addNameToChangeKinds, defaultChangeKinds } from "../config/resolve.js";
 import type { ChronusResolvedConfig } from "../config/types.js";
 import type { VersionType } from "../types.js";
-import type { Package, PackageJson, Workspace } from "../workspace-manager/types.js";
+import type { Package, PackageJson } from "../workspace-manager/types.js";
 import { createChronusWorkspace } from "../workspace/load.js";
 import { getPrereleaseVersionActions } from "./prerelease-versioning.js";
 
@@ -20,20 +20,22 @@ describe("Assemble Release Plan", () => {
     };
   }
 
-  function mkWorkspace(packages: Package[]): Workspace {
-    return { type: "pnpm", path: "/", packages };
-  }
   function mkPkg(name: string, manifest: PackageJson): Package {
     const version = manifest.version ?? "1.0.0";
-    return { name, relativePath: `packages/${name}`, version, dependencies: new Map() };
+    return { name, ecosystem: "npm", relativePath: `packages/${name}`, version, dependencies: new Map() };
   }
-  const workspace: Workspace = mkWorkspace([
+  const workspace: Package[] = [
     mkPkg("pkg-a", { version: "1.0.0" }),
     mkPkg("pkg-b", { version: "1.0.3" }),
     mkPkg("pkg-c", { version: "1.0.0" }),
-  ]);
+  ];
 
-  const baseConfig: ChronusResolvedConfig = { workspaceRoot: "proj", baseBranch: "main", changeKinds };
+  const baseConfig: ChronusResolvedConfig = {
+    workspaceRoot: "proj",
+    baseBranch: "main",
+    changeKinds,
+    resolvedPackages: [{ path: "." }],
+  };
 
   describe("interpolate nextVersion", () => {
     it.each([

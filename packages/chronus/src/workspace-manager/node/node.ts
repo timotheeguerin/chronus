@@ -1,7 +1,6 @@
-import { parse } from "yaml";
 import { ChronusError, joinPaths, resolvePath, type ChronusHost, type Mutable } from "../../utils/index.js";
-import type { Package, PackageBase, PackageJson, PatchPackageVersion, Workspace, WorkspaceManager } from "../types.js";
-import { findPackagesFromPattern } from "./utils.js";
+import type { Ecosystem, Package, PackageBase, PackageJson, PatchPackageVersion } from "../types.js";
+import { findPackagesFromPattern, tryLoadNodePackage } from "./utils.js";
 
 export interface NodePackage extends PackageBase {
   manifest: PackageJson;
@@ -9,7 +8,7 @@ export interface NodePackage extends PackageBase {
 
 const workspaceFileName = "package.json";
 
-export function createNodeWorkspaceManager(): WorkspaceManager {
+export function createNodeWorkspaceManager(): Ecosystem {
   return {
     type: "node:npm",
     aliases: ["npm", "node:npm"],
@@ -17,43 +16,48 @@ export function createNodeWorkspaceManager(): WorkspaceManager {
       try {
         const workspaceFilePath = joinPaths(dir, workspaceFileName);
         const file = await host.readFile(workspaceFilePath);
-        const pkgJson: PackageJson = parse(file.content) as any;
+        const pkgJson: PackageJson = JSON.parse(file.content) as any;
         return pkgJson.workspaces !== undefined && Array.isArray(pkgJson.workspaces);
       } catch {
         return false;
       }
     },
-    async load(host: ChronusHost, root: string): Promise<Workspace> {
-      const workspaceFilePath = joinPaths(root, workspaceFileName);
+    async loadPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
+      return findPackagesFromPattern(host, root, pattern, "node:npm");
+    },
+    async load(host: ChronusHost, root: string, relativePath: string): Promise<Package[]> {
+      const workspaceFilePath = resolvePath(root, relativePath, workspaceFileName);
 
       const file = await host.readFile(workspaceFilePath);
-      const pkgJson: PackageJson = parse(file.content) as any;
+      const pkgJson: PackageJson = JSON.parse(file.content) as any;
 
+      // If no workspaces defined, load as a single package
       if (pkgJson.workspaces === undefined) {
-        throw new ChronusError(`workspaces entry missing in ${workspaceFileName}`);
+        const pkg = await tryLoadNodePackage(host, root, relativePath, "node:npm");
+        return pkg ? [pkg] : [];
       }
       if (Array.isArray(pkgJson.workspaces) === false) {
         throw new ChronusError(`workspaces is not an array in ${workspaceFileName}`);
       }
+      // Prefix patterns with the dir relative to root
+      const prefixedPatterns = pkgJson.workspaces.map((p) =>
+        relativePath && relativePath !== "." ? joinPaths(relativePath, p) : p,
+      );
       const packages: Package[] = (
-        await Promise.all(pkgJson.workspaces.map((pattern) => findPackagesFromPattern(host, root, pattern)))
+        await Promise.all(prefixedPatterns.map((pattern) => findPackagesFromPattern(host, root, pattern, "node:npm")))
       ).flat();
-      return {
-        type: "node:npm",
-        path: root,
-        packages,
-      };
+      return packages;
     },
     async updateVersionsForPackage(
       host: ChronusHost,
-      workspace: Workspace,
+      workspaceRoot: string,
       pkg: Package,
       request: PatchPackageVersion,
     ): Promise<void> {
       const newPkgJson = getNewPackageJson(pkg as any as NodePackage, request);
 
       await host.writeFile(
-        resolvePath(workspace.path, pkg.relativePath, "package.json"),
+        resolvePath(workspaceRoot, pkg.relativePath, "package.json"),
         JSON.stringify(newPkgJson, null, 2) + "\n",
       );
     },
