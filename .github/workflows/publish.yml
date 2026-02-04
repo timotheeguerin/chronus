@@ -53,8 +53,8 @@ jobs:
         name: Publish
 
       # To pack and publish as one step
-      - run: NODE_AUTH_TOKEN="" node ./packages/chronus/cmd/cli.mjs publish --access public  --report-summary ./publish-summary.json
-        name: Publish
+      # - run: NODE_AUTH_TOKEN="" node ./packages/chronus/cmd/cli.mjs publish --access public  --report-summary ./publish-summary.json
+      #   name: Publish
 
       - run: |
           echo "Publish summary:"
