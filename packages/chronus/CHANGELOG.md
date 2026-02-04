@@ -1,5 +1,23 @@
 # @chronus/chronus
 
+## 1.3.0
+
+### Features
+
+- [#530](https://github.com/timotheeguerin/chronus/pull/530) Addition of `packages` field in the config to provide a more generic way of specifying packages to include. This now allows multiple ecosystem type to live side by side
+  
+  Example of a repo with a pnpm workspace in `node-pkgs` and a cargo workspace in `rust-pkgs` and some standalone node packages in `others`
+  ```yaml
+  packages:
+    - "node-ws"
+    - path: "rust-ws"
+      type: cargo
+    - path: "others/*"
+      type: npm
+  ```
+- [#509](https://github.com/timotheeguerin/chronus/pull/509) Added support for python:pip ecosystem for repos that use pyproject.toml
+
+
 ## 1.2.0
 
 ### Bug Fixes
