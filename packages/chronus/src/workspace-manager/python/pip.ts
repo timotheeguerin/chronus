@@ -71,15 +71,17 @@ export class PipWorkspaceManager implements Ecosystem {
 
     const isDynamic = pyproject.project.dynamic?.includes("version");
 
-    // Update version
-    if (isDynamic) {
-      await updateVersionInPythonFile(host, packageRoot, getVersionFilePath(pyproject), patchRequest.newVersion!);
-    } else {
-      const updated = file.content.replace(
-        /(\[project\][\s\S]*?version\s*=\s*)"[^"]+"/,
-        `$1"${patchRequest.newVersion}"`,
-      );
-      await host.writeFile(pyprojectPath, updated);
+    if (patchRequest.newVersion) {
+      // Update version
+      if (isDynamic) {
+        await updateVersionInPythonFile(host, packageRoot, getVersionFilePath(pyproject), patchRequest.newVersion);
+      } else {
+        const updated = file.content.replace(
+          /(\[project\][\s\S]*?version\s*=\s*)"[^"]+"/,
+          `$1"${patchRequest.newVersion}"`,
+        );
+        await host.writeFile(pyprojectPath, updated);
+      }
     }
   }
 }
