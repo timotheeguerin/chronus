@@ -11,7 +11,6 @@ const defaultIgnorePatterns = [
   "**/__pycache__",
   "**/venv",
   "**/.venv",
-  "**/samples",
   "**/_vendor",
   "**/_generated",
 ];
