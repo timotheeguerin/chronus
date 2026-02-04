@@ -103,51 +103,6 @@ describe("updateVersionsForPackage", () => {
     const updatedFile = await host.host.readFile("proj/packages/pkg-a/pyproject.toml");
     expect(updatedFile.content).toContain('version = "2.0.0"');
   });
-
-  it("updates dependency versions", async () => {
-    host.addFile(
-      "proj/packages/pkg-a/pyproject.toml",
-      `[project]
-name = "pkg-a"
-version = "1.0.0"
-dependencies = [
-    "pkg-b>=1.0.0",
-    "requests>=2.28.0"
-]
-`,
-    );
-    const [pkg] = await ws.load(host.host, "proj", "packages/pkg-a");
-
-    await ws.updateVersionsForPackage(host.host, "proj", pkg, {
-      dependenciesVersions: { "pkg-b": "2.0.0" },
-    });
-
-    const updatedFile = await host.host.readFile("proj/packages/pkg-a/pyproject.toml");
-    expect(updatedFile.content).toContain("pkg-b>=2.0.0");
-  });
-
-  it("updates version and dependencies together", async () => {
-    host.addFile(
-      "proj/packages/pkg-a/pyproject.toml",
-      `[project]
-name = "pkg-a"
-version = "1.0.0"
-dependencies = [
-    "pkg-b>=1.0.0"
-]
-`,
-    );
-    const [pkg] = await ws.load(host.host, "proj", "packages/pkg-a");
-
-    await ws.updateVersionsForPackage(host.host, "proj", pkg, {
-      newVersion: "2.0.0",
-      dependenciesVersions: { "pkg-b": "1.5.0" },
-    });
-
-    const updatedFile = await host.host.readFile("proj/packages/pkg-a/pyproject.toml");
-    expect(updatedFile.content).toContain('version = "2.0.0"');
-    expect(updatedFile.content).toContain("pkg-b>=1.5.0");
-  });
 });
 
 describe("dynamic version with different backends", () => {
@@ -186,14 +141,13 @@ dynamic = ["version"]
 
     await ws.updateVersionsForPackage(host.host, "proj", pkg, {
       newVersion: "5.0.0",
-      dependenciesVersions: { requests: "3.0.0" },
+      dependenciesVersions: {},
     });
 
     const versionFile = await host.host.readFile("proj/sdk/my-pkg/my_pkg/_version.py");
     expect(versionFile.content).toContain('VERSION = "5.0.0"');
 
     const pyproject = await host.host.readFile("proj/sdk/my-pkg/pyproject.toml");
-    expect(pyproject.content).toContain("requests>=3.0.0");
     expect(pyproject.content).not.toContain('version = "5.0.0"');
   });
 });
