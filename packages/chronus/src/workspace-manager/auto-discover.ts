@@ -3,6 +3,7 @@ import { ChronusError, resolvePath, type ChronusHost } from "../utils/index.js";
 import { createNodeWorkspaceManager } from "./node/node.js";
 import { createPnpmWorkspaceManager } from "./node/pnpm.js";
 import { createRushWorkspaceManager } from "./node/rush.js";
+import { PipWorkspaceManager } from "./python/pip.js";
 import { CargoWorkspaceManager } from "./rust/cargo.js";
 import type { Ecosystem, Package } from "./types.js";
 
@@ -11,6 +12,7 @@ const ecosystems = [
   createRushWorkspaceManager(),
   createNodeWorkspaceManager(),
   new CargoWorkspaceManager(),
+  new PipWorkspaceManager(),
 ];
 const ecosystemMap = new Map<string, Ecosystem>(
   ecosystems.flatMap((x) => {
