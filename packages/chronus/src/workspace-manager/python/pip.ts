@@ -142,11 +142,6 @@ function getVersionFilePath(pyproject: PyprojectToml): string | undefined {
     return tool.pdm.version.path;
   }
 
-  // Flit: reads from module's __version__
-  if (tool?.flit?.module?.name) {
-    return `${tool.flit.module.name}/__init__.py`;
-  }
-
   return undefined;
 }
 
