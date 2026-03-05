@@ -1,0 +1,57 @@
+---
+title: Chronus
+description: Changelog management for monorepos — across npm, pnpm, Rush, and Cargo workspaces.
+template: splash
+hero:
+  tagline: Streamlined changelog management for monorepos — across npm, pnpm, Rush, and Cargo workspaces.
+  actions:
+    - text: Get Started
+      link: /chronus/getting-started/installation/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/timotheeguerin/chronus
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+## Why Chronus?
+
+Chronus ensures every changed package in your monorepo has a meaningful changelog entry — and makes it easy to add one directly from a GitHub PR comment.
+
+<CardGrid stagger>
+  <Card title="Multi-Ecosystem Support" icon="seti:npm">
+    Works with **npm**, **pnpm**, **Rush**, and **Cargo** workspaces out of the box. Auto-detects your setup.
+  </Card>
+  <Card title="Per-Package Verification" icon="approve-check-circle">
+    Verifies that *every* changed package has a changelog entry — not just that a single change file exists.
+  </Card>
+  <Card title="Flexible Version Policies" icon="setting">
+    Choose between **independent** versioning or **lockstep** groups. Perfect for pre-release workflows where semver rules are relaxed.
+  </Card>
+  <Card title="GitHub Integration" icon="github">
+    Add changelogs directly from PR comments in the browser. Enrich entries with PR numbers and commit links automatically.
+  </Card>
+  <Card title="Custom Change Kinds" icon="list-format">
+    Go beyond `major` / `minor` / `patch` — define custom categories like `deprecation`, `internal`, or `chore` for richer changelogs.
+  </Card>
+  <Card title="Prerelease Builds" icon="rocket">
+    Automatically produce unique prerelease versions (e.g. `1.5.0-dev.3`) based on pending change count. Great for nightly and PR builds.
+  </Card>
+</CardGrid>
+
+## Quick Start
+
+```bash
+# Add a changelog entry
+npx chronus add
+
+# Verify all changed packages have entries
+npx chronus verify
+
+# Bump versions and generate changelogs
+npx chronus version
+```
+
+Check out the [installation guide](/chronus/getting-started/installation/) to get set up.

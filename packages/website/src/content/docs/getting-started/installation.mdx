@@ -1,0 +1,102 @@
+---
+title: Installation
+description: How to install and configure Chronus in your monorepo.
+---
+
+## Install the CLI
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+<Tabs>
+  <TabItem label="npm">
+    ```bash
+    npm install -D chronus
+    ```
+  </TabItem>
+  <TabItem label="pnpm">
+    ```bash
+    pnpm add -D chronus
+    ```
+  </TabItem>
+  <TabItem label="yarn">
+    ```bash
+    yarn add -D chronus
+    ```
+  </TabItem>
+  <TabItem label="npx (no install)">
+    ```bash
+    npx chronus
+    ```
+  </TabItem>
+</Tabs>
+
+## Initialize configuration
+
+Create a `.chronus/config.yaml` file in the root of your monorepo:
+
+```yaml
+# .chronus/config.yaml
+
+# Changelog generator — use "basic" or "@chronus/github/changelog" for PR links
+changelog: basic
+
+# Change kinds — customize the categories for your changelog
+changeKinds:
+  breaking:
+    versionType: major
+  feature:
+    versionType: minor
+  fix:
+    versionType: patch
+  internal:
+    versionType: none
+
+# Optional: filter which file changes require a changelog entry
+changedFiles:
+  - "!**/*.md"
+  - "!**/*.test.ts"
+```
+
+## Workspace detection
+
+Chronus auto-detects your monorepo setup. It supports:
+
+| Environment | Detection |
+|---|---|
+| **pnpm** | `pnpm-workspace.yaml` |
+| **npm** | `package.json` with `workspaces` field |
+| **Rush** | `rush.json` |
+| **Cargo** | `Cargo.toml` with `workspace` section |
+
+See [Supported Environments](/chronus/guides/supported-environments/) for full details.
+
+## Basic workflow
+
+1. **Make changes** to your packages
+2. **Add a changelog entry**: `npx chronus add`
+3. **Verify** all changed packages have entries: `npx chronus verify`
+4. **Bump versions** and generate changelogs: `npx chronus version`
+5. **Pack** packages for publishing: `npx chronus pack`
+
+## GitHub integration
+
+For GitHub-enhanced changelogs with PR numbers and commit links, install the GitHub plugin:
+
+```bash
+npm install -D @chronus/github
+```
+
+Then update your config:
+
+```yaml
+changelog: "@chronus/github/changelog"
+```
+
+See the [Changelog Generator](/chronus/guides/changelog-generator/) guide for details.
+
+## Next steps
+
+- [CLI Reference](/chronus/reference/cli/) — Full command documentation
+- [Change Kinds](/chronus/guides/change-kinds/) — Customize changelog categories
+- [Version Policies](/chronus/guides/version-policies/) — Independent vs. lockstep versioning
+- [Prereleases](/chronus/guides/prerelease/) — Automatic prerelease version bumps

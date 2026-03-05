@@ -1,0 +1,20 @@
+{
+  "name": "@chronus/website",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "clean": "rimraf dist .astro"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.34.0",
+    "astro": "^5.7.0",
+    "sharp": "^0.33.0"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1"
+  }
+}

@@ -1,12 +1,13 @@
 # Chronus Documentation
 
-- [CLI](cli.md)
+Documentation has moved to the [Chronus website](https://timotheeguerin.github.io/chronus/).
 
-Chronus functionalities:
+- [Installation & Setup](https://timotheeguerin.github.io/chronus/getting-started/installation/)
+- [CLI Reference](https://timotheeguerin.github.io/chronus/reference/cli/)
+- [Change Kinds](https://timotheeguerin.github.io/chronus/guides/change-kinds/)
+- [Changed Files Filter](https://timotheeguerin.github.io/chronus/guides/changed-files-filter/)
+- [Changelog Generator](https://timotheeguerin.github.io/chronus/guides/changelog-generator/)
+- [Prereleases](https://timotheeguerin.github.io/chronus/guides/prerelease/)
+- [Supported Environments](https://timotheeguerin.github.io/chronus/guides/supported-environments/)
+- [Version Policies](https://timotheeguerin.github.io/chronus/guides/version-policies/)
 
-- [Supported environments](supported-environments.md)
-- [Configure change kinds](change-kinds.md) _Use a different set of change kinds from `major`, `minor`, `patch`_
-- [Changed files filter](changed-files-filter.md)
-- [Configure changelog generator](changelog-generator.md)
-- [Prereleases](prerelease.md)
-- [Version policies](version-policies.md)
