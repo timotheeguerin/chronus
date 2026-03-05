@@ -85,6 +85,14 @@ export interface GitRepository {
    * Return the commit ids that added the given files.
    */
   getCommitsThatAddFiles(files: string[]): Promise<Record<string, string>>;
+
+  /**
+   * Get the diff of changes since the given ref.
+   * ```bash
+   * git diff <ref>...
+   * ```
+   */
+  getDiff(ref: string): Promise<string>;
 }
 
 export class GitError extends Error {
@@ -124,6 +132,7 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     listChangedFilesSince,
     getCurrentBranch,
     getCommitsThatAddFiles,
+    getDiff,
   };
 
   async function getRepoRoot(): Promise<string> {
@@ -307,6 +316,11 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
       // the output of that instead of messing with .git/shallow in case that changes in the future.
       return isShallowRepoOutput === "true";
     }
+  }
+
+  async function getDiff(ref: string): Promise<string> {
+    const result = await execGit(["diff", `${ref}...`], { repositoryPath });
+    return result.stdout.toString();
   }
 }
 

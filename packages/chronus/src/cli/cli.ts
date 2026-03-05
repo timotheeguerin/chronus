@@ -76,6 +76,11 @@ async function main() {
           .option("stage", {
             type: "boolean",
             description: "Stage the changeset file after creating it.",
+          })
+          .option("agent", {
+            type: "string",
+            choices: ["copilot", "claude"] as const,
+            description: "Delegate changelog content generation to an AI agent (copilot or claude).",
           }),
       withErrors((args) =>
         addChangeset({
@@ -86,6 +91,7 @@ async function main() {
           message: args.message,
           commit: args.commit,
           stage: args.stage,
+          agent: args.agent,
         }),
       ),
     )

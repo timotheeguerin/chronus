@@ -10,6 +10,7 @@ import { NodeChronusHost } from "../../utils/node-host.js";
 import type { Package } from "../../workspace-manager/types.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
 import type { ChronusWorkspace } from "../../workspace/types.js";
+import { buildAgentPrompt, runAgent } from "./agent.js";
 
 function log(...args: any[]) {
   // eslint-disable-next-line no-console
@@ -24,6 +25,7 @@ export interface AddChangesetOptions {
   readonly message?: string;
   readonly commit?: boolean;
   readonly stage?: boolean;
+  readonly agent?: "copilot" | "claude";
 }
 
 async function resolvePackagesToInclude(
@@ -47,6 +49,7 @@ export async function addChangeset({
   changeKind,
   commit,
   stage,
+  agent,
 }: AddChangesetOptions): Promise<void> {
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
@@ -69,8 +72,32 @@ export async function addChangeset({
     log("No change kind selected, cancelling.");
     return;
   }
-  const changesetContent = message ?? (await promptForContent());
-  if (changesetContent === undefined) {
+
+  let changesetContent: string | undefined;
+  if (message) {
+    changesetContent = message;
+  } else if (agent) {
+    log(`Generating changelog content using ${agent} agent...`);
+    const baseBranch = since ?? workspace.config.baseBranch;
+    const diff = await sourceControl.getDiff(baseBranch);
+    if (!diff.trim()) {
+      log("No diff found against base branch. Falling back to manual input.");
+      changesetContent = await promptForContent();
+    } else {
+      const prompt = buildAgentPrompt({
+        config: workspace.config,
+        packages: packageToInclude.map((x) => x.name),
+        changeKind: resolvedChangeKind,
+        diff,
+      });
+      changesetContent = await runAgent(agent, prompt, cwd);
+      log(`Agent generated: "${changesetContent}"`);
+    }
+  } else {
+    changesetContent = await promptForContent();
+  }
+
+  if (changesetContent === undefined || changesetContent.length === 0) {
     log("No change content, cancelling.");
     return;
   }

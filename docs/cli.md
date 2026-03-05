@@ -13,6 +13,11 @@ Add a new change description. Optionally specify the packages that the change ap
 Options:
 
 - `--since` Only compute changes since the specified branch.
+- `--kind, -k` Kind of change (e.g., `fix`, `feature`, `breaking`). If not provided, an interactive prompt will ask for it.
+- `--message, -m` Message describing the changes. If not provided, an interactive prompt will ask for it.
+- `--commit` Commit the changeset file after creating it.
+- `--stage` Stage the changeset file after creating it.
+- `--agent <copilot|claude>` Delegate changelog message generation to an AI agent. The agent receives the git diff and generates a user-facing changelog message. See [Agent Changelog Instructions](agent-changelog-instructions.md) for details on how the agent generates content.
 
 ## `chronus verify`
 
