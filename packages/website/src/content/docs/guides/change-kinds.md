@@ -1,10 +1,13 @@
-# Change kinds
+---
+title: Change Kinds
+description: Customize changelog categories beyond the standard major, minor, and patch.
+---
 
-Semver is great and understood a major for breaking changes, minor for new features and patch for bug fixes. However sometimes you might just want to be a little more descriptive or add extra change types to categorize in the changelog.
+Semver defines major for breaking changes, minor for new features, and patch for bug fixes. But sometimes you want more descriptive or additional change types to categorize entries in the changelog.
 
-This can be done in the config by setting `changeKinds`.s
+Configure custom change kinds in `.chronus/config.yaml` by setting `changeKinds`.
 
-## Example 1: Provide alternate names to the existing types
+## Example 1: Alternate names for existing types
 
 ```yaml
 changeKinds:
@@ -18,7 +21,7 @@ changeKinds:
     versionType: none
 ```
 
-## Example 2: Provide alternate names, title and descriptions to the existing types
+## Example 2: Custom titles and descriptions
 
 ```yaml
 changeKinds:
@@ -43,7 +46,7 @@ changeKinds:
     description: Internal changes that are not user facing
 ```
 
-## Example 3: Provide a different set of versioning
+## Example 3: Extended change types
 
 ```yaml
 changeKinds:
@@ -75,7 +78,7 @@ changeKinds:
   chore:
     versionType: none
     title: Chore
-    description: Changes to the build process or auxiliary tools and libraries such as documentation generation
+    description: Changes to the build process or auxiliary tools
 
   internal:
     versionType: none

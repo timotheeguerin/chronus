@@ -185,3 +185,5 @@ obj/
 *.vsix
 *.zip
 
+
+.astro/

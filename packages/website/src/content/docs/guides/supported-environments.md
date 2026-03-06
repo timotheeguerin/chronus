@@ -1,18 +1,21 @@
-# Supported Environments
+---
+title: Supported Environments
+description: Monorepo workspace types supported by Chronus.
+---
 
 Chronus supports multiple monorepo environments across different ecosystems.
 
 ## Configuration
 
-In your `.chronus/config.yaml`, you can specify where packages and workspaces are located as well as the ecosystem type:
+In your `.chronus/config.yaml`, specify where packages and workspaces are located:
 
-1. Simple case a single workspace at the top level
+### Simple case — single workspace at the top level
 
 ```yaml
-workspaceType: auto # or a specific type like "pnpm", "rush", "cargo", etc.
+workspaceType: auto # or a specific type like "pnpm", "rush", "cargo"
 ```
 
-2. More complex case with multiple workspaces/no workspace managers but many packages
+### Complex case — multiple workspaces or no workspace manager
 
 ```yaml
 # Equivalent to the default
@@ -21,9 +24,9 @@ packages:
     type: auto
 
 # Explicit packages
-packages: ["pkgs/pkg-a",  "pkgs/pkg-b"]
+packages: ["pkgs/pkg-a", "pkgs/pkg-b"]
 
-# This represents a monorepo with multiple ecosystems(A node npm workspace, a rust cargo workspace, and some standalone npm packages)
+# Multiple ecosystems: npm workspace + Cargo workspace + standalone packages
 packages:
   - path: "node-pkgs"
     type: npm
@@ -33,7 +36,7 @@ packages:
     type: npm
 ```
 
-When set to `auto` (default), Chronus will attempt to detect the workspace type based on the files present in the repository root.
+When set to `auto` (default), Chronus detects the workspace type based on files present in the repository root.
 
 ## Node.js Ecosystems
 
@@ -42,10 +45,6 @@ When set to `auto` (default), Chronus will attempt to detect the workspace type 
 - **Type**: `node` or `node:npm`
 - **Aliases**: `npm`
 - **Detection file**: `package.json` with `workspaces` field
-
-npm workspaces are detected by looking for a `package.json` file with a `workspaces` array defined.
-
-**Example `package.json`:**
 
 ```json
 {
@@ -60,10 +59,6 @@ npm workspaces are detected by looking for a `package.json` file with a `workspa
 - **Aliases**: `pnpm`
 - **Detection file**: `pnpm-workspace.yaml`
 
-pnpm workspaces are detected by the presence of a `pnpm-workspace.yaml` file.
-
-**Example `pnpm-workspace.yaml`:**
-
 ```yaml
 packages:
   - "packages/*"
@@ -75,10 +70,6 @@ packages:
 - **Type**: `node:rush`
 - **Aliases**: `rush`
 - **Detection file**: `rush.json`
-
-Rush monorepos are detected by the presence of a `rush.json` file.
-
-**Example `rush.json`:**
 
 ```json
 {
@@ -99,10 +90,6 @@ Rush monorepos are detected by the presence of a `rush.json` file.
 - **Type**: `rust:cargo`
 - **Aliases**: `cargo`
 - **Detection file**: `Cargo.toml` with `workspace` section
-
-Cargo workspaces are detected by the presence of a `Cargo.toml` file with a `workspace` section containing a `members` array.
-
-**Example `Cargo.toml`:**
 
 ```toml
 [workspace]
@@ -127,18 +114,18 @@ version = "1.0.0"
 some-dep = "1.2.3"
 ```
 
-## Auto-detection Priority
+## Auto-detection priority
 
-When using `auto` detection, Chronus checks for workspace types in the following order:
+When using `auto` detection, Chronus checks for workspace types in this order:
 
-1. **pnpm** - Looks for `pnpm-workspace.yaml`
-2. **Rush** - Looks for `rush.json`
-3. **npm** - Looks for `package.json` with `workspaces` field
-4. **Cargo** - Looks for `Cargo.toml` with `workspace` section
+1. **pnpm** — Looks for `pnpm-workspace.yaml`
+2. **Rush** — Looks for `rush.json`
+3. **npm** — Looks for `package.json` with `workspaces` field
+4. **Cargo** — Looks for `Cargo.toml` with `workspace` section
 
 The first matching workspace type is used.
 
-## Feature Support by Environment
+## Feature support by environment
 
 | Feature              | npm | pnpm | Rush | Cargo |
 | -------------------- | --- | ---- | ---- | ----- |
@@ -147,7 +134,4 @@ The first matching workspace type is used.
 | Dependency updates   | ✅  | ✅   | ✅   | 🚧    |
 | Change file tracking | ✅  | ✅   | ✅   | ✅    |
 
-Legend:
-
-- ✅ Fully supported
-- 🚧 In progress / partial support
+**Legend:** ✅ Fully supported · 🚧 In progress / partial support
