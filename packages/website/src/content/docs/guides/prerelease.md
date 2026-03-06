@@ -35,5 +35,5 @@ Given package `pkg-a` with independent version policy, currently at version `1.4
 
 | Template                                   | Resolved version |
 | ------------------------------------------ | ---------------- |
-| `{nextVersion}-dev.{changeCountWithPatch}` | `1.5.0-dev.5`   |
-| `{nextVersion}-dev.{changeCount}`          | `1.5.0-dev.3`   |
+| `{nextVersion}-dev.{changeCountWithPatch}` | `1.5.0-dev.5`    |
+| `{nextVersion}-dev.{changeCount}`          | `1.5.0-dev.3`    |

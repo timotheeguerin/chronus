@@ -44,25 +44,25 @@ npx chronus version
 
 ## 📋 Supported Environments
 
-| Environment | Workspace Detection |
-| ----------- | ------------------- |
-| **pnpm**    | `pnpm-workspace.yaml` |
-| **npm**     | `package.json` with `workspaces` |
-| **Rush**    | `rush.json` |
+| Environment | Workspace Detection                   |
+| ----------- | ------------------------------------- |
+| **pnpm**    | `pnpm-workspace.yaml`                 |
+| **npm**     | `package.json` with `workspaces`      |
+| **Rush**    | `rush.json`                           |
 | **Cargo**   | `Cargo.toml` with `workspace` section |
 
 ## 🆚 Why Chronus over Changesets?
 
 Chronus was inspired by [changesets](https://github.com/changesets/changesets) but takes a different approach:
 
-| Feature | Chronus | Changesets |
-| ------- | ------- | ---------- |
-| Change detection | Compares against **remote** branch | Compares against local base branch |
-| Verification | Checks **every** package has a changelog | Checks for a single changelog file |
-| Version policies | Independent + **lockstep** groups | Independent only |
-| Change categories | Fully **customizable** change kinds | Fixed major/minor/patch |
-| Prerelease builds | Automatic from **pending change count** | Manual configuration |
-| Pack & publish | **Separable** workflows | Combined |
+| Feature           | Chronus                                  | Changesets                         |
+| ----------------- | ---------------------------------------- | ---------------------------------- |
+| Change detection  | Compares against **remote** branch       | Compares against local base branch |
+| Verification      | Checks **every** package has a changelog | Checks for a single changelog file |
+| Version policies  | Independent + **lockstep** groups        | Independent only                   |
+| Change categories | Fully **customizable** change kinds      | Fixed major/minor/patch            |
+| Prerelease builds | Automatic from **pending change count**  | Manual configuration               |
+| Pack & publish    | **Separable** workflows                  | Combined                           |
 
 ## 📖 Documentation
 
