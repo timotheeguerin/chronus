@@ -1,12 +1,17 @@
 import semverSatisfies from "semver/functions/satisfies.js";
 import type { DependencyType, VersionType } from "../types.js";
+import { isPackageIncluded } from "../utils/misc-utils.js";
 import type { Package } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { incrementVersion } from "./increment-version.js";
 import type { InternalReleaseAction } from "./types.internal.js";
 
-function filterPackages(packages: string[], { only, exclude }: { only?: string[]; exclude?: string[] }): string[] {
-  return packages.filter((pkg) => (!only || only.includes(pkg)) && (!exclude || !exclude.includes(pkg)));
+function filterPackages(
+  packages: string[],
+  workspace: ChronusWorkspace,
+  filters: { only?: string[]; exclude?: string[] },
+): string[] {
+  return packages.filter((name) => isPackageIncluded(workspace.getPackage(name), filters));
 }
 
 /*
@@ -47,7 +52,7 @@ export function applyDependents({
     if (!pkgDependents) {
       continue;
     }
-    filterPackages(pkgDependents, { only, exclude })
+    filterPackages(pkgDependents, workspace, { only, exclude })
       .map((x) => workspace.getPackage(x))
       .map((dependentPackage) => {
         let type: VersionType | undefined;

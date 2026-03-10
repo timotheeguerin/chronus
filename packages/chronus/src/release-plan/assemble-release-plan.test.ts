@@ -332,6 +332,23 @@ describe("Assemble Release Plan", () => {
         expect(plan.actions).toHaveLength(1);
         expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
       });
+
+      it("excludes packages in a policy from being added as dependents", () => {
+        const workspace: Package[] = [
+          mkPkg("pkg-a", {}),
+          mkPkg("pkg-b", { dependencies: { "pkg-a": "1.0.0" } }),
+          mkPkg("pkg-c", {}),
+        ];
+        const plan = assembleReleasePlan(
+          [mkChange("pkg-a", "major"), mkChange("pkg-c", "patch")],
+          createChronusWorkspace(workspace, lockStepConfig),
+          { exclude: ["lockStep"] },
+        );
+        // pkg-b depends on pkg-a with incompatible range, but is excluded via policy
+        // pkg-a is also excluded via policy, so only pkg-c should have an action
+        expect(plan.actions).toHaveLength(1);
+        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-c", oldVersion: "1.0.0", newVersion: "1.0.1" });
+      });
     });
   });
 });
