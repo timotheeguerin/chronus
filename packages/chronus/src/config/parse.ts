@@ -32,6 +32,7 @@ const packageOrWorkspaceSchema = z.union([
   z.object({
     path: z.string(),
     type: z.string().optional(),
+    standalone: z.boolean().optional(),
   }),
 ]);
 

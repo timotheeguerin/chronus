@@ -42,7 +42,7 @@ export interface ChronusUserConfig {
   readonly changedFiles?: readonly string[];
 }
 
-export type PackageOrWorkspaceConfig = { path: string; type?: string };
+export type PackageOrWorkspaceConfig = { path: string; type?: string; standalone?: boolean };
 
 export interface ChangeKindUserConfig {
   /** What should this change do regarding to versioning. */

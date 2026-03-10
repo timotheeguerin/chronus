@@ -253,6 +253,24 @@ describe("Assemble Release Plan", () => {
       expect(plan.changes).toHaveLength(1);
       expect(plan.changes[0]).toMatchObject({ usage: "partial", packages: ["pkg-a"] });
     });
+
+    describe("with lockstep policies", () => {
+      const lockStepConfig: ChronusResolvedConfig = {
+        ...baseConfig,
+        versionPolicies: [{ name: "lockStep", type: "lockstep", step: "minor", packages: ["pkg-a", "pkg-b"] }],
+      };
+
+      it("includes only packages in a lockstep policy when using --only with policy name", () => {
+        const plan = assembleReleasePlan(
+          [mkChange("pkg-a", "minor"), mkChange("pkg-c", "patch")],
+          createChronusWorkspace(workspace, lockStepConfig),
+          { only: ["lockStep"] },
+        );
+        expect(plan.actions).toHaveLength(2);
+        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+        expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      });
+    });
   });
 
   describe("partial release plan using exclude option", () => {
@@ -287,6 +305,50 @@ describe("Assemble Release Plan", () => {
       );
       expect(plan.changes).toHaveLength(1);
       expect(plan.changes[0]).toMatchObject({ usage: "partial", packages: ["pkg-a"] });
+    });
+
+    describe("with lockstep policies", () => {
+      const lockStepConfig: ChronusResolvedConfig = {
+        ...baseConfig,
+        versionPolicies: [{ name: "lockStep", type: "lockstep", step: "minor", packages: ["pkg-a", "pkg-b"] }],
+      };
+
+      it("excludes all packages in a lockstep policy when excluding by policy name", () => {
+        const plan = assembleReleasePlan(
+          [mkChange("pkg-a", "minor"), mkChange("pkg-c", "patch")],
+          createChronusWorkspace(workspace, lockStepConfig),
+          { exclude: ["lockStep"] },
+        );
+        expect(plan.actions).toHaveLength(1);
+        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-c", oldVersion: "1.0.0", newVersion: "1.0.1" });
+      });
+
+      it("excludes individual package within a lockstep policy by package name", () => {
+        const plan = assembleReleasePlan(
+          [mkChange("pkg-a", "minor")],
+          createChronusWorkspace(workspace, lockStepConfig),
+          { exclude: ["pkg-b"] },
+        );
+        expect(plan.actions).toHaveLength(1);
+        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      });
+
+      it("excludes packages in a policy from being added as dependents", () => {
+        const workspace: Package[] = [
+          mkPkg("pkg-a", {}),
+          mkPkg("pkg-b", { dependencies: { "pkg-a": "1.0.0" } }),
+          mkPkg("pkg-c", {}),
+        ];
+        const plan = assembleReleasePlan(
+          [mkChange("pkg-a", "major"), mkChange("pkg-c", "patch")],
+          createChronusWorkspace(workspace, lockStepConfig),
+          { exclude: ["lockStep"] },
+        );
+        // pkg-b depends on pkg-a with incompatible range, but is excluded via policy
+        // pkg-a is also excluded via policy, so only pkg-c should have an action
+        expect(plan.actions).toHaveLength(1);
+        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-c", oldVersion: "1.0.0", newVersion: "1.0.1" });
+      });
     });
   });
 });
