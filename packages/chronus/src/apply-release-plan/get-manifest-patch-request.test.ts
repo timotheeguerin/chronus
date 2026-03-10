@@ -26,10 +26,7 @@ const baseConfig: ChronusResolvedConfig = {
 
 describe("getManifestPatchRequest", () => {
   it("updates dependency versions for versioned packages", () => {
-    const packages: Package[] = [
-      mkPkg("pkg-a", {}),
-      mkPkg("pkg-b", { dependencies: { "pkg-a": "1.0.0" } }),
-    ];
+    const packages: Package[] = [mkPkg("pkg-a", {}), mkPkg("pkg-b", { dependencies: { "pkg-a": "1.0.0" } })];
     const workspace = createChronusWorkspace(packages, baseConfig);
     const actions = new Map<string, VersionAction>([["pkg-a", { newVersion: "2.0.0" }]]);
     const patch = getManifestPatchRequest(workspace, workspace.getPackage("pkg-b"), actions);

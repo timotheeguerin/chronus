@@ -25,11 +25,10 @@
     "clean": "pnpm -r run clean && rimraf **/.temp/",
     "lint": "eslint .",
     "lint:sp": "syncpack lint",
-    "format": "npm run -s prettier -- --write && syncpack format",
-    "format:check": "npm run -s prettier -- --check",
+    "format": "prettier --write . && syncpack format",
+    "format:check": "prettier --check .",
     "check-version-mismatch": "syncpack list-mismatches",
     "fix-version-mismatch": "syncpack fix-mismatches",
-    "prettier": "prettier --config ./.prettierrc.yaml **/*.{ts,js,mjs,json,yml,yaml,md}",
     "cspell": "cspell --no-progress ."
   },
   "devDependencies": {

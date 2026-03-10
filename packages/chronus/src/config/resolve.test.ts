@@ -32,7 +32,10 @@ describe("normalizePackagesConfig", () => {
   it("preserves standalone flag from packages config", () => {
     const result = normalizePackagesConfig({
       baseBranch: "main",
-      packages: [{ path: ".", type: "pnpm" }, { path: "extra/*", type: "npm", standalone: true }],
+      packages: [
+        { path: ".", type: "pnpm" },
+        { path: "extra/*", type: "npm", standalone: true },
+      ],
     });
     expect(result).toEqual([
       { path: ".", type: "pnpm" },

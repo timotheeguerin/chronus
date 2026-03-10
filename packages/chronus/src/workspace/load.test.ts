@@ -101,7 +101,10 @@ it("marks packages with standalone: true as standalone", async () => {
   const host = createTestHost({
     "proj/.chronus/config.yaml": stringify({
       baseBranch: "main",
-      packages: [{ path: ".", type: "pnpm" }, { path: "extra/*", type: "npm", standalone: true }],
+      packages: [
+        { path: ".", type: "pnpm" },
+        { path: "extra/*", type: "npm", standalone: true },
+      ],
     }),
     "proj/pnpm-workspace.yaml": stringify({ packages: ["packages/*"] }),
     "proj/packages/a/package.json": JSON.stringify({ name: "a", version: "1.0.0" }),
