@@ -34,6 +34,17 @@ packages:
 `);
     expect(config.packages).toEqual([{ path: "pnpm-workspace.yaml", type: "pnpm" }, "additional/*"]);
   });
+
+  it("accepts packages with standalone flag", () => {
+    const config = parseConfig(`
+baseBranch: main
+packages:
+  - path: "other/*"
+    type: "npm"
+    standalone: true
+`);
+    expect(config.packages).toEqual([{ path: "other/*", type: "npm", standalone: true }]);
+  });
 });
 
 describe("packages with deprecated options", () => {

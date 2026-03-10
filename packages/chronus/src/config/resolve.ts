@@ -63,10 +63,10 @@ export function normalizePackagesConfig(config: ChronusUserConfig): PackageOrWor
   // Add workspace type as the primary source
   result.push({ path: ".", type: config.workspaceType ?? "auto" });
 
-  // Add additional packages as glob patterns
+  // Add additional packages as glob patterns (standalone by default)
   if (config.additionalPackages) {
     for (const pattern of config.additionalPackages) {
-      result.push({ path: pattern, type: "npm" }); // Historically this only supported packages.
+      result.push({ path: pattern, type: "npm", standalone: true });
     }
   }
 
