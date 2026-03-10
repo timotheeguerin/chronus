@@ -30,6 +30,8 @@ export interface PackageDependencySpec {
 export interface Package extends PackageBase {
   /** Relative path of the package to the chronus workspace root */
   readonly relativePath: string;
+  /** Whether this package is standalone (not part of the main workspace, dependencies not touched) */
+  readonly standalone?: boolean;
 }
 
 export interface PackageJson {

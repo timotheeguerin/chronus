@@ -30,9 +30,9 @@ export function assembleReleasePlan(
     for (const policy of workspace.config.versionPolicies) {
       if (policy.type === "lockstep") {
         for (const pkgName of policy.packages) {
-          if (options?.only && !options.only.includes(pkgName)) continue;
           const pkg = packagesByName.get(pkgName);
           if (!pkg) throw new Error(`Could not find package ${pkgName}`);
+          if (!isPackageIncluded(pkg, { only: options?.only, exclude: options?.exclude })) continue;
           internalActions.set(pkgName, {
             packageName: pkgName,
             type: policy.step as any,

@@ -15,6 +15,9 @@ function getPackageState(config: ChronusResolvedConfig, pkg: Package): ChronusPa
   if (pkg.private) {
     return "private";
   }
+  if (pkg.standalone) {
+    return "standalone";
+  }
   return "versioned";
 }
 

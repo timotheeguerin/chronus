@@ -8,26 +8,10 @@ description: How to install and configure Chronus in your monorepo.
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 <Tabs>
-  <TabItem label="npm">
-    ```bash
-    npm install -D chronus
-    ```
-  </TabItem>
-  <TabItem label="pnpm">
-    ```bash
-    pnpm add -D chronus
-    ```
-  </TabItem>
-  <TabItem label="yarn">
-    ```bash
-    yarn add -D chronus
-    ```
-  </TabItem>
-  <TabItem label="npx (no install)">
-    ```bash
-    npx chronus
-    ```
-  </TabItem>
+  <TabItem label="npm">```bash npm install -D chronus ```</TabItem>
+  <TabItem label="pnpm">```bash pnpm add -D chronus ```</TabItem>
+  <TabItem label="yarn">```bash yarn add -D chronus ```</TabItem>
+  <TabItem label="npx (no install)">```bash npx chronus ```</TabItem>
 </Tabs>
 
 ## Initialize configuration
@@ -61,12 +45,12 @@ changedFiles:
 
 Chronus auto-detects your monorepo setup. It supports:
 
-| Environment | Detection |
-|---|---|
-| **pnpm** | `pnpm-workspace.yaml` |
-| **npm** | `package.json` with `workspaces` field |
-| **Rush** | `rush.json` |
-| **Cargo** | `Cargo.toml` with `workspace` section |
+| Environment | Detection                              |
+| ----------- | -------------------------------------- |
+| **pnpm**    | `pnpm-workspace.yaml`                  |
+| **npm**     | `package.json` with `workspaces` field |
+| **Rush**    | `rush.json`                            |
+| **Cargo**   | `Cargo.toml` with `workspace` section  |
 
 See [Supported Environments](/chronus/guides/supported-environments/) for full details.
 

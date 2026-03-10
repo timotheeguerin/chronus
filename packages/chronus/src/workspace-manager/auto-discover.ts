@@ -45,7 +45,9 @@ export async function loadPackages(
   const packages: Package[] = [];
   for (const pkgConfig of packageConfigs) {
     const found = await loadPackagesForConfig(host, root, pkgConfig);
-    found.forEach((pkg) => packages.push(pkg));
+    for (const pkg of found) {
+      packages.push(pkgConfig.standalone ? { ...pkg, standalone: true } : pkg);
+    }
   }
   return packages;
 }

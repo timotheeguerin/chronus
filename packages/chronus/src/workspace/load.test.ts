@@ -75,3 +75,42 @@ it("(LEGACY) includes additionalPackages", async () => {
   expect(workspace.packages[0].name).toBe("a");
   expect(workspace.packages[1].name).toBe("b");
 });
+
+it("(LEGACY) marks additionalPackages as standalone", async () => {
+  const host = makeHost({
+    config: {
+      additionalPackages: ["extra/*"],
+    },
+    packages: {
+      "packages/a": {
+        name: "a",
+        version: "1.0.0",
+      },
+      "extra/b": {
+        name: "b",
+        version: "1.0.0",
+      },
+    },
+  });
+  const workspace = await loadChronusWorkspace(host.host, "proj");
+  expect(workspace.getPackage("a").state).toBe("versioned");
+  expect(workspace.getPackage("b").state).toBe("standalone");
+});
+
+it("marks packages with standalone: true as standalone", async () => {
+  const host = createTestHost({
+    "proj/.chronus/config.yaml": stringify({
+      baseBranch: "main",
+      packages: [
+        { path: ".", type: "pnpm" },
+        { path: "extra/*", type: "npm", standalone: true },
+      ],
+    }),
+    "proj/pnpm-workspace.yaml": stringify({ packages: ["packages/*"] }),
+    "proj/packages/a/package.json": JSON.stringify({ name: "a", version: "1.0.0" }),
+    "proj/extra/b/package.json": JSON.stringify({ name: "b", version: "1.0.0" }),
+  });
+  const workspace = await loadChronusWorkspace(host.host, "proj");
+  expect(workspace.getPackage("a").state).toBe("versioned");
+  expect(workspace.getPackage("b").state).toBe("standalone");
+});
