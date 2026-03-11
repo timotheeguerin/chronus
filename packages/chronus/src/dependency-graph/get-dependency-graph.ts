@@ -40,7 +40,7 @@ export function getDependencyGraph(
   valid: boolean;
 } {
   const graph = new Map<string, { pkg: Package; dependencies: string[] }>();
-  let valid = true;
+  const valid = true;
 
   const packagesByName: { [key: string]: Package } = {};
 
@@ -78,11 +78,9 @@ export function getDependencyGraph(
       const range = getValidRange(repRange);
 
       if (((range && !range.test(expected)) || isProtocolRange(repRange)) && usesWorkspaceRange) {
-        valid = false;
         throw new ChronusError(
           `Package "${name}" must depend on the current version of "${depName}": "${expected}" vs "${originalDepRange}"`,
         );
-        continue;
       }
 
       // `depRange` could have been a tag and if a tag has been used there might have been a reason for that
