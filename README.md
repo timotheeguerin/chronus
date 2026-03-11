@@ -47,12 +47,14 @@ npx chronus version
 
 Chronus was inspired by [changesets](https://github.com/changesets/changesets) but differs in a few ways:
 
-- Change detection compares against the **remote** branch, not a local base
-- Verification checks **every** package, not just that a single changelog file exists
-- Supports **lockstep** version policies in addition to independent versioning
-- Change kinds are **customizable**, not fixed to major/minor/patch
-- Prerelease versions are derived automatically from **pending change count**
-- Pack and publish are **separate steps** so you can upload artifacts in between
+| Feature           | Chronus                                  | Changesets                         |
+| ----------------- | ---------------------------------------- | ---------------------------------- |
+| Change detection  | Compares against **remote** branch       | Compares against local base branch |
+| Verification      | Checks **every** package has a changelog | Checks for a single changelog file |
+| Version policies  | Independent + **lockstep** groups        | Independent only                   |
+| Change categories | Fully **customizable** change kinds      | Fixed major/minor/patch            |
+| Prerelease builds | Automatic from **pending change count**  | Manual configuration               |
+| Pack & publish    | **Separable** workflows                  | Combined                           |
 
 ## Documentation
 
