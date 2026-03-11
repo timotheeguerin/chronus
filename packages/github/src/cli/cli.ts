@@ -1,3 +1,4 @@
+import { DynamicReporter } from "@chronus/chronus/reporters";
 import { resolvePath } from "@chronus/chronus/utils";
 import "source-map-support/register.js";
 import yargs from "yargs";
@@ -11,6 +12,7 @@ async function main() {
     .scriptName("chronus")
     .strict()
     .help()
+    .showHelpOnFail(false)
     .parserConfiguration({
       "greedy-arrays": false,
       "boolean-negation": false,
@@ -56,6 +58,7 @@ async function main() {
           }),
       (args) =>
         createRelease({
+          reporter: new DynamicReporter(),
           publishSummary: args.publishSummary && resolveCliPath(args.publishSummary),
           package: args.package,
           policy: args.policy,

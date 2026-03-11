@@ -34,6 +34,7 @@ async function main() {
     .scriptName("chronus")
     .strict()
     .help()
+    .showHelpOnFail(false)
     .version(pkg.version)
     .parserConfiguration({
       "greedy-arrays": false,
