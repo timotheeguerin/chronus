@@ -41,7 +41,7 @@
     "@vitest/eslint-plugin": "^1.6.10",
     "@vitest/ui": "^4.0.18",
     "cspell": "^9.7.0",
-    "eslint": "^9.38.0",
+    "eslint": "^10.0.3",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-unicorn": "^62.0.0",
     "execa": "^9.6.1",
@@ -51,7 +51,7 @@
     "syncpack": "^13.0.4",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.56.1",
+    "typescript-eslint": "^8.57.0",
     "vitest": "^4.0.18"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
