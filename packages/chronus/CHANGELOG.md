@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 1.3.1
+
+### Bug Fixes
+
+- [#548](https://github.com/timotheeguerin/chronus/pull/548) Fix versioning of standalone packages, added a standalone: true option to the package list
+
+
 ## 1.3.0
 
 ### Features
