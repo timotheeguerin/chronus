@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 1.4.0
+
+### Features
+
+- [#557](https://github.com/timotheeguerin/chronus/pull/557) [API] Expose reporters
+
+
 ## 1.3.1
 
 ### Bug Fixes
