@@ -13,12 +13,15 @@ updates:
       ESLint:
         patterns:
           - "eslint"
+          - "eslint-*"
           - "typescript-eslint"
           - "@typescript-eslint/*"
           - "@eslint/*"
+          - "@vitest/eslint-plugin"
         update-types:
           - major
           - minor
+          - patch
 
       # Group remaining dev dependencies for minor and patch release. Major can be upgraded individually.
       dev-dependencies:
@@ -26,8 +29,10 @@ updates:
         update-types:
           - "minor"
           - "patch"
-        exclude-patterns: # Deditected group
+        exclude-patterns: # Dedicated group
           - "eslint"
+          - "eslint-*"
           - "typescript-eslint"
           - "@typescript-eslint/*"
           - "@eslint/*"
+          - "@vitest/eslint-plugin"
