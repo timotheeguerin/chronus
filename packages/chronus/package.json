@@ -20,6 +20,7 @@
     "./source-control/git": "./dist/source-control/git.js",
     "./publish": "./dist/publish/index.js",
     "./utils": "./dist/utils/index.js",
+    "./reporters": "./dist/reporters/index.js",
     "./testing": "./dist/testing/index.js"
   },
   "bin": {

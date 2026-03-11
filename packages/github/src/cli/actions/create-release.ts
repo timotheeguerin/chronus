@@ -1,5 +1,6 @@
 import { NodeChronusHost, loadChronusWorkspace, type ChronusWorkspace } from "@chronus/chronus";
 import { readPublishSummary } from "@chronus/chronus/publish";
+import type { Reporter } from "@chronus/chronus/reporters";
 import { ChronusError, resolveCurrentLockStepVersion, type ChronusHost } from "@chronus/chronus/utils";
 import { Octokit } from "octokit";
 import pc from "picocolors";
@@ -9,6 +10,7 @@ import { getGithubToken } from "../../utils/gh-token.js";
 import { loadAndMergeMultiplePackageChangelog, loadChangelogForVersion } from "../../utils/parse-changelog.js";
 
 export interface CreateReleaseOptions {
+  readonly reporter: Reporter;
   readonly workspaceDir: string;
   readonly repo: string;
   readonly publishSummary?: string;
@@ -20,6 +22,7 @@ export interface CreateReleaseOptions {
 }
 
 export async function createRelease({
+  reporter,
   publishSummary: publishSummaryPath,
   repo,
   workspaceDir,
@@ -55,7 +58,7 @@ export async function createRelease({
   const [owner, repoName] = repo.split("/", 2);
   const releaseRef: ReleaseRef = { owner, repo: repoName, commit };
   if (publishSummaryPath) {
-    return createReleaseFromPublishSummary(host, workspace, octokit, publishSummaryPath, releaseRef, dryRun);
+    return createReleaseFromPublishSummary(host, workspace, octokit, reporter, publishSummaryPath, releaseRef, dryRun);
   } else {
     if (version === undefined) {
       throw new ChronusError("Both 'version' option must be provided when using 'package' or 'policy'");
@@ -65,6 +68,7 @@ export async function createRelease({
         host,
         workspace,
         octokit,
+        reporter,
         pkgName,
         version,
         releaseRef,
@@ -81,7 +85,16 @@ export async function createRelease({
       if (policy.type !== "lockstep") {
         throw new ChronusError(`Can only create release for lockstep policies`);
       }
-      const createResult = await createReleaseForPolicy(host, workspace, octokit, policy, version, releaseRef, dryRun);
+      const createResult = await createReleaseForPolicy(
+        host,
+        workspace,
+        octokit,
+        reporter,
+        policy,
+        version,
+        releaseRef,
+        dryRun,
+      );
       if (!createResult.success) {
         process.exit(1);
       }
@@ -93,6 +106,7 @@ async function createReleaseFromPublishSummary(
   host: ChronusHost,
   workspace: ChronusWorkspace,
   octokit: Octokit,
+  reporter: Reporter,
   publishSummaryPath: string,
   ref: ReleaseRef,
   dryRun: boolean | undefined,
@@ -135,13 +149,16 @@ async function createReleaseFromPublishSummary(
   let hasError = false;
   for (const result of packagesNeedingARelease.values()) {
     if (!result.published) {
-      log(pc.yellow(`Package ${result.name}@${result.version} failed to publish so skipping github release creation.`));
+      reporter.log(
+        pc.yellow(`Package ${result.name}@${result.version} failed to publish so skipping github release creation.`),
+      );
       continue;
     }
     const createResult = await createReleaseForPackage(
       host,
       workspace,
       octokit,
+      reporter,
       result.name,
       result.version,
       ref,
@@ -157,6 +174,7 @@ async function createReleaseFromPublishSummary(
       host,
       workspace,
       octokit,
+      reporter,
       result.policy,
       result.version,
       ref,
@@ -180,62 +198,80 @@ async function createReleaseForPackage(
   host: ChronusHost,
   workspace: ChronusWorkspace,
   octokit: Octokit,
+  reporter: Reporter,
   pkgName: string,
   version: string,
   ref: ReleaseRef,
   dryRun: boolean | undefined,
 ): Promise<{ success: boolean }> {
-  log(`Will create release for package ${pkgName}@${version}.`);
-
-  const changelog = await loadChangelogForVersion(host, workspace, pkgName, version);
   const tag = `${pkgName}@${version}`;
-  try {
-    await createGithubRelease(octokit, {
-      tag,
-      version,
-      content: changelog ?? "",
-      ref,
-      dryRun,
-    });
-    return { success: true };
-  } catch (e) {
-    log(pc.red(`Error while creating release '${tag}':`));
-    log(e);
-    return { success: false };
-  }
+  let success = false;
+  await reporter.task(`${pc.yellow(tag)} creating github release`, async (task) => {
+    const changelog = await loadChangelogForVersion(host, workspace, pkgName, version);
+    try {
+      const result = await createGithubRelease(octokit, {
+        tag,
+        version,
+        content: changelog ?? "",
+        ref,
+        dryRun,
+      });
+      if (result === "already_exists") {
+        task.update(`${pc.yellow(tag)} release already exists, skipped`);
+        success = true;
+        return "skipped";
+      }
+      task.update(`${pc.yellow(tag)} release created`);
+      success = true;
+      return "success";
+    } catch (e) {
+      task.update(`${pc.yellow(tag)} failed to create release:\n${e instanceof Error ? e.message : String(e)}`);
+      return "failure";
+    }
+  });
+  return { success };
 }
 
 async function createReleaseForPolicy(
   host: ChronusHost,
   workspace: ChronusWorkspace,
   octokit: Octokit,
+  reporter: Reporter,
   policy: LockstepVersionPolicy,
   version: string,
   ref: ReleaseRef,
   dryRun: boolean | undefined,
 ): Promise<{ success: boolean }> {
-  log(`Will create release for version policy ${policy.name}@${version}.`);
-
-  const changelog = await loadAndMergeMultiplePackageChangelog(
-    host,
-    workspace,
-    policy.packages.map((x) => ({ name: x, version })),
-  );
   const tag = `${policy.name}@${version}`;
-  try {
-    await createGithubRelease(octokit, {
-      tag,
-      version,
-      content: changelog,
-      ref,
-      dryRun,
-    });
-    return { success: true };
-  } catch (e) {
-    log(pc.red(`Error while creating release '${tag}':`));
-    log(e);
-    return { success: false };
-  }
+  let success = false;
+  await reporter.task(`${pc.yellow(tag)} creating github release`, async (task) => {
+    const changelog = await loadAndMergeMultiplePackageChangelog(
+      host,
+      workspace,
+      policy.packages.map((x) => ({ name: x, version })),
+    );
+    try {
+      const result = await createGithubRelease(octokit, {
+        tag,
+        version,
+        content: changelog,
+        ref,
+        dryRun,
+      });
+      if (result === "already_exists") {
+        task.update(`${pc.yellow(tag)} release already exists, skipped`);
+        success = true;
+        return "skipped";
+      }
+      task.update(`${pc.yellow(tag)} release created`);
+      success = true;
+      return "success";
+    } catch (e) {
+      task.update(`${pc.yellow(tag)} failed to create release`);
+      return "failure";
+    }
+  });
+  return { success };
 }
 
 interface CreateGithubReleaseOptions {
@@ -249,37 +285,27 @@ interface CreateGithubReleaseOptions {
 async function createGithubRelease(
   octokit: Octokit,
   { version, tag, ref, content, dryRun }: CreateGithubReleaseOptions,
-) {
+): Promise<"created" | "already_exists"> {
   if (dryRun) {
-    log("-".repeat(60));
-    log(`Creating release: ${tag}`);
-    log("-".repeat(60));
-    log("");
-    log(content);
-    log("-".repeat(60));
-  } else {
-    try {
-      const release = await octokit.rest.repos.createRelease({
-        owner: ref.owner,
-        repo: ref.repo,
-        target_commitish: ref.commit,
-        tag_name: tag,
-        name: tag,
-        body: content,
-        prerelease: version.includes("-"),
-      });
-      log(pc.green(`Created release ${tag}: ${release.data.html_url}`));
-    } catch (e: any) {
-      if (e.code === "already_exists") {
-        log(pc.yellow(`Release ${tag} already exists, skipping.`));
-        return;
-      }
-      throw e;
-    }
+    // eslint-disable-next-line no-console
+    console.log([`Creating release: ${tag}`, "", content].join("\n"));
+    return "created";
   }
-}
-
-function log(...args: unknown[]) {
-  // eslint-disable-next-line no-console
-  console.log(...args);
+  try {
+    await octokit.rest.repos.createRelease({
+      owner: ref.owner,
+      repo: ref.repo,
+      target_commitish: ref.commit,
+      tag_name: tag,
+      name: tag,
+      body: content,
+      prerelease: version.includes("-"),
+    });
+    return "created";
+  } catch (e: any) {
+    if (e.status === 422 && e.response?.data?.errors?.some((err: any) => err.code === "already_exists")) {
+      return "already_exists";
+    }
+    throw e;
+  }
 }
