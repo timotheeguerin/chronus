@@ -4,6 +4,7 @@ Changelog management for monorepos.
 
 [![npm version](https://img.shields.io/npm/v/@chronus/chronus)](https://www.npmjs.com/package/@chronus/chronus)
 [![CI](https://github.com/timotheeguerin/chronus/actions/workflows/ci.yml/badge.svg)](https://github.com/timotheeguerin/chronus/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Chronus makes sure every changed package in your monorepo has a changelog entry. Entries can be added from the CLI or directly from a GitHub PR comment.
 
