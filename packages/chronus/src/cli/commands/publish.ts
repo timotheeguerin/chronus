@@ -36,7 +36,7 @@ export async function publish({ reporter, pattern, reportSummary, ...others }: P
 
     results = await publishTarballs(host, tgzFiles, { reporter, ...others });
   } else {
-    workspace = workspace = await loadChronusWorkspace(host, pattern);
+    workspace = await loadChronusWorkspace(host, pattern);
     results = await publishWorkspacePackages(workspace, { reporter, ...others });
   }
 

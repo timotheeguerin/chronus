@@ -34,7 +34,6 @@ export function prettyBytes(bytes: number, decimals = 2) {
 }
 
 export function getLastJsonObject(str: string) {
-  let start = 0;
   let end = str.length - 1;
   for (let i = str.length - 1; i >= 0; i--) {
     if (str[i] === "}") {
@@ -45,9 +44,8 @@ export function getLastJsonObject(str: string) {
 
   for (let i = end; i >= 0; i--) {
     if (str[i] === "{") {
-      start = i;
       try {
-        return JSON.parse(str.slice(start, end + 1));
+        return JSON.parse(str.slice(i, end + 1));
       } catch (err) {
         // ignore keep trying to look for previous { to parse
       }

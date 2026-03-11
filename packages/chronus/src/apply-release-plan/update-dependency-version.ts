@@ -23,10 +23,9 @@ export function updateDependencyVersion(
 }
 
 function updatePrereleaseDependencyVersion(currentRequirement: string, action: ResolvedVersionAction): string {
-  let stableVersion = "";
+  let stableVersion: string;
   if (currentRequirement.startsWith("workspace:")) {
     stableVersion = resolveWorkspaceVersion(currentRequirement, action);
-    currentRequirement = currentRequirement.slice(workspaceScheme.length);
   } else {
     stableVersion = currentRequirement;
   }
