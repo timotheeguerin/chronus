@@ -99,8 +99,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       semver:
-        specifier: ^7.7.2
-        version: 7.7.3
+        specifier: ^7.7.4
+        version: 7.7.4
       smol-toml:
         specifier: ^1.4.1
         version: 1.6.0
@@ -11463,7 +11463,7 @@ snapshots:
       ora: 8.2.0
       prompts: 2.4.2
       read-yaml-file: 2.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       tightrope: 0.2.0
       ts-toolbelt: 9.6.0
     transitivePeerDependencies:
