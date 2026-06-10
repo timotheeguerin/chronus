@@ -1,9 +1,9 @@
 import { type ChronusWorkspace } from "@chronus/chronus";
-import type { ReleaseNotesChange, ReleaseNotesContextEnricher } from "@chronus/chronus/release-notes";
 import { resolveChangeRelativePath } from "@chronus/chronus/change";
+import type { ReleaseNotesChange, ReleaseNotesContextEnricher } from "@chronus/chronus/release-notes";
 import { createGitSourceControl } from "@chronus/chronus/source-control/git";
-import { getGithubToken } from "../utils/gh-token.js";
 import { getGithubInfoForChange } from "../changelog/fetch-pr-info.js";
+import { getGithubToken } from "../utils/gh-token.js";
 
 export interface GithubReleaseNotesEnricherOptions {
   readonly repo: string;
@@ -17,10 +17,7 @@ export function createGithubReleaseNotesEnricher(
 ): ReleaseNotesContextEnricher {
   return {
     name: "@chronus/github/release-notes",
-    async enrichChanges(
-      changes: ReleaseNotesChange[],
-      workspace: ChronusWorkspace,
-    ): Promise<ReleaseNotesChange[]> {
+    async enrichChanges(changes: ReleaseNotesChange[], workspace: ChronusWorkspace): Promise<ReleaseNotesChange[]> {
       if (!options?.repo) {
         return changes;
       }

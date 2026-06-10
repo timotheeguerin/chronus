@@ -1,5 +1,9 @@
 import { writeFile } from "node:fs/promises";
-import { collectReleaseNotesContext, renderContextAsJson, renderContextAsMarkdown } from "../../release-notes/collect-context.js";
+import {
+  collectReleaseNotesContext,
+  renderContextAsJson,
+  renderContextAsMarkdown,
+} from "../../release-notes/collect-context.js";
 import { loadPromptTemplate, renderPrompt } from "../../release-notes/render-prompt.js";
 import type { ReleaseNotesOptions } from "../../release-notes/types.js";
 import type { ChronusHost } from "../../utils/host.js";
@@ -19,8 +23,7 @@ export async function releaseNotes(host: ChronusHost, options: ReleaseNotesOptio
 
   if (options.contextOnly) {
     // Just output the raw context
-    output =
-      options.format === "json" ? renderContextAsJson(context) : renderContextAsMarkdown(context);
+    output = options.format === "json" ? renderContextAsJson(context) : renderContextAsMarkdown(context);
   } else {
     // Load prompt template and render the full prompt
     const releaseNotesConfig = (workspace.config as any).releaseNotes;

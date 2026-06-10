@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { createTestChronusWorkspace, TestingChangeKinds } from "../testing/test-chronus-workspace.js";
 import { renderContextAsMarkdown } from "./collect-context.js";
 import { renderPrompt } from "./render-prompt.js";
 import type { ReleaseNotesContext } from "./types.js";
@@ -11,9 +10,7 @@ describe("renderContextAsMarkdown", () => {
       releaseDate: "2026-06-09",
       packages: ["pkg-a", "pkg-b"],
       changesByKind: {
-        breaking: [
-          { id: "c1", content: "Removed deprecated API", packages: ["pkg-a"], changeKind: "breaking" },
-        ],
+        breaking: [{ id: "c1", content: "Removed deprecated API", packages: ["pkg-a"], changeKind: "breaking" }],
         feature: [
           { id: "c2", content: "Added new helper", packages: ["pkg-b"], changeKind: "feature" },
           { id: "c3", content: "Support async operations", packages: ["pkg-a", "pkg-b"], changeKind: "feature" },
@@ -62,7 +59,8 @@ describe("renderContextAsMarkdown", () => {
 
 describe("renderPrompt", () => {
   it("replaces template variables with context data", () => {
-    const template = "Version: {{version}}\nSlug: {{slug}}\nPackages: {{packages}}\nDate: {{releaseDate}}\n\n{{context}}";
+    const template =
+      "Version: {{version}}\nSlug: {{slug}}\nPackages: {{packages}}\nDate: {{releaseDate}}\n\n{{context}}";
     const context: ReleaseNotesContext = {
       version: "3.0.0",
       releaseDate: "2026-06-09",

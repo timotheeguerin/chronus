@@ -1,8 +1,8 @@
 import { readChangeDescriptions } from "../change/read.js";
+import { assembleReleasePlan } from "../release-plan/assemble-release-plan.js";
 import type { ChronusHost } from "../utils/host.js";
 import { loadChronusWorkspace } from "../workspace/index.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
-import { assembleReleasePlan } from "../release-plan/assemble-release-plan.js";
 import type { ReleaseNotesChange, ReleaseNotesContext, ReleaseNotesContextEnricher } from "./types.js";
 
 export interface CollectContextOptions {
@@ -78,11 +78,7 @@ export async function collectReleaseNotesContext(
   };
 }
 
-function resolveScopedPackages(
-  workspace: ChronusWorkspace,
-  packages: string[],
-  policies: string[],
-): Set<string> {
+function resolveScopedPackages(workspace: ChronusWorkspace, packages: string[], policies: string[]): Set<string> {
   const result = new Set<string>();
 
   for (const pkgName of packages) {

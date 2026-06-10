@@ -1,4 +1,3 @@
-import type { ChangeDescription } from "../change/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 
 /**
@@ -36,10 +35,7 @@ export interface ReleaseNotesChange {
 export interface ReleaseNotesContextEnricher {
   readonly name: string;
   /** Enrich change entries with additional metadata */
-  enrichChanges(
-    changes: ReleaseNotesChange[],
-    workspace: ChronusWorkspace,
-  ): Promise<ReleaseNotesChange[]>;
+  enrichChanges(changes: ReleaseNotesChange[], workspace: ChronusWorkspace): Promise<ReleaseNotesChange[]>;
 }
 
 export type ReleaseNotesContextEnricherFactory = (

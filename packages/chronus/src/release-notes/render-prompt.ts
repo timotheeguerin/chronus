@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import { resolvePath } from "../utils/path-utils.js";
 import type { ChronusHost } from "../utils/host.js";
+import { resolvePath } from "../utils/path-utils.js";
 import { renderContextAsMarkdown } from "./collect-context.js";
 import type { ReleaseNotesContext } from "./types.js";
 

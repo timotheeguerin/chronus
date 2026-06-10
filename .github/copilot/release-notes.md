@@ -7,6 +7,7 @@ Generate blog-post-style release notes from pending chronus change descriptions.
 ## When to Use
 
 Use this skill when asked to:
+
 - Create release notes for an upcoming release
 - Write a blog post summarizing changes
 - Generate a release announcement
@@ -14,12 +15,15 @@ Use this skill when asked to:
 ## Instructions
 
 1. **Collect the change context** by running:
+
    ```bash
    chronus release-notes --context-only
    ```
+
    This outputs all pending changes as structured markdown.
 
    To scope to a specific policy or package:
+
    ```bash
    chronus release-notes --context-only --policy <policy-name>
    chronus release-notes --context-only --package <package-name>
