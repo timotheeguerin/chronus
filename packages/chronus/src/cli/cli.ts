@@ -7,6 +7,7 @@ import { addChangeset } from "./commands/add-changeset.js";
 import { bumpVersions } from "./commands/bump-versions.js";
 import { changelog } from "./commands/changelog.js";
 import { listPendingPublish } from "./commands/list-pending-publish.js";
+import { releaseNotes } from "./commands/release-notes.js";
 import { pack } from "./commands/pack.js";
 import { publish } from "./commands/publish.js";
 import { showStatus } from "./commands/show-status.js";
@@ -248,6 +249,48 @@ async function main() {
           tag: args.tag,
           otp: args.otp,
           reportSummary: args.reportSummary && resolvePath(process.cwd(), args.reportSummary),
+        }),
+      ),
+    )
+    .command(
+      "release-notes",
+      "Generate an AI prompt for creating blog-post-style release notes",
+      (cmd) =>
+        cmd
+          .option("package", {
+            type: "string",
+            array: true,
+            description: "Scope to specific package(s)",
+          })
+          .option("policy", {
+            type: "string",
+            array: true,
+            description: "Scope to specific policy/policies",
+          })
+          .option("output", {
+            short: "o",
+            type: "string",
+            description: "Write output to a file instead of stdout",
+          })
+          .option("format", {
+            type: "string",
+            choices: ["markdown", "json"] as const,
+            default: "markdown",
+            description: "Output format for context-only mode",
+          })
+          .option("context-only", {
+            type: "boolean",
+            default: false,
+            description: "Output only the raw change context without the prompt template",
+          }),
+      withErrors((args) =>
+        releaseNotes(NodeChronusHost, {
+          dir: process.cwd(),
+          package: args.package,
+          policy: args.policy,
+          output: args.output,
+          format: args.format as "markdown" | "json",
+          contextOnly: args.contextOnly,
         }),
       ),
     )

@@ -17,7 +17,8 @@
   "exports": {
     ".": "./dist/index.js",
     "./pull-requests": "./dist/pull-requests/index.js",
-    "./changelog": "./dist/changelog/index.js"
+    "./changelog": "./dist/changelog/index.js",
+    "./release-notes": "./dist/release-notes/index.js"
   },
   "bin": {
     "chronus-github": "./cmd/cli.mjs"
