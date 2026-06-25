@@ -1,11 +1,11 @@
 import { mkdir, stat } from "fs/promises";
 
-import pacote from "pacote";
 import { gte } from "semver";
 
 import { execAsync } from "../utils/exec-async.js";
 import { getLastJsonObject } from "../utils/misc-utils.js";
 import { resolvePath } from "../utils/path-utils.js";
+import { readPackageManifestFromTarball } from "../utils/read-tarball-manifest.js";
 import type { Package } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 
@@ -86,7 +86,7 @@ async function packPackageWithPnpm(pkg: Package, pkgDir: string, packDestination
   const path = resolvePath(packDestination, filename);
 
   const stats = await stat(path);
-  const tabballManifest = await pacote.manifest(path, { fullMetadata: true });
+  const tabballManifest = await readPackageManifestFromTarball(path);
 
   return {
     id: tabballManifest._id,

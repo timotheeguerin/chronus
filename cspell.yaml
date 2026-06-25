@@ -8,8 +8,10 @@ words:
   - commitish
   - EOTP
   - ETARGET
+  - nanotar
   - npmjs
   - onwarn
+  - packument
   - pacote
   - picocolors
   - pkgs
