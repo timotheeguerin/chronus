@@ -36,7 +36,6 @@
     "@types/cross-spawn": "catalog:",
     "@types/node": "catalog:",
     "rimraf": "catalog:",
-    "source-map-support": "catalog:",
     "typescript": "catalog:"
   },
   "engines": {

@@ -51,7 +51,6 @@
     "@types/node": "catalog:",
     "@types/yargs": "catalog:",
     "rimraf": "catalog:",
-    "source-map-support": "catalog:",
     "typescript": "catalog:"
   },
   "engines": {
