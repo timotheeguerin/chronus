@@ -4,167 +4,329 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@actions/github':
+      specifier: ^9.0.0
+      version: 9.1.1
+    '@astrojs/starlight':
+      specifier: 0.41.0
+      version: 0.41.0
+    '@eslint/js':
+      specifier: ^10.0.1
+      version: 10.0.1
+    '@octokit/graphql':
+      specifier: ^9.0.1
+      version: 9.0.3
+    '@octokit/rest':
+      specifier: ^22.0.1
+      version: 22.0.1
+    '@types/cross-spawn':
+      specifier: ^6.0.6
+      version: 6.0.6
+    '@types/micromatch':
+      specifier: ^4.0.10
+      version: 4.0.10
+    '@types/node':
+      specifier: 26.0.0
+      version: 26.0.0
+    '@types/node-fetch':
+      specifier: ^2.6.13
+      version: 2.6.13
+    '@types/pacote':
+      specifier: ^11.1.8
+      version: 11.1.8
+    '@types/pluralize':
+      specifier: ^0.0.33
+      version: 0.0.33
+    '@types/prompts':
+      specifier: ^2.4.9
+      version: 2.4.9
+    '@types/semver':
+      specifier: ^7.7.1
+      version: 7.7.1
+    '@types/xml2js':
+      specifier: ^0.4.14
+      version: 0.4.14
+    '@types/yargs':
+      specifier: ^17.0.34
+      version: 17.0.35
+    '@typescript-eslint/parser':
+      specifier: ^8.57.1
+      version: 8.62.0
+    '@typescript-eslint/utils':
+      specifier: ^8.57.1
+      version: 8.62.0
+    '@vitest/eslint-plugin':
+      specifier: ^1.6.12
+      version: 1.6.20
+    '@vitest/ui':
+      specifier: ^4.1.0
+      version: 4.1.9
+    astro:
+      specifier: ^7.0.2
+      version: 7.0.2
+    cross-spawn:
+      specifier: ^7.0.6
+      version: 7.0.6
+    cspell:
+      specifier: ^10.0.1
+      version: 10.0.1
+    eslint:
+      specifier: ^10.1.0
+      version: 10.5.0
+    eslint-plugin-import:
+      specifier: ^2.32.0
+      version: 2.32.0
+    eslint-plugin-unicorn:
+      specifier: ^68.0.0
+      version: 68.0.0
+    execa:
+      specifier: ^9.6.1
+      version: 9.6.1
+    globby:
+      specifier: ^16.1.1
+      version: 16.2.0
+    is-unicode-supported:
+      specifier: ^2.1.0
+      version: 2.1.0
+    micromatch:
+      specifier: ^4.0.8
+      version: 4.0.8
+    octokit:
+      specifier: ^5.0.3
+      version: 5.0.5
+    pacote:
+      specifier: ^22.0.0
+      version: 22.0.0
+    picocolors:
+      specifier: ^1.1.1
+      version: 1.1.1
+    pluralize:
+      specifier: ^8.0.0
+      version: 8.0.0
+    prettier:
+      specifier: ^3.8.1
+      version: 3.8.4
+    prettier-plugin-organize-imports:
+      specifier: ^4.3.0
+      version: 4.3.0
+    prompts:
+      specifier: ^2.4.2
+      version: 2.4.2
+    rimraf:
+      specifier: ^6.1.3
+      version: 6.1.3
+    semver:
+      specifier: ^7.7.2
+      version: 7.8.5
+    sharp:
+      specifier: ^0.35.2
+      version: 0.35.2
+    smol-toml:
+      specifier: ^1.4.1
+      version: 1.7.0
+    source-map-support:
+      specifier: ^0.5.21
+      version: 0.5.21
+    std-env:
+      specifier: ^4.1.0
+      version: 4.1.0
+    syncpack:
+      specifier: ^15.3.2
+      version: 15.3.2
+    tsx:
+      specifier: ^4.20.6
+      version: 4.22.4
+    typescript:
+      specifier: ^6.0.3
+      version: 6.0.3
+    typescript-eslint:
+      specifier: ^8.57.1
+      version: 8.62.0
+    verdaccio:
+      specifier: ^6.2.5
+      version: 6.7.4
+    vite:
+      specifier: ^8.1.0
+      version: 8.1.0
+    vite-bundle-visualizer:
+      specifier: ^1.2.1
+      version: 1.2.1
+    vitest:
+      specifier: ^4.1.0
+      version: 4.1.9
+    yaml:
+      specifier: ^2.8.1
+      version: 2.9.0
+    yargs:
+      specifier: ^18.0.0
+      version: 18.0.0
+    zod:
+      specifier: ^4.3.6
+      version: 4.4.3
+
 importers:
 
   .:
     devDependencies:
       '@actions/github':
-        specifier: ^9.0.0
+        specifier: 'catalog:'
         version: 9.1.1
       '@chronus/github':
         specifier: workspace:*
         version: link:packages/github
       '@eslint/js':
-        specifier: ^10.0.1
+        specifier: 'catalog:'
         version: 10.0.1(eslint@10.5.0)
       '@types/node':
-        specifier: ^26.0.1
-        version: 26.0.1
+        specifier: 'catalog:'
+        version: 26.0.0
       '@typescript-eslint/parser':
-        specifier: ^8.57.1
+        specifier: 'catalog:'
         version: 8.62.0(eslint@10.5.0)(typescript@6.0.3)
       '@typescript-eslint/utils':
-        specifier: ^8.57.1
+        specifier: 'catalog:'
         version: 8.62.0(eslint@10.5.0)(typescript@6.0.3)
       '@vitest/eslint-plugin':
-        specifier: ^1.6.12
+        specifier: 'catalog:'
         version: 1.6.20(@typescript-eslint/eslint-plugin@8.62.0(@typescript-eslint/parser@8.62.0(eslint@10.5.0)(typescript@6.0.3))(eslint@10.5.0)(typescript@6.0.3))(eslint@10.5.0)(typescript@6.0.3)(vitest@4.1.9)
       '@vitest/ui':
-        specifier: ^4.1.0
+        specifier: 'catalog:'
         version: 4.1.9(vitest@4.1.9)
       cspell:
-        specifier: ^10.0.1
+        specifier: 'catalog:'
         version: 10.0.1
       eslint:
-        specifier: ^10.1.0
+        specifier: 'catalog:'
         version: 10.5.0
       eslint-plugin-import:
-        specifier: ^2.32.0
+        specifier: 'catalog:'
         version: 2.32.0(@typescript-eslint/parser@8.62.0(eslint@10.5.0)(typescript@6.0.3))(eslint@10.5.0)
       eslint-plugin-unicorn:
-        specifier: ^69.0.0
-        version: 69.0.0(eslint@10.5.0)
+        specifier: 'catalog:'
+        version: 68.0.0(eslint@10.5.0)
       execa:
-        specifier: ^9.6.1
+        specifier: 'catalog:'
         version: 9.6.1
       prettier:
-        specifier: ^3.8.1
+        specifier: 'catalog:'
         version: 3.8.4
       prettier-plugin-organize-imports:
-        specifier: ^4.3.0
+        specifier: 'catalog:'
         version: 4.3.0(prettier@3.8.4)(typescript@6.0.3)
       rimraf:
-        specifier: ^6.1.3
+        specifier: 'catalog:'
         version: 6.1.3
       syncpack:
-        specifier: ^15.3.2
+        specifier: 'catalog:'
         version: 15.3.2
       tsx:
-        specifier: ^4.20.6
+        specifier: 'catalog:'
         version: 4.22.4
       typescript:
-        specifier: ^6.0.3
+        specifier: 'catalog:'
         version: 6.0.3
       typescript-eslint:
-        specifier: ^8.57.1
+        specifier: 'catalog:'
         version: 8.62.0(eslint@10.5.0)(typescript@6.0.3)
       vitest:
-        specifier: ^4.1.0
-        version: 4.1.9(@types/node@26.0.1)(@vitest/ui@4.1.9)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
+        specifier: 'catalog:'
+        version: 4.1.9(@types/node@26.0.0)(@vitest/ui@4.1.9)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
 
   packages/chronus:
     dependencies:
       cross-spawn:
-        specifier: ^7.0.6
+        specifier: 'catalog:'
         version: 7.0.6
       globby:
-        specifier: ^16.1.1
+        specifier: 'catalog:'
         version: 16.2.0
       is-unicode-supported:
-        specifier: ^2.1.0
+        specifier: 'catalog:'
         version: 2.1.0
       micromatch:
-        specifier: ^4.0.8
+        specifier: 'catalog:'
         version: 4.0.8
       pacote:
-        specifier: ^22.0.0
+        specifier: 'catalog:'
         version: 22.0.0
       picocolors:
-        specifier: ^1.1.1
+        specifier: 'catalog:'
         version: 1.1.1
       pluralize:
-        specifier: ^8.0.0
+        specifier: 'catalog:'
         version: 8.0.0
       prompts:
-        specifier: ^2.4.2
+        specifier: 'catalog:'
         version: 2.4.2
       semver:
-        specifier: ^7.7.2
+        specifier: 'catalog:'
         version: 7.8.5
       smol-toml:
-        specifier: ^1.4.1
+        specifier: 'catalog:'
         version: 1.7.0
       source-map-support:
-        specifier: ^0.5.21
+        specifier: 'catalog:'
         version: 0.5.21
       std-env:
-        specifier: ^4.1.0
+        specifier: 'catalog:'
         version: 4.1.0
       yaml:
-        specifier: ^2.8.1
+        specifier: 'catalog:'
         version: 2.9.0
       yargs:
-        specifier: ^18.0.0
+        specifier: 'catalog:'
         version: 18.0.0
       zod:
-        specifier: ^4.3.6
+        specifier: 'catalog:'
         version: 4.4.3
     devDependencies:
       '@chronus/registry-mock':
         specifier: workspace:*
         version: link:../registry-mock
       '@types/cross-spawn':
-        specifier: ^6.0.6
+        specifier: 'catalog:'
         version: 6.0.6
       '@types/micromatch':
-        specifier: ^4.0.10
+        specifier: 'catalog:'
         version: 4.0.10
       '@types/node':
-        specifier: ^26.0.1
-        version: 26.0.1
+        specifier: 'catalog:'
+        version: 26.0.0
       '@types/node-fetch':
-        specifier: ^2.6.13
+        specifier: 'catalog:'
         version: 2.6.13
       '@types/pacote':
-        specifier: ^11.1.8
+        specifier: 'catalog:'
         version: 11.1.8
       '@types/pluralize':
-        specifier: ^0.0.33
+        specifier: 'catalog:'
         version: 0.0.33
       '@types/prompts':
-        specifier: ^2.4.9
+        specifier: 'catalog:'
         version: 2.4.9
       '@types/semver':
-        specifier: ^7.7.1
+        specifier: 'catalog:'
         version: 7.7.1
       '@types/xml2js':
-        specifier: ^0.4.14
+        specifier: 'catalog:'
         version: 0.4.14
       '@types/yargs':
-        specifier: ^17.0.34
+        specifier: 'catalog:'
         version: 17.0.35
       prettier:
-        specifier: ^3.8.1
+        specifier: 'catalog:'
         version: 3.8.4
       rimraf:
-        specifier: ^6.1.3
+        specifier: 'catalog:'
         version: 6.1.3
       typescript:
-        specifier: ^6.0.3
+        specifier: 'catalog:'
         version: 6.0.3
       vitest:
-        specifier: ^4.1.0
-        version: 4.1.9(@types/node@26.0.1)(@vitest/ui@4.1.9)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
+        specifier: 'catalog:'
+        version: 4.1.9(@types/node@26.0.0)(@vitest/ui@4.1.9)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
 
   packages/dummy: {}
 
@@ -174,41 +336,41 @@ importers:
         specifier: workspace:*
         version: link:../chronus
       '@octokit/graphql':
-        specifier: ^9.0.1
+        specifier: 'catalog:'
         version: 9.0.3
       '@octokit/rest':
-        specifier: ^22.0.1
+        specifier: 'catalog:'
         version: 22.0.1
       cross-spawn:
-        specifier: ^7.0.6
+        specifier: 'catalog:'
         version: 7.0.6
       octokit:
-        specifier: ^5.0.3
+        specifier: 'catalog:'
         version: 5.0.5
       picocolors:
-        specifier: ^1.1.1
+        specifier: 'catalog:'
         version: 1.1.1
       yargs:
-        specifier: ^18.0.0
+        specifier: 'catalog:'
         version: 18.0.0
     devDependencies:
       '@types/cross-spawn':
-        specifier: ^6.0.6
+        specifier: 'catalog:'
         version: 6.0.6
       '@types/node':
-        specifier: ^26.0.1
-        version: 26.0.1
+        specifier: 'catalog:'
+        version: 26.0.0
       '@types/yargs':
-        specifier: ^17.0.34
+        specifier: 'catalog:'
         version: 17.0.35
       rimraf:
-        specifier: ^6.1.3
+        specifier: 'catalog:'
         version: 6.1.3
       source-map-support:
-        specifier: ^0.5.21
+        specifier: 'catalog:'
         version: 0.5.21
       typescript:
-        specifier: ^6.0.3
+        specifier: 'catalog:'
         version: 6.0.3
 
   packages/github-pr-commenter:
@@ -217,70 +379,70 @@ importers:
         specifier: workspace:*
         version: link:../github
       '@octokit/rest':
-        specifier: ^22.0.1
+        specifier: 'catalog:'
         version: 22.0.1
     devDependencies:
       '@types/node':
-        specifier: ^26.0.1
-        version: 26.0.1
+        specifier: 'catalog:'
+        version: 26.0.0
       rimraf:
-        specifier: ^6.1.3
+        specifier: 'catalog:'
         version: 6.1.3
       source-map-support:
-        specifier: ^0.5.21
+        specifier: 'catalog:'
         version: 0.5.21
       typescript:
-        specifier: ^6.0.3
+        specifier: 'catalog:'
         version: 6.0.3
       vite:
-        specifier: ^8.1.0
-        version: 8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)
+        specifier: 'catalog:'
+        version: 8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)
       vite-bundle-visualizer:
-        specifier: ^1.2.1
+        specifier: 'catalog:'
         version: 1.2.1(rolldown@1.1.3)
 
   packages/registry-mock:
     dependencies:
       cross-spawn:
-        specifier: ^7.0.6
+        specifier: 'catalog:'
         version: 7.0.6
       verdaccio:
-        specifier: ^6.2.5
+        specifier: 'catalog:'
         version: 6.7.4(typanion@3.14.0)
       yaml:
-        specifier: ^2.8.1
+        specifier: 'catalog:'
         version: 2.9.0
     devDependencies:
       '@types/cross-spawn':
-        specifier: ^6.0.6
+        specifier: 'catalog:'
         version: 6.0.6
       '@types/node':
-        specifier: ^26.0.1
-        version: 26.0.1
+        specifier: 'catalog:'
+        version: 26.0.0
       rimraf:
-        specifier: ^6.1.3
+        specifier: 'catalog:'
         version: 6.1.3
       source-map-support:
-        specifier: ^0.5.21
+        specifier: 'catalog:'
         version: 0.5.21
       typescript:
-        specifier: ^6.0.3
+        specifier: 'catalog:'
         version: 6.0.3
 
   packages/website:
     dependencies:
       '@astrojs/starlight':
-        specifier: ^0.41.1
-        version: 0.41.1(@astrojs/markdown-remark@7.2.0)(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0))(typescript@6.0.3)
+        specifier: 'catalog:'
+        version: 0.41.0(@astrojs/markdown-remark@7.2.0)(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0))(typescript@6.0.3)
       astro:
-        specifier: ^7.0.2
-        version: 7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0)
+        specifier: 'catalog:'
+        version: 7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0)
       sharp:
-        specifier: ^0.35.2
+        specifier: 'catalog:'
         version: 0.35.2
     devDependencies:
       rimraf:
-        specifier: ^6.1.3
+        specifier: 'catalog:'
         version: 6.1.3
 
 packages:
@@ -381,8 +543,8 @@ packages:
   '@astrojs/sitemap@3.7.3':
     resolution: {integrity: sha512-f8euLVsyeAmAkSm/1M2Kb8sL8byQmfgbvBNaHFItCheTj/IpiJYSEWVcqDHZ/yEHxiS7+w87mQkzwZaPHmk5GA==}
 
-  '@astrojs/starlight@0.41.1':
-    resolution: {integrity: sha512-avf2OmrVg6GdVU18juebjjIIuLa+uS3syHuJ/3yDaEFP/8it+YvcxRrYDSf7K6rC4v770UxIddba2hAqQyTeYA==}
+  '@astrojs/starlight@0.41.0':
+    resolution: {integrity: sha512-5QQLMArxdnLOQhKbXTEU4wh4hydUilXHKG6llOfIZuggM3Mr4b6RvdvInYtqWLfeAZxnlvIHGrwurC3wWW9zRg==}
     peerDependencies:
       '@astrojs/markdown-remark': ^7.2.0
       astro: ^7.0.2
@@ -918,17 +1080,17 @@ packages:
     resolution: {integrity: sha512-+CNAzxglkrpNf/kKywqQfk74QjtceuOE7Qm+AF8miRvPF/wmmK5+OJOgVh3AVTT3RP2mH3+FOaxlE5v72owk0A==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@expressive-code/core@0.44.0':
-    resolution: {integrity: sha512-xgiF2P6tYUbrhi3+x0S8xHZWT1t3Bvb3U91tAtRbLb9HLejLvYc5GZUqKICKLaUN4iSGhhNJu2fM/aH8e5yCMg==}
+  '@expressive-code/core@0.43.1':
+    resolution: {integrity: sha512-H4rUJXKyS6y2q9Ig9bIp3dFhWhkZQIeH/jRGl3DROlslrGvfD4OC9qzmvKEFExm+/DtdvvHMQ8/Olmrcfxp+wQ==}
 
-  '@expressive-code/plugin-frames@0.44.0':
-    resolution: {integrity: sha512-V6M6+zVc1GzqCvXkQHc2m5rcFOIVzJgMq5gnfrMnVf2gwtj/sg4H93c1f/mGeqHycubwkHFUDyParAOiGeDZeA==}
+  '@expressive-code/plugin-frames@0.43.1':
+    resolution: {integrity: sha512-tENfLw2UDeq5h749tTLvUtQYvgjIiQc6W7PBCR5xQ4yuE/QftManKJfUQjwJo6RRsAimVQDN4alhFTJ3aq1Khg==}
 
-  '@expressive-code/plugin-shiki@0.44.0':
-    resolution: {integrity: sha512-RZsdaqlbGqyAQKuoX4myQXxjmiE2l5KBpJ/gKPh62tCdIdpWyjbzVqSo8+5XsezZxkfi8AJ/J6EUaBTPROFX/Q==}
+  '@expressive-code/plugin-shiki@0.43.1':
+    resolution: {integrity: sha512-NdceinYEROXODNgB/ix+7oCdIg+nGyok+E+p2lU9YlWd1xKshXdXpmmptKfkuU27MJ5jjnfhMCI78YYBGi9GtQ==}
 
-  '@expressive-code/plugin-text-markers@0.44.0':
-    resolution: {integrity: sha512-0/m3A5b+lz2upyNq+wzZ1S69HRoJmyFs5LsR42lVZ9pmGRlBiSBYQpvqlji4DBj1+Riamxc0AvcCr5kuzOQeWA==}
+  '@expressive-code/plugin-text-markers@0.43.1':
+    resolution: {integrity: sha512-JWf8wdbZSNoGY4TFv3lmt3/NNDaCP7iYL6rRYD05g8YYjKL62hKUHLl5+B47+v0+bqbuMhXDN7qz2wywFUvMkg==}
 
   '@gar/promise-retry@1.0.3':
     resolution: {integrity: sha512-GmzA9ckNokPypTg10pgpeHNQe7ph+iIKKmhKu3Ob9ANkswreCx7R3cKmY781K8QK3AqVL3xVh9A42JvIAbkkSA==}
@@ -1754,9 +1916,6 @@ packages:
   '@types/node@26.0.0':
     resolution: {integrity: sha512-vf2YFi1iY9lHGwNJMs01biZFbKJkrZR1T6/MlzjhJLPdntOHLhTrDSnSVcdtvjihi4VQNlrFRIxLsDBlQpAipA==}
 
-  '@types/node@26.0.1':
-    resolution: {integrity: sha512-fc3KiUoBt6kie0N9bIW3E47vZsuaMf0PM2AaUpLCLT0s/LvX1nxAim6Fc049cNxODPpGm6qRAuUOB86SkRuPQw==}
-
   '@types/npm-package-arg@6.1.4':
     resolution: {integrity: sha512-vDgdbMy2QXHnAruzlv68pUtXCjmqUk3WrBAsRboRovsOmxbfn/WiYCjmecyKjGztnMps5dWp4Uq2prp+Ilo17Q==}
 
@@ -2119,10 +2278,10 @@ packages:
     resolution: {integrity: sha512-LElXdjswlqjWrPpJFg1Fx4wpkOCxj1TDHlSV4PlaRxHGWko024xICaa97ZkMfs6DRKlCguiAI+rbXv5GWwXIkg==}
     hasBin: true
 
-  astro-expressive-code@0.44.0:
-    resolution: {integrity: sha512-b1wN/ZvbJprzxlGKIpIes2kQrCY5KRLwys2tWbZAZyjGZcW5ZtgneZnBwzNRiBna9/48d4mQl19KLjcRuhO1hw==}
+  astro-expressive-code@0.43.1:
+    resolution: {integrity: sha512-xddgwQxFRwpnnAnU7kSfrO82SsOAq7sQrYpXxVcrN9k/0aqNlTH2+mLrOMm1wXm6jdFKepst3hd8/qWojwuunw==}
     peerDependencies:
-      astro: ^4.0.0-beta || ^5.0.0-beta || ^3.3.0 || ^6.0.0-beta || ^7.0.0
+      astro: ^4.0.0-beta || ^5.0.0-beta || ^3.3.0 || ^6.0.0-beta
 
   astro@7.0.2:
     resolution: {integrity: sha512-Rj31HS85pVSfiQTxKTwH6vTmF8y57iRfkgb1uiCTtdLIh3jlUKPAPXtEmHXRKp/PdTS00D4EXYlWXypY+AVVCA==}
@@ -2807,8 +2966,8 @@ packages:
       '@typescript-eslint/parser':
         optional: true
 
-  eslint-plugin-unicorn@69.0.0:
-    resolution: {integrity: sha512-ZN/KtHr9hQ6AOByANSNJpsDbo/+Nn+EyQ6blK4w+dcmS/xpYkqLLfrUc+NA/wOK6vF5uEUvhn8my5B/3sruB9g==}
+  eslint-plugin-unicorn@68.0.0:
+    resolution: {integrity: sha512-mHYWvX948Q4H3bGc39bsNMxD/leOuNI+Iws9NVsoSz5VA7EGP86wnz7mZ/SPSvRhefT8L4hd8DHfDuGC+lIoCQ==}
     engines: {node: '>=22'}
     peerDependencies:
       eslint: '>=10.4'
@@ -2924,8 +3083,8 @@ packages:
     resolution: {integrity: sha512-IuL+Elrou2ZvCFHs18/CIzy2Nzvo25nZ1/D2eIZlz7c+QUayAcYoiM2BthCjs+EBHVpjYjcuLDAiCWgeIX3X1Q==}
     engines: {node: '>= 0.10.0'}
 
-  expressive-code@0.44.0:
-    resolution: {integrity: sha512-JXVWVNCKlLuZLMQH8cOiDUSosT0Bb+elwE/dbAkpwFwDFmyFyWlECoWZIohh2FkIF1iI67TQJ+Ts9k7oNDh2qA==}
+  expressive-code@0.43.1:
+    resolution: {integrity: sha512-JdOzanoU825iNvslmk6Kg8Ro61eSHmDK2Zz7BynOxObVrpIXZNzrIZOwQO2uDQcGsjSYShL/8vTrXgeWYnq3NA==}
 
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
@@ -4583,8 +4742,8 @@ packages:
     resolution: {integrity: sha512-NgRBy2Nx/bE+9F27nVHnqcN5HjyLmecqsqx2PJHu3/IEtADD4WuxuXIVExD5PoSDFVrl78dOonfcOe5O+5nbzQ==}
     hasBin: true
 
-  rehype-expressive-code@0.44.0:
-    resolution: {integrity: sha512-5r74C5F2sMR3X+QJH8OKWgZBO/cqRw5W1fLT6GVlSfLqepk+4j8tGFkyPqZYWjwntsBHzKPDH2zI68sZ7ScLfA==}
+  rehype-expressive-code@0.43.1:
+    resolution: {integrity: sha512-CUOGQVlUcSMSXZgpcq9xL6B+dZqnI3w1R6EZj932XpGgj2Hmy7H6oMqa9W/Z7X2HOILWLWhqu1b9kuYcD+nd6w==}
 
   rehype-format@5.0.1:
     resolution: {integrity: sha512-zvmVru9uB0josBVpr946OR8ui7nJEdzZobwLOOqHb/OOD88W0Vk2SqLwoVOj0fM6IPCCO6TaV9CvQvJMWwukFQ==}
@@ -5348,10 +5507,6 @@ packages:
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
 
-  url-extras@0.1.0:
-    resolution: {integrity: sha512-8tzwTeXFPuX/5PHuCDQE5Dd9Ts4rwoq2t9aIT+HS4iAVpmj5l4Ao7Q+BuuFjvWRqrLswBhQDk8O96ZicgCqQqw==}
-    engines: {node: '>=20'}
-
   utf8-byte-length@1.0.5:
     resolution: {integrity: sha512-Xn0w3MtiQ6zoz2vFyUVruaCL53O/DwUvkEeOvj+uulMm0BkUGYWmBYVyElqZaSLhY6ZD0ulfU3aBra2aVT4xfA==}
 
@@ -5742,13 +5897,13 @@ snapshots:
       github-slugger: 2.0.0
       satteri: 0.9.2
 
-  '@astrojs/mdx@7.0.0(@astrojs/markdown-satteri@0.3.2)(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0))':
+  '@astrojs/mdx@7.0.0(@astrojs/markdown-satteri@0.3.2)(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0))':
     dependencies:
       '@astrojs/internal-helpers': 0.10.0
       '@astrojs/markdown-remark': 7.2.0
       '@mdx-js/mdx': 3.1.1
       acorn: 8.17.0
-      astro: 7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0)
+      astro: 7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0)
       es-module-lexer: 2.1.0
       estree-util-visit: 2.0.0
       hast-util-to-html: 9.0.5
@@ -5774,17 +5929,17 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 4.4.3
 
-  '@astrojs/starlight@0.41.1(@astrojs/markdown-remark@7.2.0)(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0))(typescript@6.0.3)':
+  '@astrojs/starlight@0.41.0(@astrojs/markdown-remark@7.2.0)(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0))(typescript@6.0.3)':
     dependencies:
       '@astrojs/markdown-satteri': 0.3.2
-      '@astrojs/mdx': 7.0.0(@astrojs/markdown-satteri@0.3.2)(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0))
+      '@astrojs/mdx': 7.0.0(@astrojs/markdown-satteri@0.3.2)(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0))
       '@astrojs/sitemap': 3.7.3
       '@pagefind/default-ui': 1.5.2
       '@types/hast': 3.0.4
       '@types/js-yaml': 4.0.9
       '@types/mdast': 4.0.4
-      astro: 7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0)
-      astro-expressive-code: 0.44.0(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0))
+      astro: 7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0)
+      astro-expressive-code: 0.43.1(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0))
       bcp-47: 2.1.0
       hast-util-from-html: 2.0.3
       hast-util-select: 6.0.4
@@ -6253,7 +6408,7 @@ snapshots:
       '@eslint/core': 1.2.1
       levn: 0.4.1
 
-  '@expressive-code/core@0.44.0':
+  '@expressive-code/core@0.43.1':
     dependencies:
       '@ctrl/tinycolor': 4.2.0
       hast-util-select: 6.0.4
@@ -6265,18 +6420,18 @@ snapshots:
       unist-util-visit: 5.1.0
       unist-util-visit-parents: 6.0.2
 
-  '@expressive-code/plugin-frames@0.44.0':
+  '@expressive-code/plugin-frames@0.43.1':
     dependencies:
-      '@expressive-code/core': 0.44.0
+      '@expressive-code/core': 0.43.1
 
-  '@expressive-code/plugin-shiki@0.44.0':
+  '@expressive-code/plugin-shiki@0.43.1':
     dependencies:
-      '@expressive-code/core': 0.44.0
+      '@expressive-code/core': 0.43.1
       shiki: 4.2.0
 
-  '@expressive-code/plugin-text-markers@0.44.0':
+  '@expressive-code/plugin-text-markers@0.43.1':
     dependencies:
-      '@expressive-code/core': 0.44.0
+      '@expressive-code/core': 0.43.1
 
   '@gar/promise-retry@1.0.3': {}
 
@@ -7020,10 +7175,6 @@ snapshots:
     dependencies:
       undici-types: 8.3.0
 
-  '@types/node@26.0.1':
-    dependencies:
-      undici-types: 8.3.0
-
   '@types/npm-package-arg@6.1.4': {}
 
   '@types/npm-registry-fetch@8.0.9':
@@ -7343,7 +7494,7 @@ snapshots:
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 8.62.0(@typescript-eslint/parser@8.62.0(eslint@10.5.0)(typescript@6.0.3))(eslint@10.5.0)(typescript@6.0.3)
       typescript: 6.0.3
-      vitest: 4.1.9(@types/node@26.0.1)(@vitest/ui@4.1.9)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
+      vitest: 4.1.9(@types/node@26.0.0)(@vitest/ui@4.1.9)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
     transitivePeerDependencies:
       - supports-color
 
@@ -7356,13 +7507,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.0
 
-  '@vitest/mocker@4.1.9(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))':
+  '@vitest/mocker@4.1.9(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))':
     dependencies:
       '@vitest/spy': 4.1.9
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.9':
     dependencies:
@@ -7391,7 +7542,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vitest: 4.1.9(@types/node@26.0.1)(@vitest/ui@4.1.9)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
+      vitest: 4.1.9(@types/node@26.0.0)(@vitest/ui@4.1.9)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
 
   '@vitest/utils@4.1.9':
     dependencies:
@@ -7538,13 +7689,12 @@ snapshots:
 
   astring@1.9.0: {}
 
-  astro-expressive-code@0.44.0(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0)):
+  astro-expressive-code@0.43.1(astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0)):
     dependencies:
-      astro: 7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0)
-      rehype-expressive-code: 0.44.0
-      url-extras: 0.1.0
+      astro: 7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0)
+      rehype-expressive-code: 0.43.1
 
-  astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.1)(tsx@4.22.4)(yaml@2.9.0):
+  astro@7.0.2(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.0.0)(tsx@4.22.4)(yaml@2.9.0):
     dependencies:
       '@astrojs/compiler-rs': 0.2.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
       '@astrojs/internal-helpers': 0.10.0
@@ -7597,8 +7747,8 @@ snapshots:
       unist-util-visit: 5.1.0
       unstorage: 1.17.5
       vfile: 6.0.3
-      vite: 8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)
-      vitefu: 1.1.3(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
+      vite: 8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)
+      vitefu: 1.1.3(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
       xxhash-wasm: 1.1.0
       yargs-parser: 22.0.0
       zod: 4.4.3
@@ -8408,7 +8558,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-unicorn@69.0.0(eslint@10.5.0):
+  eslint-plugin-unicorn@68.0.0(eslint@10.5.0):
     dependencies:
       '@babel/helper-validator-identifier': 7.29.7
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.5.0)
@@ -8636,12 +8786,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  expressive-code@0.44.0:
+  expressive-code@0.43.1:
     dependencies:
-      '@expressive-code/core': 0.44.0
-      '@expressive-code/plugin-frames': 0.44.0
-      '@expressive-code/plugin-shiki': 0.44.0
-      '@expressive-code/plugin-text-markers': 0.44.0
+      '@expressive-code/core': 0.43.1
+      '@expressive-code/plugin-frames': 0.43.1
+      '@expressive-code/plugin-shiki': 0.43.1
+      '@expressive-code/plugin-text-markers': 0.43.1
 
   extend@3.0.2: {}
 
@@ -10732,9 +10882,9 @@ snapshots:
     dependencies:
       jsesc: 3.1.0
 
-  rehype-expressive-code@0.44.0:
+  rehype-expressive-code@0.43.1:
     dependencies:
-      expressive-code: 0.44.0
+      expressive-code: 0.43.1
 
   rehype-format@5.0.1:
     dependencies:
@@ -11677,8 +11827,6 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
-  url-extras@0.1.0: {}
-
   utf8-byte-length@1.0.5: {}
 
   util-deprecate@1.0.2: {}
@@ -11788,7 +11936,7 @@ snapshots:
       - rollup
       - supports-color
 
-  vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0):
+  vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
@@ -11796,20 +11944,20 @@ snapshots:
       rolldown: 1.1.3
       tinyglobby: 0.2.17
     optionalDependencies:
-      '@types/node': 26.0.1
+      '@types/node': 26.0.0
       esbuild: 0.28.1
       fsevents: 2.3.3
       tsx: 4.22.4
       yaml: 2.9.0
 
-  vitefu@1.1.3(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)):
+  vitefu@1.1.3(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)):
     optionalDependencies:
-      vite: 8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)
 
-  vitest@4.1.9(@types/node@26.0.1)(@vitest/ui@4.1.9)(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)):
+  vitest@4.1.9(@types/node@26.0.0)(@vitest/ui@4.1.9)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.9
-      '@vitest/mocker': 4.1.9(vite@8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
+      '@vitest/mocker': 4.1.9(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0))
       '@vitest/pretty-format': 4.1.9
       '@vitest/runner': 4.1.9
       '@vitest/snapshot': 4.1.9
@@ -11826,10 +11974,10 @@ snapshots:
       tinyexec: 1.2.4
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vite: 8.1.0(@types/node@26.0.1)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)
+      vite: 8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(tsx@4.22.4)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 26.0.1
+      '@types/node': 26.0.0
       '@vitest/ui': 4.1.9(vitest@4.1.9)
     transitivePeerDependencies:
       - msw
