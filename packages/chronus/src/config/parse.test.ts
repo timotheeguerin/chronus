@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
+
 import { ChronusDiagnosticError } from "../utils/errors.js";
 import { parseConfig } from "./parse.js";
+
+function expectConfigError(content: string): ChronusDiagnosticError {
+  try {
+    parseConfig(content);
+  } catch (e) {
+    return e as ChronusDiagnosticError;
+  }
+  throw new Error("Expected parseConfig to throw a ChronusDiagnosticError");
+}
 
 describe("packages field", () => {
   it("accepts packages as array of strings", () => {
@@ -49,62 +59,34 @@ packages:
 
 describe("packages with deprecated options", () => {
   it("emits error when both packages and workspaceType are provided", () => {
-    expect(() =>
-      parseConfig(`
-baseBranch: main
-packages:
-  - "packages/*"
-workspaceType: pnpm
-`),
-    ).toThrow(ChronusDiagnosticError);
-
-    try {
-      parseConfig(`
+    const error = expectConfigError(`
 baseBranch: main
 packages:
   - "packages/*"
 workspaceType: pnpm
 `);
-    } catch (e) {
-      expect(e).toBeInstanceOf(ChronusDiagnosticError);
-      const error = e as ChronusDiagnosticError;
-      expect(error.diagnostics).toHaveLength(1);
-      expect(error.diagnostics[0].message).toContain("Cannot use 'workspaceType' when 'packages' is defined");
-      expect(error.diagnostics[0].message).toContain("Migrate by removing 'workspaceType'");
-    }
+    expect(error).toBeInstanceOf(ChronusDiagnosticError);
+    expect(error.diagnostics).toHaveLength(1);
+    expect(error.diagnostics[0].message).toContain("Cannot use 'workspaceType' when 'packages' is defined");
+    expect(error.diagnostics[0].message).toContain("Migrate by removing 'workspaceType'");
   });
 
   it("emits error when both packages and additionalPackages are provided", () => {
-    expect(() =>
-      parseConfig(`
-baseBranch: main
-packages:
-  - "packages/*"
-additionalPackages:
-  - "extra/*"
-`),
-    ).toThrow(ChronusDiagnosticError);
-
-    try {
-      parseConfig(`
+    const error = expectConfigError(`
 baseBranch: main
 packages:
   - "packages/*"
 additionalPackages:
   - "extra/*"
 `);
-    } catch (e) {
-      expect(e).toBeInstanceOf(ChronusDiagnosticError);
-      const error = e as ChronusDiagnosticError;
-      expect(error.diagnostics).toHaveLength(1);
-      expect(error.diagnostics[0].message).toContain("Cannot use 'additionalPackages' when 'packages' is defined");
-      expect(error.diagnostics[0].message).toContain("Migrate by moving all entries from 'additionalPackages'");
-    }
+    expect(error).toBeInstanceOf(ChronusDiagnosticError);
+    expect(error.diagnostics).toHaveLength(1);
+    expect(error.diagnostics[0].message).toContain("Cannot use 'additionalPackages' when 'packages' is defined");
+    expect(error.diagnostics[0].message).toContain("Migrate by moving all entries from 'additionalPackages'");
   });
 
   it("emits multiple errors when packages is used with both workspaceType and additionalPackages", () => {
-    try {
-      parseConfig(`
+    const error = expectConfigError(`
 baseBranch: main
 packages:
   - "packages/*"
@@ -112,14 +94,10 @@ workspaceType: pnpm
 additionalPackages:
   - "extra/*"
 `);
-    } catch (e) {
-      expect(e).toBeInstanceOf(ChronusDiagnosticError);
-      const error = e as ChronusDiagnosticError;
-      expect(error.diagnostics).toHaveLength(2);
-      const messages = error.diagnostics.map((d) => d.message);
-      expect(messages.some((m) => m.includes("Cannot use 'workspaceType'"))).toBe(true);
-      expect(messages.some((m) => m.includes("Cannot use 'additionalPackages'"))).toBe(true);
-    }
+    expect(error.diagnostics).toHaveLength(2);
+    const messages = error.diagnostics.map((d) => d.message);
+    expect(messages.some((m) => m.includes("Cannot use 'workspaceType'"))).toBe(true);
+    expect(messages.some((m) => m.includes("Cannot use 'additionalPackages'"))).toBe(true);
   });
 
   it("allows workspaceType without packages", () => {

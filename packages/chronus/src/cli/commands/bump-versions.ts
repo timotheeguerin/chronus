@@ -1,5 +1,6 @@
 import pc from "picocolors";
 import { isCI } from "std-env";
+
 import { applyReleasePlan, updatePackageVersions } from "../../apply-release-plan/apply-release-plan.js";
 import { readChangeDescriptions } from "../../change/read.js";
 import { getPrereleaseVersionActions } from "../../prerelease-versioning/index.js";
@@ -43,7 +44,7 @@ export async function bumpVersions(cwd: string, options?: BumpVersionOptions): P
 export async function resolveReleasePlan(
   host: ChronusHost,
   workspace: ChronusWorkspace,
-  options?: BumpVersionOptions | undefined,
+  options?: BumpVersionOptions,
 ): Promise<ReleasePlan> {
   const changesets = await readChangeDescriptions(host, workspace);
 

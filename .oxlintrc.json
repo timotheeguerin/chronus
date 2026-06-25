@@ -1,0 +1,65 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  // Use oxlint's `correctness` preset + the TypeScript plugin instead of enumerating every rule.
+  "plugins": ["typescript"],
+  "categories": { "correctness": "error" },
+  // Enable type-aware rules (requires the `oxlint-tsgolint` package) to keep `no-floating-promises`.
+  "options": { "typeAware": true },
+  "ignorePatterns": ["**/dist/**", "**/.temp/**", "**/.astro/**"],
+  "rules": {
+    "no-console": "warn",
+    "prefer-const": "warn",
+    "eqeqeq": ["warn", "always", { "null": "ignore" }],
+    "no-unused-vars": [
+      "warn",
+      {
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": ".*",
+        "caughtErrorsIgnorePattern": ".*",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "typescript/no-explicit-any": "off",
+    "typescript/no-floating-promises": "warn"
+  },
+  "overrides": [
+    {
+      // Test-file specific rules.
+      "files": ["**/*.test.ts"],
+      "plugins": ["vitest"],
+      "rules": {
+        "vitest/no-focused-tests": "warn",
+        "vitest/no-identical-title": "error",
+        "vitest/no-commented-out-tests": "warn",
+        "vitest/no-import-node-test": "warn",
+        "vitest/require-local-test-context-for-concurrent-snapshots": "warn",
+        "vitest/valid-describe-callback": "warn",
+        "vitest/valid-expect": "warn",
+        // Recognize the node `assert` helpers (and the `findRightLocation` wrapper) as assertions.
+        "vitest/expect-expect": [
+          "error",
+          {
+            "assertFunctionNames": [
+              "expect",
+              "ok",
+              "strictEqual",
+              "notStrictEqual",
+              "deepStrictEqual",
+              "notDeepStrictEqual",
+              "equal",
+              "notEqual",
+              "deepEqual",
+              "match",
+              "throws",
+              "rejects",
+              "doesNotThrow",
+              "doesNotReject",
+              "findRightLocation"
+            ]
+          }
+        ],
+        "typescript/no-non-null-asserted-optional-chain": "off"
+      }
+    }
+  ]
+}

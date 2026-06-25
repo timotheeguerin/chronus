@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import type { ChangeDescription } from "../change/types.js";
 import { addNameToChangeKinds, defaultChangeKinds } from "../config/resolve.js";
 import type { ChronusResolvedConfig } from "../config/types.js";
@@ -22,7 +23,13 @@ describe("Assemble Release Plan", () => {
 
   function mkPkg(name: string, manifest: PackageJson): Package {
     const version = manifest.version ?? "1.0.0";
-    return { name, ecosystem: "npm", relativePath: `packages/${name}`, version, dependencies: new Map() };
+    return {
+      name,
+      ecosystem: "npm",
+      relativePath: `packages/${name}`,
+      version,
+      dependencies: new Map(),
+    };
   }
   const workspace: Package[] = [
     mkPkg("pkg-a", { version: "1.0.0" }),

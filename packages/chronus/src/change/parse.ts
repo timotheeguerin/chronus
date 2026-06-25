@@ -1,4 +1,5 @@
 import z from "zod";
+
 import { createEmbeddedFile, type EmbeddedFile, type TextFile } from "../file/index.js";
 import { ChronusDiagnosticError, type Diagnostic } from "../utils/errors.js";
 import { getBaseFileName } from "../utils/path-utils.js";
@@ -34,7 +35,12 @@ export function parseChangeDescription(workspace: ChronusWorkspace, file: TextFi
   }
   const [, frontMatterRaw, contentRaw] = execResult;
   const pos = file.content.indexOf(frontMatterRaw);
-  const frontMattterFile = createEmbeddedFile({ content: frontMatterRaw, file, pos, end: pos + frontMatterRaw.length });
+  const frontMattterFile = createEmbeddedFile({
+    content: frontMatterRaw,
+    file,
+    pos,
+    end: pos + frontMatterRaw.length,
+  });
   const frontMatter = parseChangeFrontMatter(frontMattterFile);
 
   const changeKind = workspace.config.changeKinds[frontMatter.changeKind];

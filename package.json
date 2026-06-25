@@ -1,20 +1,17 @@
 {
   "name": "@chronus/monorepo",
   "version": "0.1.0",
-  "type": "module",
+  "private": true,
   "description": "Monorepo for chronus",
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
-  "packageManager": "pnpm@11.9.0",
+  "bugs": "https://github.com/timotheeguerin/chronus/issues",
   "license": "MIT",
-  "private": true,
   "author": "Microsoft",
   "repository": "timotheeguerin/chronus.git",
-  "engines": {
-    "node": ">=20.0.0"
-  },
   "workspaces": [
     "packages/*"
   ],
+  "type": "module",
   "scripts": {
     "change": "node ./packages/chronus/cmd/cli.mjs",
     "test": "vitest run",
@@ -23,32 +20,28 @@
     "watch": "tsc --build ./tsconfig.ws.json --watch",
     "build": "pnpm -r run build",
     "clean": "pnpm -r run clean && rimraf **/.temp/",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "cspell": "cspell --no-progress ."
   },
   "devDependencies": {
     "@actions/github": "catalog:",
     "@chronus/github": "workspace:*",
-    "@eslint/js": "catalog:",
     "@types/node": "catalog:",
-    "@typescript-eslint/parser": "catalog:",
-    "@typescript-eslint/utils": "catalog:",
-    "@vitest/eslint-plugin": "catalog:",
     "@vitest/ui": "catalog:",
     "cspell": "catalog:",
-    "eslint": "catalog:",
-    "eslint-plugin-import": "catalog:",
-    "eslint-plugin-unicorn": "catalog:",
     "execa": "catalog:",
-    "prettier": "catalog:",
-    "prettier-plugin-organize-imports": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
     "rimraf": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
-    "typescript-eslint": "catalog:",
     "vitest": "catalog:"
   },
-  "bugs": "https://github.com/timotheeguerin/chronus/issues"
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@11.9.0"
 }

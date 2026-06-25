@@ -1,5 +1,6 @@
 import type { ChronusWorkspace } from "@chronus/chronus";
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { TestingChangeKinds, createTestChronusWorkspace } from "../testing/test-chronus-workspace.js";
 import { BasicChangelogGenerator } from "./basic.js";
 
@@ -41,7 +42,12 @@ describe("generate single package changelog", () => {
   it("indent multi line change entry", () => {
     const generator = new BasicChangelogGenerator(workspace);
     const generated = generator.renderPackageVersion("1.0.0", [
-      { id: "change-1", changeKind: TestingChangeKinds.major, content: "Change 1\nwith\nsome\ndetails", packages: [] },
+      {
+        id: "change-1",
+        changeKind: TestingChangeKinds.major,
+        content: "Change 1\nwith\nsome\ndetails",
+        packages: [],
+      },
     ]);
 
     expect(generated).toEqual(

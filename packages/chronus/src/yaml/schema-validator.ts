@@ -1,4 +1,5 @@
 import { ZodError, type ZodType, type core } from "zod";
+
 import { ChronusDiagnosticError, type Diagnostic } from "../utils/errors.js";
 import { getLocationInYamlScript } from "./location.js";
 import type { YamlFile } from "./types.js";

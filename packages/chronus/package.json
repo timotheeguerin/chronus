@@ -1,17 +1,27 @@
 {
   "name": "@chronus/chronus",
   "version": "1.3.1",
-  "type": "module",
   "description": "chronus",
-  "homepage": "https://github.com/timotheeguerin/chronus#readme",
-  "license": "MIT",
-  "author": "Microsoft",
   "keywords": [
     "change",
     "changelog",
     "chronus",
     "monorepo"
   ],
+  "homepage": "https://github.com/timotheeguerin/chronus#readme",
+  "bugs": "https://github.com/timotheeguerin/chronus/issues",
+  "license": "MIT",
+  "author": "Microsoft",
+  "repository": "timotheeguerin/chronus.git",
+  "bin": {
+    "chronus": "cmd/cli.mjs",
+    "kro": "cmd/cli.mjs"
+  },
+  "files": [
+    "cmd",
+    "dist"
+  ],
+  "type": "module",
   "main": "dist/index.js",
   "exports": {
     ".": "./dist/index.js",
@@ -23,24 +33,12 @@
     "./reporters": "./dist/reporters/index.js",
     "./testing": "./dist/testing/index.js"
   },
-  "bin": {
-    "kro": "cmd/cli.mjs",
-    "chronus": "cmd/cli.mjs"
-  },
-  "files": [
-    "cmd",
-    "dist"
-  ],
-  "repository": "timotheeguerin/chronus.git",
-  "engines": {
-    "node": ">=20.0.0"
-  },
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
     "build": "tsc -p ./tsconfig.build.json",
     "clean": "rimraf dist/ .temp/",
-    "lint": "eslint . --max-warnings=0",
-    "lint:fix": "eslint . --fix",
+    "lint": "oxlint --max-warnings=0",
+    "lint:fix": "oxlint --fix",
     "test": "vitest run",
     "test:watch": "vitest -w"
   },
@@ -73,10 +71,11 @@
     "@types/semver": "catalog:",
     "@types/xml2js": "catalog:",
     "@types/yargs": "catalog:",
-    "prettier": "catalog:",
     "rimraf": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
-  "bugs": "https://github.com/timotheeguerin/chronus/issues"
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }

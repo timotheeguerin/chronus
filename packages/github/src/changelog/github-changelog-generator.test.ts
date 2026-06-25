@@ -1,7 +1,9 @@
+import { createHash } from "crypto";
+
 import type { ChronusWorkspace } from "@chronus/chronus";
 import { createTestChronusWorkspace, TestingChangeKinds } from "@chronus/chronus/testing";
-import { createHash } from "crypto";
 import { beforeEach, describe, expect, it } from "vitest";
+
 import type { GithubInfo } from "./fetch-pr-info.js";
 import { GithubChangelogGenerator } from "./github-changelog-generator.js";
 
@@ -81,7 +83,7 @@ describe("generate single package changelog", () => {
     );
   });
 
-  it("include commit if no PR was retrieved ", () => {
+  it("include commit if no PR was retrieved", () => {
     const commit1 = mkSha("change-1");
     const commit2 = mkSha("change-2");
     const generator = new GithubChangelogGenerator(workspace, {
@@ -109,7 +111,12 @@ describe("generate single package changelog", () => {
   it("indent multi line change entry", () => {
     const generator = new GithubChangelogGenerator(workspace, {});
     const generated = generator.renderPackageVersion("1.0.0", [
-      { id: "change-1", changeKind: TestingChangeKinds.major, content: "Change 1\nwith\nsome\ndetails", packages: [] },
+      {
+        id: "change-1",
+        changeKind: TestingChangeKinds.major,
+        content: "Change 1\nwith\nsome\ndetails",
+        packages: [],
+      },
     ]);
 
     expect(generated).toEqual(

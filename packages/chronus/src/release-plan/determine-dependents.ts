@@ -1,4 +1,5 @@
 import semverSatisfies from "semver/functions/satisfies.js";
+
 import type { DependencyType, VersionType } from "../types.js";
 import { isPackageIncluded } from "../utils/misc-utils.js";
 import type { Package } from "../workspace-manager/types.js";

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { updateDependencyVersion, type ResolvedVersionAction } from "./update-dependency-version.js";
 
 describe("stable mode", () => {
@@ -36,13 +37,13 @@ describe("stable mode", () => {
     it("update 'workspace:>=x.y.z' version", () => {
       expect(updateDependencyVersion("workspace:>=1.0.0", resolvedVersion, "stable")).toBe("workspace:>=2.0.0");
     });
-    it("keeps 'workspace:~' ", () => {
+    it("keeps 'workspace:~'", () => {
       expect(updateDependencyVersion("workspace:~", resolvedVersion, "stable")).toBe("workspace:~");
     });
-    it("keeps 'workspace:^' ", () => {
+    it("keeps 'workspace:^'", () => {
       expect(updateDependencyVersion("workspace:^", resolvedVersion, "stable")).toBe("workspace:^");
     });
-    it("keeps 'workspace:*' ", () => {
+    it("keeps 'workspace:*'", () => {
       expect(updateDependencyVersion("workspace:*", resolvedVersion, "stable")).toBe("workspace:*");
     });
   });
@@ -89,13 +90,13 @@ describe("prerelease mode", () => {
         ">=1.0.0 || >= 2.0.0-dev.1",
       );
     });
-    it("keeps 'workspace:~' ", () => {
+    it("keeps 'workspace:~'", () => {
       expect(updateDependencyVersion("workspace:~", resolvedVersion, "prerelease")).toBe("~1.0.0 || >= 2.0.0-dev.1");
     });
-    it("keeps 'workspace:^' ", () => {
+    it("keeps 'workspace:^'", () => {
       expect(updateDependencyVersion("workspace:^", resolvedVersion, "prerelease")).toBe("^1.0.0 || >= 2.0.0-dev.1");
     });
-    it("keeps 'workspace:*' ", () => {
+    it("keeps 'workspace:*'", () => {
       expect(updateDependencyVersion("workspace:*", resolvedVersion, "prerelease")).toBe("* || >= 2.0.0-dev.1");
     });
   });

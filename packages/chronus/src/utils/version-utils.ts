@@ -1,4 +1,5 @@
 import { gt, parse } from "semver";
+
 import type { LockstepVersionPolicy } from "../config/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { ChronusError } from "./errors.js";
@@ -34,6 +35,6 @@ export function resolveCurrentLockStepVersion(workspace: ChronusWorkspace, polic
     case "major":
       return `${major}.0.0`;
     default:
-      throw new ChronusError(`Invalid step '${policy.step}'`);
+      throw new ChronusError(`Invalid step '${String(policy.step)}'`);
   }
 }

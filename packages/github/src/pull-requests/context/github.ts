@@ -1,4 +1,5 @@
 import { readFileSync } from "fs";
+
 import type { CIContext } from "./types.js";
 
 interface GithubEnvironment {

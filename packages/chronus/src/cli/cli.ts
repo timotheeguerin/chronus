@@ -1,6 +1,8 @@
 import { readFile } from "node:fs/promises";
+
 import "source-map-support/register.js";
 import yargs from "yargs";
+
 import { NodeChronusHost } from "../utils/node-host.js";
 import { resolvePath } from "../utils/path-utils.js";
 import { addChangeset } from "./commands/add-changeset.js";
@@ -144,7 +146,11 @@ async function main() {
           })
           .option(filteringOptions),
       withErrors((args) =>
-        showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only, exclude: args.exclude }),
+        showStatus(process.cwd(), {
+          ignorePolicies: args.ignorePolicies,
+          only: args.only,
+          exclude: args.exclude,
+        }),
       ),
     )
     .command(

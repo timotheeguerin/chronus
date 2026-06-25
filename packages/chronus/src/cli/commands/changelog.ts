@@ -1,4 +1,5 @@
 import { isCI } from "std-env";
+
 import { readChangeDescriptions } from "../../change/read.js";
 import type { ChangeDescription } from "../../change/types.js";
 import { resolveChangelogGenerator } from "../../changelog/generate.js";
