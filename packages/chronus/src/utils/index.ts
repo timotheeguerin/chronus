@@ -4,6 +4,8 @@ export * from "./fs-utils.js";
 export * from "./host.js";
 export * from "./misc-utils.js";
 export * from "./node-host.js";
+export * from "./npm-registry.js";
 export * from "./path-utils.js";
+export * from "./read-tarball-manifest.js";
 export type * from "./types.js";
 export { resolveCurrentLockStepVersion, resolveLatestVersion } from "./version-utils.js";

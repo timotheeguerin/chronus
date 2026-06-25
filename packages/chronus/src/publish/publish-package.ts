@@ -1,10 +1,10 @@
 import { stat } from "fs/promises";
 
-import pacote from "pacote";
 import { isCI } from "std-env";
 
 import { execAsync, type ExecResult } from "../utils/exec-async.js";
 import { NodeChronusHost, getDirectoryPath, getLastJsonObject, lookup } from "../utils/index.js";
+import { fetchPackageManifest } from "../utils/npm-registry.js";
 import { createPnpmWorkspaceManager } from "../workspace-manager/node/pnpm.js";
 import type { PackageId } from "../workspace-manager/types.js";
 import type { PublishPackageResult } from "./types.js";
@@ -105,8 +105,7 @@ export async function publishPackageWithPnpm(
   const json = getLastJsonObject(stdoutstring);
   if (json === null) {
     const id = stdoutstring.trim().replace("+ ", "");
-    const tabballManifest = await pacote.manifest(id, {
-      fullMetadata: true,
+    const tabballManifest = await fetchPackageManifest(id, {
       registry: options.registry,
     });
 
