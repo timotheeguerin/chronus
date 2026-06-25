@@ -24,11 +24,8 @@
     "build": "pnpm -r run build",
     "clean": "pnpm -r run clean && rimraf **/.temp/",
     "lint": "eslint .",
-    "lint:sp": "syncpack lint",
-    "format": "prettier --write . && syncpack format",
+    "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check-version-mismatch": "syncpack list-mismatches",
-    "fix-version-mismatch": "syncpack fix-mismatches",
     "cspell": "cspell --no-progress ."
   },
   "devDependencies": {
@@ -48,7 +45,6 @@
     "prettier": "catalog:",
     "prettier-plugin-organize-imports": "catalog:",
     "rimraf": "catalog:",
-    "syncpack": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:",
     "typescript-eslint": "catalog:",
