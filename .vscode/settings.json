@@ -6,8 +6,6 @@
     "source.fixAll.oxc": "always"
   },
   "oxc.typeAware": true,
-  "oxc.configPath": ".oxlintrc.ts",
-  "oxc.fmt.configPath": ".oxfmtrc.ts",
   "search.exclude": {
     "**/node_modules": true,
     "dist": true

@@ -20,9 +20,9 @@
     "watch": "tsc --build ./tsconfig.ws.json --watch",
     "build": "pnpm -r run build",
     "clean": "pnpm -r run clean && rimraf **/.temp/",
-    "lint": "oxlint -c .oxlintrc.ts",
-    "format": "oxfmt -c .oxfmtrc.ts",
-    "format:check": "oxfmt -c .oxfmtrc.ts --check",
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "cspell": "cspell --no-progress ."
   },
   "devDependencies": {

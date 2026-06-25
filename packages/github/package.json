@@ -32,8 +32,8 @@
     "watch": "tsc -p ./tsconfig.build.json --watch",
     "build": "tsc -p ./tsconfig.build.json",
     "clean": "rimraf dist/ .temp/",
-    "lint": "oxlint -c ../../.oxlintrc.ts --max-warnings=0",
-    "lint:fix": "oxlint -c ../../.oxlintrc.ts --fix",
+    "lint": "oxlint --max-warnings=0",
+    "lint:fix": "oxlint --fix",
     "test": "vitest run",
     "test:watch": "vitest -w"
   },
