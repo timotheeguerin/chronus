@@ -1,11 +1,12 @@
 import { readFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 import type { ChronusHost } from "../utils/host.js";
 import { resolvePath } from "../utils/path-utils.js";
 import { renderContextAsMarkdown } from "./collect-context.js";
 import type { ReleaseNotesContext } from "./types.js";
 
-const defaultPromptPath = resolvePath(fileURLToPath(import.meta.url), "../default-prompt.md");
+// Resolved relative to the compiled output (dist/release-notes) up to the package
+// root, where the shipped `prompts/` directory lives (see `files` in package.json).
+const defaultPromptPath = resolvePath(import.meta.dirname, "../../prompts/default-prompt.md");
 
 /**
  * Load the prompt template. Uses a custom template from the workspace if configured,

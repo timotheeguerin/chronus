@@ -19,7 +19,8 @@
   },
   "files": [
     "cmd",
-    "dist"
+    "dist",
+    "prompts"
   ],
   "type": "module",
   "main": "dist/index.js",
