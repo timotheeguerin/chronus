@@ -39,9 +39,9 @@ export class RegistryError extends Error {
 }
 
 interface Packument {
-  readonly name: string;
+  readonly "name": string;
   readonly "dist-tags"?: Record<string, string>;
-  readonly versions: Record<string, RegistryManifest>;
+  readonly "versions": Record<string, RegistryManifest>;
 }
 
 interface ParsedSpec {
@@ -94,11 +94,7 @@ export async function fetchPackageManifest(
   const version = packument["dist-tags"]?.[selector] ?? selector;
   const manifest = packument.versions?.[version];
   if (manifest === undefined) {
-    throw new RegistryError(
-      "ETARGET",
-      `No matching version found for ${name}@${selector}.`,
-      "version",
-    );
+    throw new RegistryError("ETARGET", `No matching version found for ${name}@${selector}.`, "version");
   }
 
   return {
