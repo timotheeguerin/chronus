@@ -1,20 +1,17 @@
 {
   "name": "@chronus/monorepo",
   "version": "0.1.0",
-  "type": "module",
+  "private": true,
   "description": "Monorepo for chronus",
   "homepage": "https://github.com/timotheeguerin/chronus#readme",
-  "packageManager": "pnpm@10.28.1",
+  "bugs": "https://github.com/timotheeguerin/chronus/issues",
   "license": "MIT",
-  "private": true,
   "author": "Microsoft",
   "repository": "timotheeguerin/chronus.git",
-  "engines": {
-    "node": ">=20.0.0"
-  },
   "workspaces": [
     "packages/*"
   ],
+  "type": "module",
   "scripts": {
     "change": "node ./packages/chronus/cmd/cli.mjs",
     "test": "vitest run",
@@ -23,36 +20,28 @@
     "watch": "tsc --build ./tsconfig.ws.json --watch",
     "build": "pnpm -r run build",
     "clean": "pnpm -r run clean && rimraf **/.temp/",
-    "lint": "eslint .",
-    "lint:sp": "syncpack lint",
-    "format": "prettier --write . && syncpack format",
-    "format:check": "prettier --check .",
-    "check-version-mismatch": "syncpack list-mismatches",
-    "fix-version-mismatch": "syncpack fix-mismatches",
+    "lint": "oxlint",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
     "cspell": "cspell --no-progress ."
   },
   "devDependencies": {
-    "@actions/github": "^9.0.0",
+    "@actions/github": "catalog:",
     "@chronus/github": "workspace:*",
-    "@eslint/js": "^10.0.1",
-    "@types/node": "^25.5.0",
-    "@typescript-eslint/parser": "^8.57.1",
-    "@typescript-eslint/utils": "^8.57.1",
-    "@vitest/eslint-plugin": "^1.6.12",
-    "@vitest/ui": "^4.1.0",
-    "cspell": "^9.7.0",
-    "eslint": "^10.1.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-unicorn": "^63.0.0",
-    "execa": "^9.6.1",
-    "prettier": "^3.8.1",
-    "prettier-plugin-organize-imports": "^4.3.0",
-    "rimraf": "^6.1.3",
-    "syncpack": "^13.0.4",
-    "tsx": "^4.20.6",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.1",
-    "vitest": "^4.1.0"
+    "@types/node": "catalog:",
+    "@vitest/ui": "catalog:",
+    "cspell": "catalog:",
+    "execa": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "rimraf": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
-  "bugs": "https://github.com/timotheeguerin/chronus/issues"
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@11.9.0"
 }

@@ -1,4 +1,5 @@
 import pc from "picocolors";
+
 import { resolveCurrentReleasePlan } from "../../release-plan/current.js";
 import type { ReleaseAction } from "../../release-plan/types.js";
 import type { VersionType } from "../../types.js";

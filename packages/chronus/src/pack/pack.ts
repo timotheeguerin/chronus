@@ -1,9 +1,11 @@
 import { mkdir, stat } from "fs/promises";
-import pacote from "pacote";
+
 import { gte } from "semver";
+
 import { execAsync } from "../utils/exec-async.js";
 import { getLastJsonObject } from "../utils/misc-utils.js";
 import { resolvePath } from "../utils/path-utils.js";
+import { readPackageManifestFromTarball } from "../utils/read-tarball-manifest.js";
 import type { Package } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 
@@ -42,7 +44,7 @@ async function packPackageWithNpm(pkg: Package, pkgDir: string, packDestination:
   const command = getNpmCommand(packDestination);
   const result = await execAsync(command.command, command.args, { cwd: pkgDir });
   if (result.code !== 0) {
-    throw new Error(`Failed to pack package ${pkg.name} at ${pkg.relativePath}. Log:\n${result.stdall}`);
+    throw new Error(`Failed to pack package ${pkg.name} at ${pkg.relativePath}. Log:\n${result.stdall.toString()}`);
   }
 
   const parsedResult = getLastJsonObject(result.stdout.toString());
@@ -77,14 +79,14 @@ async function packPackageWithPnpm(pkg: Package, pkgDir: string, packDestination
   const result = await execAsync(command.command, command.args, { cwd: pkgDir });
 
   if (result.code !== 0) {
-    throw new Error(`Failed to pack package ${pkg.name} at ${pkg.relativePath}. Log:\n${result.stdall}`);
+    throw new Error(`Failed to pack package ${pkg.name} at ${pkg.relativePath}. Log:\n${result.stdall.toString()}`);
   }
 
   const filename = getOutputFilename(result.stdout.toString(), supportsJson);
   const path = resolvePath(packDestination, filename);
 
   const stats = await stat(path);
-  const tabballManifest = await pacote.manifest(path, { fullMetadata: true });
+  const tabballManifest = await readPackageManifestFromTarball(path);
 
   return {
     id: tabballManifest._id,

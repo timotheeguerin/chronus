@@ -1,5 +1,7 @@
 import { exit } from "node:process";
+
 import pc from "picocolors";
+
 import { publishPackage } from "../../publish/publish-package.js";
 import type { PublishPackageResult, PublishSummary } from "../../publish/types.js";
 import type { Reporter } from "../../reporters/index.js";

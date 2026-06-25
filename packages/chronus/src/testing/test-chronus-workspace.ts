@@ -1,4 +1,5 @@
 import { stringify } from "yaml";
+
 import type { ChronusResolvedConfig, ChronusUserConfig } from "../config/types.js";
 import type { ChronusWorkspace } from "../index.js";
 import type { VersionType } from "../types.js";
@@ -16,7 +17,13 @@ export const TestingChangeKinds = {
 
 function mkPkg(name: string, manifest: Partial<PackageJson>): Package {
   const version = manifest.version ?? "1.0.0";
-  return { name, relativePath: `packages/${name}`, version, dependencies: new Map(), ecosystem: "npm" };
+  return {
+    name,
+    relativePath: `packages/${name}`,
+    version,
+    dependencies: new Map(),
+    ecosystem: "npm",
+  };
 }
 
 const baseUserConfig: ChronusUserConfig = {

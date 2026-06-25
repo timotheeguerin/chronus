@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import type { ChronusWorkspace } from "../../dist/index.js";
 import type { GitRepository } from "../source-control/git.js";
 import { createTestChronusWorkspace } from "../testing/test-chronus-workspace.js";
@@ -43,10 +44,9 @@ describe("collect changes", () => {
     });
     expect(result.all.packageChanged).toEqual([workspace.getPackage("pkg-a")]);
     expect(result[key].packageChanged).toEqual([workspace.getPackage("pkg-a")]);
-    for (const [cur, value] of Object.entries(result)) {
-      if (cur !== "all" && cur !== "packages" && cur !== key) {
-        expect(value.packageChanged).toHaveLength(0);
-      }
+    const otherChanges = Object.entries(result).filter(([cur]) => cur !== "all" && cur !== "packages" && cur !== key);
+    for (const [, value] of otherChanges) {
+      expect(value.packageChanged).toHaveLength(0);
     }
   });
 });

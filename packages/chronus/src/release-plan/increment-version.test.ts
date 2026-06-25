@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import type { VersionType } from "../types.js";
 import { incrementVersion } from "./increment-version.js";
 

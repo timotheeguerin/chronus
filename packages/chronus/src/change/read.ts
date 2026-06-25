@@ -25,7 +25,9 @@ export async function readChangeDescriptions(
   host: ChronusHost,
   workspace: ChronusWorkspace,
 ): Promise<ChangeDescription[]> {
-  const changelogs = await host.glob(resolvePath(changesRelativeDir, "*.md"), { baseDir: workspace.path });
+  const changelogs = await host.glob(resolvePath(changesRelativeDir, "*.md"), {
+    baseDir: workspace.path,
+  });
   const changesets = await Promise.all(
     changelogs.map(async (x) => {
       try {

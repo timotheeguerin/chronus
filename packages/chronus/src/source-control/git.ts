@@ -1,4 +1,5 @@
 import { existsSync } from "fs";
+
 import { execAsync, type ExecResult } from "../utils/exec-async.js";
 import { resolvePath } from "../utils/path-utils.js";
 
@@ -157,7 +158,9 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
 
   async function listUntrackedOrModifiedFiles() {
     return splitStdoutLines(
-      await execGit(["ls-files", "--modified", "--others", "--exclude-standard"], { repositoryPath }),
+      await execGit(["ls-files", "--modified", "--others", "--exclude-standard"], {
+        repositoryPath,
+      }),
     );
   }
 
@@ -189,7 +192,9 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     if (remoteBase === undefined) {
       // Try remote tracking branch first, fall back to local branch if no remote exists
       try {
-        await execGit(["rev-parse", "--verify", `refs/remotes/origin/${baseBranch}`], { repositoryPath });
+        await execGit(["rev-parse", "--verify", `refs/remotes/origin/${baseBranch}`], {
+          repositoryPath,
+        });
         remoteBase = `refs/remotes/origin/${baseBranch}`;
       } catch {
         // No remote, use local branch
@@ -229,7 +234,9 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
       const commitInfos = await Promise.all(
         remaining.map(async (gitPath: string) => {
           const [commitSha, parentSha] = trimSingleLine(
-            await execGit(["log", "--diff-filter=A", "--max-count=1", "--format=%H:%p", gitPath], { repositoryPath }),
+            await execGit(["log", "--diff-filter=A", "--max-count=1", "--format=%H:%p", gitPath], {
+              repositoryPath,
+            }),
           ).split(":");
           return { path: gitPath, commitSha, parentSha };
         }),

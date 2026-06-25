@@ -30,7 +30,7 @@ async function findEcosystem(host: ChronusHost, root: string): Promise<Ecosystem
   throw new ChronusError(`Cannot auto-discover ecosystem in ${root}. Please specify the ecosystem type explicitly.`);
 }
 
-export async function getWorkspaceManager(host: ChronusHost, root: string, type?: string | "auto"): Promise<Ecosystem> {
+export async function getWorkspaceManager(host: ChronusHost, root: string, type?: string): Promise<Ecosystem> {
   if (type === "auto" || type === undefined) {
     return findEcosystem(host, root);
   }

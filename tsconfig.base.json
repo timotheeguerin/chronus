@@ -15,6 +15,7 @@
     "strict": true,
     "declaration": true,
     "stripInternal": true,
+    "skipLibCheck": true,
     "target": "ES2022",
     "types": ["node"],
     "lib": ["ES2022"],

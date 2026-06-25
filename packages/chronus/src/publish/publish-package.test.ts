@@ -1,11 +1,13 @@
-import { REGISTRY_MOCK_PORT, prepare, start } from "@chronus/registry-mock";
 import type { ChildProcess } from "child_process";
 import { mkdir, readFile, writeFile } from "fs/promises";
-import pacote, { type Manifest } from "pacote";
+
+import { REGISTRY_MOCK_PORT, prepare, start } from "@chronus/registry-mock";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { stringify } from "yaml";
+
 import { createTestDir, type TestDir } from "../testing/test-dir.js";
 import { execAsync } from "../utils/exec-async.js";
+import { fetchPackageManifest, type RegistryManifest } from "../utils/npm-registry.js";
 import { resolvePath } from "../utils/path-utils.js";
 import type { Package, PackageJson } from "../workspace-manager/types.js";
 import { publishPackageWithNpm, publishPackageWithPnpm } from "./publish-package.js";
@@ -77,18 +79,20 @@ async function patchPackageJson(pkg: TestPackage, manifestProps: Partial<Package
 async function execAsyncSuccess(cmd: string, args: string[], { cwd }: { cwd?: string } = {}) {
   const result = await execAsync(cmd, args, { cwd });
   if (result.code !== 0) {
-    throw new Error(`Failed to run npm: ${JSON.stringify(args)}\n${result.stdall}`);
+    throw new Error(`Failed to run npm: ${JSON.stringify(args)}\n${result.stdall.toString()}`);
   }
 }
 async function runNpm(args: string[], { cwd }: { cwd?: string } = {}) {
   await execAsyncSuccess("npm", args, { cwd });
 }
 function getTagVersion(pkg: TestPackage, tag: string) {
-  return pacote.manifest(`${pkg.name}@${tag}`, { registry: MOCK_REGISTRY }).then((manifest) => manifest.version);
+  return fetchPackageManifest(`${pkg.name}@${tag}`, { registry: MOCK_REGISTRY }).then((manifest) => manifest.version);
 }
 
-async function checkPackagePublished(name: string, extra: Partial<Manifest> = {}) {
-  const manifest = await pacote.manifest(`${name}@1.0.0`, { registry: MOCK_REGISTRY, fullMetadata: true });
+async function checkPackagePublished(name: string, extra: Partial<RegistryManifest> = {}) {
+  const manifest = await fetchPackageManifest(`${name}@1.0.0`, {
+    registry: MOCK_REGISTRY,
+  });
   expect(manifest).toMatchObject({
     ...extra,
     _id: `${name}@1.0.0`,
@@ -178,6 +182,7 @@ describe("with pnpm", () => {
     await checkPackagePublished("pkg-pnpm-a");
   });
 
+  // oxlint-disable-next-line vitest/no-disabled-tests -- intentionally skipped: slow/flaky end-to-end tgz publish
   it.skip("publish tgz", { timeout: 20_000 }, async () => {
     const pkg = await createTestPackage("packages/pkg-pnpm-b", "pkg-pnpm-b");
 

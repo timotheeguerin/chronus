@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { stringify } from "yaml";
+
 import { createTestHost, type TestHost } from "../testing/test-host.js";
 import { loadPackages } from "./auto-discover.js";
 

@@ -4,6 +4,7 @@ import type { Reporter } from "@chronus/chronus/reporters";
 import { ChronusError, resolveCurrentLockStepVersion, type ChronusHost } from "@chronus/chronus/utils";
 import { Octokit } from "octokit";
 import pc from "picocolors";
+
 import type { LockstepVersionPolicy } from "../../../../chronus/dist/config/types.js";
 import type { GithubRepo } from "../../types.js";
 import { getGithubToken } from "../../utils/gh-token.js";

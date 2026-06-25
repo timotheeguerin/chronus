@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import type { ChangeDescription } from "../change/types.js";
 import { addNameToChangeKinds, defaultChangeKinds } from "../config/resolve.js";
 import type { ChronusResolvedConfig } from "../config/types.js";
@@ -23,7 +24,10 @@ describe("Assemble Release Plan", () => {
 
   function mkPkg(name: string, manifest: PackageJson): Package {
     const version = manifest.version ?? "1.0.0";
-    return { relativePath: `packages/${name}`, ...createPackageFromPackageJson({ ...manifest, name, version }, "npm") };
+    return {
+      relativePath: `packages/${name}`,
+      ...createPackageFromPackageJson({ ...manifest, name, version }, "npm"),
+    };
   }
   const workspace: Package[] = [
     mkPkg("pkg-a", {}),
@@ -44,7 +48,11 @@ describe("Assemble Release Plan", () => {
     it("only packages with changeset", () => {
       const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
       expect(plan.actions).toHaveLength(1);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
     });
     describe("picks the heighest version type", () => {
       it("major", () => {
@@ -53,7 +61,11 @@ describe("Assemble Release Plan", () => {
           createChronusWorkspace(workspace, baseConfig),
         );
         expect(plan.actions).toHaveLength(1);
-        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "2.0.0" });
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-a",
+          oldVersion: "1.0.0",
+          newVersion: "2.0.0",
+        });
       });
       it("minor", () => {
         const plan = assembleReleasePlan(
@@ -61,7 +73,11 @@ describe("Assemble Release Plan", () => {
           createChronusWorkspace(workspace, baseConfig),
         );
         expect(plan.actions).toHaveLength(1);
-        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-a",
+          oldVersion: "1.0.0",
+          newVersion: "1.1.0",
+        });
       });
     });
 
@@ -71,8 +87,16 @@ describe("Assemble Release Plan", () => {
         createChronusWorkspace(workspace, baseConfig),
       );
       expect(plan.actions).toHaveLength(2);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
-      expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.0.1" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
+      expect(plan.actions[1]).toMatchObject({
+        packageName: "pkg-b",
+        oldVersion: "1.0.0",
+        newVersion: "1.0.1",
+      });
     });
 
     describe("bumps dependencies", () => {
@@ -85,7 +109,11 @@ describe("Assemble Release Plan", () => {
           oldVersion: "1.0.0",
           newVersion: "1.1.0",
         });
-        expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.0.1" });
+        expect(plan.actions[1]).toMatchObject({
+          packageName: "pkg-b",
+          oldVersion: "1.0.0",
+          newVersion: "1.0.1",
+        });
       });
 
       it("dependency with workspace: requirement are only bumped if the new version will be incompatible with last release", () => {
@@ -101,7 +129,11 @@ describe("Assemble Release Plan", () => {
           oldVersion: "1.0.0",
           newVersion: "1.1.0",
         });
-        expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.0.1" });
+        expect(plan.actions[1]).toMatchObject({
+          packageName: "pkg-b",
+          oldVersion: "1.0.0",
+          newVersion: "1.0.1",
+        });
       });
     });
 
@@ -139,8 +171,16 @@ describe("Assemble Release Plan", () => {
     it("bumps all packages in the lockstep if one changed", () => {
       const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, lockStepConfig));
       expect(plan.actions).toHaveLength(2);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
-      expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
+      expect(plan.actions[1]).toMatchObject({
+        packageName: "pkg-b",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
     });
 
     it("bumps all packages in the lockstep of the step regardless of what changesets says (higher)", () => {
@@ -149,8 +189,16 @@ describe("Assemble Release Plan", () => {
         createChronusWorkspace(workspace, lockStepConfig),
       );
       expect(plan.actions).toHaveLength(2);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
-      expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
+      expect(plan.actions[1]).toMatchObject({
+        packageName: "pkg-b",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
     });
 
     it("bumps all packages in the lockstep of the step regardless of what changesets says (lower)", () => {
@@ -159,8 +207,16 @@ describe("Assemble Release Plan", () => {
         createChronusWorkspace(workspace, lockStepConfig),
       );
       expect(plan.actions).toHaveLength(2);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
-      expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
+      expect(plan.actions[1]).toMatchObject({
+        packageName: "pkg-b",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
     });
 
     it("ignore policy when options.ignorePolicies: true", () => {
@@ -170,8 +226,16 @@ describe("Assemble Release Plan", () => {
         { ignorePolicies: true },
       );
       expect(plan.actions).toHaveLength(2);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.0.1" });
-      expect(plan.actions[1]).toMatchObject({ packageName: "pkg-c", oldVersion: "1.0.0", newVersion: "1.0.1" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.0.1",
+      });
+      expect(plan.actions[1]).toMatchObject({
+        packageName: "pkg-c",
+        oldVersion: "1.0.0",
+        newVersion: "1.0.1",
+      });
     });
   });
 
@@ -204,7 +268,11 @@ describe("Assemble Release Plan", () => {
       ];
       const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
       expect(plan.actions).toHaveLength(1);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
     });
   });
 
@@ -217,7 +285,11 @@ describe("Assemble Release Plan", () => {
         { only: ["pkg-a"] },
       );
       expect(plan.actions).toHaveLength(1);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
     });
 
     it("ignore packages that would need to be bumped as dependent", () => {
@@ -226,7 +298,11 @@ describe("Assemble Release Plan", () => {
         only: ["pkg-a"],
       });
       expect(plan.actions).toHaveLength(1);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
     });
 
     it("report changes as fully used if bumping all packages tagged in it", () => {
@@ -267,8 +343,16 @@ describe("Assemble Release Plan", () => {
           { only: ["lockStep"] },
         );
         expect(plan.actions).toHaveLength(2);
-        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
-        expect(plan.actions[1]).toMatchObject({ packageName: "pkg-b", oldVersion: "1.0.0", newVersion: "1.1.0" });
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-a",
+          oldVersion: "1.0.0",
+          newVersion: "1.1.0",
+        });
+        expect(plan.actions[1]).toMatchObject({
+          packageName: "pkg-b",
+          oldVersion: "1.0.0",
+          newVersion: "1.1.0",
+        });
       });
     });
   });
@@ -282,7 +366,11 @@ describe("Assemble Release Plan", () => {
         { exclude: ["pkg-b"] },
       );
       expect(plan.actions).toHaveLength(1);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
     });
 
     it("ignore packages that would need to be bumped as dependent", () => {
@@ -291,7 +379,11 @@ describe("Assemble Release Plan", () => {
         exclude: ["pkg-b"],
       });
       expect(plan.actions).toHaveLength(1);
-      expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-a",
+        oldVersion: "1.0.0",
+        newVersion: "1.1.0",
+      });
     });
 
     it("report changes as partially used if only bumping some packages tagged in it", () => {
@@ -320,7 +412,11 @@ describe("Assemble Release Plan", () => {
           { exclude: ["lockStep"] },
         );
         expect(plan.actions).toHaveLength(1);
-        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-c", oldVersion: "1.0.0", newVersion: "1.0.1" });
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-c",
+          oldVersion: "1.0.0",
+          newVersion: "1.0.1",
+        });
       });
 
       it("excludes individual package within a lockstep policy by package name", () => {
@@ -330,7 +426,11 @@ describe("Assemble Release Plan", () => {
           { exclude: ["pkg-b"] },
         );
         expect(plan.actions).toHaveLength(1);
-        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" });
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-a",
+          oldVersion: "1.0.0",
+          newVersion: "1.1.0",
+        });
       });
 
       it("excludes packages in a policy from being added as dependents", () => {
@@ -347,7 +447,11 @@ describe("Assemble Release Plan", () => {
         // pkg-b depends on pkg-a with incompatible range, but is excluded via policy
         // pkg-a is also excluded via policy, so only pkg-c should have an action
         expect(plan.actions).toHaveLength(1);
-        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-c", oldVersion: "1.0.0", newVersion: "1.0.1" });
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-c",
+          oldVersion: "1.0.0",
+          newVersion: "1.0.1",
+        });
       });
     });
   });

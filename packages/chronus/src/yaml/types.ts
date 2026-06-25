@@ -1,4 +1,5 @@
 import type { Document } from "yaml";
+
 import type { EmbeddedFile, TextFile } from "../file/index.js";
 
 export interface YamlFile {

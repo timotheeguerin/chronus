@@ -1,5 +1,6 @@
-import pacote from "pacote";
 import type { ChronusWorkspace } from "../index.js";
+import { fetchPackageManifest, RegistryError } from "../utils/npm-registry.js";
+import { readPackageManifestFromTarball } from "../utils/read-tarball-manifest.js";
 import type { Package, PackageId } from "../workspace-manager/types.js";
 
 export async function findUnpublishedWorkspacePackages(workspace: ChronusWorkspace): Promise<Package[]> {
@@ -13,7 +14,7 @@ export async function findUnpublishedWorkspacePackages(workspace: ChronusWorkspa
 export async function findUnpublishedPackages(tarballs: string[]): Promise<(PackageId & { tarballPath: string })[]> {
   const data = await Promise.all(
     tarballs.map(async (tarball) => {
-      const manifest = await pacote.manifest(tarball);
+      const manifest = await readPackageManifestFromTarball(tarball);
       const packageBase: PackageId & { tarballPath: string } = {
         name: manifest.name,
         version: manifest.version,
@@ -27,29 +28,12 @@ export async function findUnpublishedPackages(tarballs: string[]): Promise<(Pack
 
 async function isPackageVersionPublished(name: string, version: string): Promise<boolean> {
   try {
-    const manifest = await pacote.manifest(`${name}@${version}`);
+    const manifest = await fetchPackageManifest(`${name}@${version}`);
     return manifest.version === version;
   } catch (e: unknown) {
-    if (isPacoteError(e) && ((e.code === "ETARGET" && e.type === "version") || e.code === "E404")) {
+    if (e instanceof RegistryError && (e.code === "E404" || (e.code === "ETARGET" && e.type === "version"))) {
       return false;
     }
     throw e;
   }
-}
-
-function isPacoteError(e: unknown): e is PacoteError | HttpError {
-  return typeof e === "object" && e !== null && "code" in e;
-}
-
-interface HttpError {
-  readonly code: "E404";
-}
-interface PacoteError {
-  readonly code: "ETARGET";
-  readonly type: "version";
-  readonly wanted: string;
-  readonly versions: string[];
-  readonly name: string;
-  readonly distTags: Record<string, string>;
-  readonly defaultTag: string;
 }

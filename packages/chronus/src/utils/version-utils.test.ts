@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import type { LockstepVersionPolicy } from "../config/types.js";
 import type { ChronusWorkspace } from "../index.js";
 import type { VersionType } from "../types.js";

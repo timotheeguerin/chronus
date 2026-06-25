@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
-import "source-map-support/register.js";
+
 import yargs from "yargs";
+
 import { NodeChronusHost } from "../utils/node-host.js";
 import { resolvePath } from "../utils/path-utils.js";
 import { addChangeset } from "./commands/add-changeset.js";
@@ -13,6 +14,8 @@ import { releaseNotes } from "./commands/release-notes.js";
 import { showStatus } from "./commands/show-status.js";
 import { verifyChangeset } from "./commands/verify-changeset.js";
 import { withErrors, withErrorsAndReporter } from "./utils.js";
+
+process.setSourceMapsEnabled(true);
 
 export const DEFAULT_PORT = 3000;
 
@@ -145,7 +148,11 @@ async function main() {
           })
           .option(filteringOptions),
       withErrors((args) =>
-        showStatus(process.cwd(), { ignorePolicies: args.ignorePolicies, only: args.only, exclude: args.exclude }),
+        showStatus(process.cwd(), {
+          ignorePolicies: args.ignorePolicies,
+          only: args.only,
+          exclude: args.exclude,
+        }),
       ),
     )
     .command(

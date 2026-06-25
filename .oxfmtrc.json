@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "trailingComma": "all",
+  "printWidth": 120,
+  "quoteProps": "consistent",
+  "endOfLine": "lf",
+  "arrowParens": "always",
+  // Replaces prettier-plugin-organize-imports (sorts imports; does not remove unused ones).
+  "sortImports": true,
+  // Keep package.json key order untouched.
+  "sortPackageJson": false,
+  // .gitignore is respected by default; these are the extra Prettier-era ignores.
+  "ignorePatterns": ["pnpm-lock.yaml", "**/CHANGELOG.md", ".chronus/changes/**/*.md"]
+}

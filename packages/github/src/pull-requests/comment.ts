@@ -8,6 +8,7 @@ import {
 } from "@chronus/chronus";
 import { printChangeDescription, resolveChangeRelativePath, type ChangeDescription } from "@chronus/chronus/change";
 import { Octokit } from "octokit";
+
 import { getGithubToken } from "../utils/gh-token.js";
 import type { PullRequestContext } from "./context/types.js";
 import { collapsibleSection } from "./markdown.js";
@@ -129,7 +130,9 @@ function newChangeDescriptionUrl(
       packages: undocummentedPackages.map((x) => x.package.name),
       content: context.prTitle,
     },
-    { frontMatterComment: `Change versionKind to one of: ${Object.keys(workspace.config.changeKinds).join(", ")}` },
+    {
+      frontMatterComment: `Change versionKind to one of: ${Object.keys(workspace.config.changeKinds).join(", ")}`,
+    },
   );
   return `${repoUrl}/new/${context.headRef}?filename=${filename}&value=${encodeURIComponent(content)}`;
 }

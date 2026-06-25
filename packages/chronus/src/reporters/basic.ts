@@ -1,5 +1,6 @@
 import pc from "picocolors";
 import { isCI } from "std-env";
+
 import { F_CHECK, F_CROSS, F_DOT } from "../utils/figures.js";
 import type { Reporter, Task, TaskStatus } from "./types.js";
 
