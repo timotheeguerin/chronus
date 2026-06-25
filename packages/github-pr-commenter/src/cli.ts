@@ -6,10 +6,11 @@ try {
 } catch {
   // package only present in dev.
 }
-import type { ChangeStatusComment } from "@chronus/github/pull-requests";
-import { Octokit } from "@octokit/rest";
 import { readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
+
+import type { ChangeStatusComment } from "@chronus/github/pull-requests";
+import { Octokit } from "@octokit/rest";
 
 const magicString = "<!--chronus-github-change-commenter-->";
 

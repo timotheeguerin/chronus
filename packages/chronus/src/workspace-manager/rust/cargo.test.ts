@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { createTestHost, type TestHost } from "../../testing/test-host.js";
 import type { Ecosystem } from "../types.js";
 import { CargoWorkspaceManager } from "./cargo.js";

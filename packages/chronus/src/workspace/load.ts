@@ -1,4 +1,5 @@
 import micromatch from "micromatch";
+
 import { resolveConfig } from "../config/index.js";
 import type { ChronusResolvedConfig, VersionPolicy } from "../config/types.js";
 import { ChronusError, throwIfDiagnostic, type Diagnostic } from "../utils/errors.js";

@@ -84,7 +84,10 @@ function reduceChanges(
   changes: ChangeDescription[],
   workspace: ChronusWorkspace,
   filters: { only?: string[]; exclude?: string[] } = {},
-): { changeApplications: ReleasePlanChangeApplication[]; actions: Map<string, InternalReleaseAction> } {
+): {
+  changeApplications: ReleasePlanChangeApplication[];
+  actions: Map<string, InternalReleaseAction>;
+} {
   const actions: Map<string, InternalReleaseAction> = new Map();
   const changeApplications: ReleasePlanChangeApplication[] = [];
   for (const change of changes) {
@@ -107,7 +110,7 @@ function reduceChanges(
       let release: InternalReleaseAction | undefined = actions.get(name);
       if (!pkg) {
         throw new Error(
-          `"${change}" changeset mentions a release for a package "${name}" but such a package could not be found.`,
+          `"${change.id}" changeset mentions a release for a package "${name}" but such a package could not be found.`,
         );
       }
       if (!release) {

@@ -1,9 +1,13 @@
 {
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.format.oxc": "always",
+    "source.fixAll.oxc": "always"
   },
+  "oxc.typeAware": true,
+  "oxc.configPath": ".oxlintrc.ts",
+  "oxc.fmt.configPath": ".oxfmtrc.ts",
   "search.exclude": {
     "**/node_modules": true,
     "dist": true
@@ -11,6 +15,6 @@
   "files.eol": "\n",
   "typescript.tsdk": "node_modules/typescript/lib",
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  }
 }

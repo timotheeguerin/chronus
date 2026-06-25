@@ -3,6 +3,7 @@ import { resolveChangeRelativePath } from "@chronus/chronus/change";
 import { defineChangelogGenerator } from "@chronus/chronus/changelog";
 import { createGitSourceControl } from "@chronus/chronus/source-control/git";
 import { ChronusError } from "@chronus/chronus/utils";
+
 import type { ChangelogGeneratorInit } from "../../../chronus/dist/changelog/types.js";
 import { getGithubToken } from "../utils/gh-token.js";
 import { getGithubInfoForChange } from "./fetch-pr-info.js";

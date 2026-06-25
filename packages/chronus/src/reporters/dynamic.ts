@@ -1,4 +1,5 @@
 import pc from "picocolors";
+
 import { BasicReporter } from "./basic.js";
 import type { Reporter, Task, TaskStatus } from "./types.js";
 import { createSpinner } from "./utils.js";

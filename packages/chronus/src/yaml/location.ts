@@ -1,5 +1,6 @@
 import { isCollection, isMap, isScalar, type Node } from "yaml";
 import { findPair } from "yaml/util";
+
 import type { FileLocation } from "../utils/errors.js";
 import type { YamlFile } from "./types.js";
 

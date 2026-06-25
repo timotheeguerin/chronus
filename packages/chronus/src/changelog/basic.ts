@@ -1,4 +1,5 @@
 import pluralize from "pluralize";
+
 import type { ChangeDescription } from "../change/types.js";
 import type { ChronusWorkspace } from "../workspace/index.js";
 

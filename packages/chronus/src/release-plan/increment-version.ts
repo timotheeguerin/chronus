@@ -1,5 +1,6 @@
 import { parse } from "semver";
 import semverInc from "semver/functions/inc.js";
+
 import type { InternalReleaseAction } from "./types.internal.js";
 
 export function incrementVersion(release: InternalReleaseAction) {

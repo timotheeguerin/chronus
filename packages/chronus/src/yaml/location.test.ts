@@ -1,5 +1,7 @@
 import { strictEqual } from "assert";
+
 import { describe, it } from "vitest";
+
 import { extractCursor } from "../testing/test-utils.js";
 import { getLocationInYamlScript } from "./location.js";
 import { parseYaml } from "./parse.js";

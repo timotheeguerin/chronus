@@ -1,7 +1,9 @@
+import { execSync } from "child_process";
+
 /* eslint-disable no-console */
 // @ts-check
 import { context, getOctokit } from "@actions/github";
-import { execSync } from "child_process";
+
 import {
   NodeChronusHost,
   renderReleasePlanAsMarkdown,

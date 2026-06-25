@@ -1,4 +1,5 @@
 import { parse } from "smol-toml";
+
 import { isPathAccessible } from "../../utils/fs-utils.js";
 import type { ChronusHost } from "../../utils/host.js";
 import { isDefined } from "../../utils/misc-utils.js";
@@ -44,7 +45,11 @@ export class PipWorkspaceManager implements Ecosystem {
   }
 
   async loadPattern(host: ChronusHost, root: string, pattern: string): Promise<Package[]> {
-    const dirs = await host.glob(pattern, { baseDir: root, onlyDirectories: true, ignore: defaultIgnorePatterns });
+    const dirs = await host.glob(pattern, {
+      baseDir: root,
+      onlyDirectories: true,
+      ignore: defaultIgnorePatterns,
+    });
     const packages = await Promise.all(dirs.map((x) => tryLoadPackage(host, root, x)));
     return packages.filter(isDefined);
   }

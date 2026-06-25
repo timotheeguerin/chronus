@@ -1,5 +1,6 @@
 import pc from "picocolors";
 import type { Formatter } from "picocolors/types.js";
+
 import type { TextFile } from "../file/types.js";
 import { DynamicReporter } from "../reporters/dynamic.js";
 import type { Reporter } from "../reporters/types.js";

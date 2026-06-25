@@ -1,5 +1,6 @@
 import pc from "picocolors";
 import prompts from "prompts";
+
 import type { ChangeStatus } from "../../change/find.js";
 import { findChangeStatus } from "../../change/index.js";
 import { writeChangeDescription } from "../../change/write.js";

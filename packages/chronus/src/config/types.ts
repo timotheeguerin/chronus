@@ -15,7 +15,7 @@ export interface ChronusUserConfig {
    */
   readonly packages?: (string | PackageOrWorkspaceConfig)[];
   /** Workspace type: pnpm, npm, yarn or auto */
-  readonly workspaceType?: string | "auto";
+  readonly workspaceType?: string;
   /**
    * Additional packages that do not belong the workspace
    * @deprecated use `packages` instead

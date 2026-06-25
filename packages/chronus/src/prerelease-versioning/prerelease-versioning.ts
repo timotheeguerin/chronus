@@ -1,4 +1,5 @@
 import { inc, parse } from "semver";
+
 import type { VersionAction } from "../apply-release-plan/get-manifest-patch-request.js";
 import type { ChangeDescription } from "../change/types.js";
 import { assembleReleasePlan } from "../release-plan/assemble-release-plan.js";
