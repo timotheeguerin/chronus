@@ -40,7 +40,6 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "rimraf": "catalog:",
-    "source-map-support": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-bundle-visualizer": "catalog:"

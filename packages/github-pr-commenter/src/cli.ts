@@ -1,16 +1,11 @@
 /* eslint-disable no-console */
-try {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  await import("source-map-support/register.js");
-} catch {
-  // package only present in dev.
-}
 import { readFile } from "node:fs/promises";
 import { parseArgs } from "node:util";
 
 import type { ChangeStatusComment } from "@chronus/github/pull-requests";
 import { Octokit } from "@octokit/rest";
+
+process.setSourceMapsEnabled(true);
 
 const magicString = "<!--chronus-github-change-commenter-->";
 

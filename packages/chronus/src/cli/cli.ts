@@ -1,6 +1,5 @@
 import { readFile } from "node:fs/promises";
 
-import "source-map-support/register.js";
 import yargs from "yargs";
 
 import { NodeChronusHost } from "../utils/node-host.js";
@@ -14,6 +13,8 @@ import { publish } from "./commands/publish.js";
 import { showStatus } from "./commands/show-status.js";
 import { verifyChangeset } from "./commands/verify-changeset.js";
 import { withErrors, withErrorsAndReporter } from "./utils.js";
+
+process.setSourceMapsEnabled(true);
 
 export const DEFAULT_PORT = 3000;
 
