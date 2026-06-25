@@ -10,11 +10,11 @@
     "clean": "rimraf dist .astro"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.34.0",
-    "astro": "^5.7.0",
-    "sharp": "^0.34.5"
+    "@astrojs/starlight": "catalog:",
+    "astro": "catalog:",
+    "sharp": "catalog:"
   },
   "devDependencies": {
-    "rimraf": "^6.1.3"
+    "rimraf": "catalog:"
   }
 }

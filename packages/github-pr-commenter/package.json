@@ -37,15 +37,15 @@
   },
   "dependencies": {
     "@chronus/github": "workspace:*",
-    "@octokit/rest": "^22.0.1"
+    "@octokit/rest": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "rimraf": "^6.1.3",
-    "source-map-support": "^0.5.21",
-    "typescript": "^5.9.3",
-    "vite": "^7.2.2",
-    "vite-bundle-visualizer": "^1.2.1"
+    "@types/node": "catalog:",
+    "rimraf": "catalog:",
+    "source-map-support": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-bundle-visualizer": "catalog:"
   },
   "bugs": "https://github.com/timotheeguerin/chronus/issues"
 }
