@@ -41,9 +41,7 @@ const releaseNotesSchema = z
   .object({
     prompt: z.string().optional(),
     output: z.string().optional(),
-    enrichers: z
-      .array(z.union([z.string(), z.tuple([z.string(), z.record(z.string(), z.unknown())])]))
-      .optional(),
+    enrichers: z.array(z.union([z.string(), z.tuple([z.string(), z.record(z.string(), z.unknown())])])).optional(),
     tool: z.enum(["copilot", "claude", "none"]).optional(),
   })
   .strict();

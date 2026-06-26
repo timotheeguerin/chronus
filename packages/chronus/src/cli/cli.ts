@@ -277,8 +277,7 @@ async function main() {
           .option("output", {
             short: "o",
             type: "string",
-            description:
-              "Write the result to a file instead of stdout. Overrides `releaseNotes.output` in config.",
+            description: "Write the result to a file instead of stdout. Overrides `releaseNotes.output` in config.",
           })
           .option("format", {
             type: "string",

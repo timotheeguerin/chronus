@@ -2,6 +2,7 @@ import { type ChronusWorkspace } from "@chronus/chronus";
 import { resolveChangeRelativePath } from "@chronus/chronus/change";
 import type { ReleaseNotesChange, ReleaseNotesContextEnricher } from "@chronus/chronus/release-notes";
 import { createGitSourceControl } from "@chronus/chronus/source-control/git";
+
 import { getGithubInfoForChange } from "../changelog/fetch-pr-info.js";
 import { getGithubToken } from "../utils/gh-token.js";
 

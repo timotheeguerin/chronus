@@ -1,9 +1,10 @@
 import pc from "picocolors";
 import { isCI } from "std-env";
+
+import { createSpinner } from "../reporters/utils.js";
 import { ChronusError } from "../utils/errors.js";
 import { execAsync } from "../utils/exec-async.js";
 import { F_CHECK, F_CROSS } from "../utils/figures.js";
-import { createSpinner } from "../reporters/utils.js";
 import type { ReleaseNotesTool } from "./types.js";
 
 interface ToolInvocation {
@@ -104,10 +105,7 @@ async function withSpinner<T>(message: string, action: () => Promise<T>): Promis
  * Run the rendered prompt through an AI CLI (`copilot` or `claude`) in non-interactive
  * mode and return its stdout as the generated release notes.
  */
-export async function invokeReleaseNotesTool(
-  tool: Exclude<ReleaseNotesTool, "none">,
-  prompt: string,
-): Promise<string> {
+export async function invokeReleaseNotesTool(tool: Exclude<ReleaseNotesTool, "none">, prompt: string): Promise<string> {
   const invocation = tools[tool];
   if (!invocation) {
     throw new ChronusError(`Unknown release notes tool '${tool}'. Expected one of: copilot, claude, none.`);

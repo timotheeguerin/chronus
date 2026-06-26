@@ -6,8 +6,8 @@ import {
 import { invokeReleaseNotesTool } from "../../release-notes/invoke-tool.js";
 import { loadPromptTemplate, renderPrompt } from "../../release-notes/render-prompt.js";
 import type { ReleaseNotesConfig, ReleaseNotesContext, ReleaseNotesOptions } from "../../release-notes/types.js";
-import { getDirectoryPath, resolvePath } from "../../utils/path-utils.js";
 import type { ChronusHost } from "../../utils/host.js";
+import { getDirectoryPath, resolvePath } from "../../utils/path-utils.js";
 import { loadChronusWorkspace } from "../../workspace/index.js";
 
 export async function releaseNotes(host: ChronusHost, options: ReleaseNotesOptions) {

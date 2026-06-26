@@ -188,7 +188,7 @@ function renderPrLink(metadata: Record<string, unknown> | undefined): string {
   if (!metadata) return "";
   const prNumber = metadata["prNumber"];
   const prUrl = metadata["prUrl"];
-  if (prNumber && prUrl) {
+  if (typeof prNumber === "number" && typeof prUrl === "string") {
     return `[#${prNumber}](${prUrl}) `;
   }
   return "";

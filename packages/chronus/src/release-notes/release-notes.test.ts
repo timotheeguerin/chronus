@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { renderContextAsMarkdown } from "./collect-context.js";
 import { renderPrompt } from "./render-prompt.js";
 import type { ReleaseNotesContext } from "./types.js";

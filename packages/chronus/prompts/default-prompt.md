@@ -27,7 +27,7 @@ Produce a single Markdown document with this structure:
 
 <Optional code example, reproduced from the change description if one is available.>
 
-Related PR: [#<number>](<url>)
+Related PR: [#<number>](url)
 
 <repeat for 3–6 top highlights>
 
@@ -37,7 +37,7 @@ Related PR: [#<number>](<url>)
 
 <1–2 sentences explaining what was broken and how it's fixed now. Include a code example only if the change description contains one.>
 
-Related PR: [#<number>](<url>)
+Related PR: [#<number>](url)
 
 <repeat for notable bug fixes worth narrating>
 
@@ -57,7 +57,7 @@ Mechanically list ALL non-internal changes, grouped by change kind (e.g. Breakin
 
 #### <package>
 
-- <description> ([#<number>](<url>) when available)
+- <description> ([#<number>](url) when available)
 
 ## Section guidelines
 
