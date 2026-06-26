@@ -1,5 +1,14 @@
 # @chronus/chronus
 
+## 1.4.0
+
+### Features
+
+- [#582](https://github.com/timotheeguerin/chronus/pull/582) Bump minimum supported Node.js version to 22
+- [#557](https://github.com/timotheeguerin/chronus/pull/557) [API] Expose reporters
+- [#581](https://github.com/timotheeguerin/chronus/pull/581) Replace `pacote` dependency with a lightweight `fetch`-based registry helper and `nanotar` for reading tarball manifests
+
+
 ## 1.3.1
 
 ### Bug Fixes
