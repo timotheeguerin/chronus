@@ -10,6 +10,7 @@ import { changelog } from "./commands/changelog.js";
 import { listPendingPublish } from "./commands/list-pending-publish.js";
 import { pack } from "./commands/pack.js";
 import { publish } from "./commands/publish.js";
+import { releaseNotes } from "./commands/release-notes.js";
 import { showStatus } from "./commands/show-status.js";
 import { verifyChangeset } from "./commands/verify-changeset.js";
 import { withErrors, withErrorsAndReporter } from "./utils.js";
@@ -255,6 +256,55 @@ async function main() {
           tag: args.tag,
           otp: args.otp,
           reportSummary: args.reportSummary && resolvePath(process.cwd(), args.reportSummary),
+        }),
+      ),
+    )
+    .command(
+      ["ai-release-notes", "ai-notes"],
+      "Generate AI release notes (or a prompt) from pending changes; optionally run them through copilot or claude",
+      (cmd) =>
+        cmd
+          .option("package", {
+            type: "string",
+            array: true,
+            description: "Scope to specific package(s)",
+          })
+          .option("policy", {
+            type: "string",
+            array: true,
+            description: "Scope to specific policy/policies",
+          })
+          .option("output", {
+            short: "o",
+            type: "string",
+            description: "Write the result to a file instead of stdout. Overrides `releaseNotes.output` in config.",
+          })
+          .option("format", {
+            type: "string",
+            choices: ["markdown", "json"] as const,
+            default: "markdown",
+            description: "Output format for context-only mode",
+          })
+          .option("context-only", {
+            type: "boolean",
+            default: false,
+            description: "Output only the raw change context without the prompt template",
+          })
+          .option("tool", {
+            type: "string",
+            choices: ["copilot", "claude", "none"] as const,
+            description:
+              "AI CLI to run the prompt through and capture as release notes. Defaults to `releaseNotes.tool` in config or `none` (just print the prompt).",
+          }),
+      withErrors((args) =>
+        releaseNotes(NodeChronusHost, {
+          dir: process.cwd(),
+          package: args.package,
+          policy: args.policy,
+          output: args.output,
+          format: args.format as "markdown" | "json",
+          contextOnly: args.contextOnly,
+          tool: args.tool,
         }),
       ),
     )
