@@ -260,8 +260,8 @@ async function main() {
       ),
     )
     .command(
-      "release-notes",
-      "Generate an AI prompt for creating blog-post-style release notes",
+      ["ai-release-notes", "ai-notes"],
+      "Generate AI release notes (or a prompt) from pending changes; optionally run them through copilot or claude",
       (cmd) =>
         cmd
           .option("package", {
@@ -277,7 +277,8 @@ async function main() {
           .option("output", {
             short: "o",
             type: "string",
-            description: "Write output to a file instead of stdout",
+            description:
+              "Write the result to a file instead of stdout. Overrides `releaseNotes.output` in config.",
           })
           .option("format", {
             type: "string",
@@ -289,6 +290,12 @@ async function main() {
             type: "boolean",
             default: false,
             description: "Output only the raw change context without the prompt template",
+          })
+          .option("tool", {
+            type: "string",
+            choices: ["copilot", "claude", "none"] as const,
+            description:
+              "AI CLI to run the prompt through and capture as release notes. Defaults to `releaseNotes.tool` in config or `none` (just print the prompt).",
           }),
       withErrors((args) =>
         releaseNotes(NodeChronusHost, {
@@ -298,6 +305,7 @@ async function main() {
           output: args.output,
           format: args.format as "markdown" | "json",
           contextOnly: args.contextOnly,
+          tool: args.tool,
         }),
       ),
     )

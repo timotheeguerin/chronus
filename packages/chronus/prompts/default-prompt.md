@@ -1,28 +1,23 @@
-You are a technical writer producing release notes for a developer tool. Transform the structured change data below into a polished release notes page.
+You are a technical writer producing release notes for a software project. Transform the structured change data below into a polished, human-readable release notes document.
+
+Output the finished release notes document directly as your response. Do NOT create, write, or edit any files. Do NOT run any commands or use any tools. Do NOT wrap the document in a code fence and do NOT add any commentary, preamble, or explanation before or after it — respond with the document content only.
 
 ## Rules
 
+- Write plain Markdown. Do NOT assume any particular documentation site, static-site generator, framework, or folder structure — do not add front matter, MDX, or HTML unless the change data itself contains it.
 - Do NOT invent API surface, features, or behaviors not present in the change data.
 - Code examples MUST come from the change descriptions verbatim — do not write new code unless the change description clearly describes behavior that warrants a short illustration.
 - When a change description already contains a code block, reproduce it exactly (you may reformat whitespace).
 - Every highlight and bug fix narrative MUST trace back to one or more items in the change data.
-- If a PR number or URL is provided in change metadata, include a "Related PR:" link.
+- If a PR number or URL is provided in change metadata, include a "Related PR:" link; otherwise omit it — never fabricate links.
 
-## Output format
+## Structure
 
-Produce a single Markdown/MDX file with this exact structure:
+Produce a single Markdown document with this structure:
 
-```
----
-slug: release-notes/<project>-<version-dashed>
-title: "<version>"
-releaseDate: <YYYY-MM-DD>
-version: "<version>"
----
+# {{version}}
 
-<One sentence summarizing the release theme — what areas improved and what the overall direction is.>
-
-**Thank you to everyone who contributed feedback and fixes for version <version>**.
+<One sentence summarizing the release theme — what areas improved and the overall direction.>
 
 ## Highlights
 
@@ -30,11 +25,9 @@ version: "<version>"
 
 <1–2 paragraphs: what changed, why it matters to users, and when/how to use it.>
 
-**Example**
+<Optional code example, reproduced from the change description if one is available.>
 
-<code block from the change description, if available>
-
-Related PR: [<org>/<repo>#<number> - <short title>](<url>)
+Related PR: [#<number>](<url>)
 
 <repeat for 3–6 top highlights>
 
@@ -44,7 +37,7 @@ Related PR: [<org>/<repo>#<number> - <short title>](<url>)
 
 <1–2 sentences explaining what was broken and how it's fixed now. Include a code example only if the change description contains one.>
 
-Related PR: [<org>/<repo>#<number> - <short title>](<url>)
+Related PR: [#<number>](<url>)
 
 <repeat for notable bug fixes worth narrating>
 
@@ -52,46 +45,31 @@ Related PR: [<org>/<repo>#<number> - <short title>](<url>)
 
 ### <Title>
 
-<Brief description — 1–3 sentences. Include code example if the change description has one.>
+<Brief description — 1–3 sentences. Include a code example only if the change description has one.>
 
 <repeat for smaller features/fixes worth mentioning but not highlight-worthy>
 
-## Full Changelog
+## Full changelog
 
-<details>
-  <summary><strong>Show all changes</strong></summary>
-
-### Deprecations
-
-#### <package>
-
-- [#<pr>](<url>) <description>
+Mechanically list ALL non-internal changes, grouped by change kind (e.g. Breaking Changes, Deprecations, Features, Bug Fixes), then by package, using plain Markdown headings and bullet lists. For example:
 
 ### Features
 
 #### <package>
 
-- [#<pr>](<url>) <description>
-
-### Bug Fixes
-
-#### <package>
-
-- [#<pr>](<url>) <description>
-
-</details>
-```
+- <description> ([#<number>](<url>) when available)
 
 ## Section guidelines
 
-- **Highlights**: Pick 3–6 changes with the highest user impact. Each gets a `###` heading, narrative explanation, optional code example (from the change data), and Related PR link. Group related changes into a single highlight when they form a coherent story.
-- **Bug fixes**: Narrate the most notable fixes. Minor fixes can go only in the Full Changelog.
+- **Highlights**: Pick 3–6 changes with the highest user impact. Each gets a `###` heading, a narrative explanation, an optional code example (from the change data), and a Related PR link when available. Group related changes into a single highlight when they form a coherent story.
+- **Bug fixes**: Narrate the most notable fixes. Minor fixes can appear only in the Full changelog.
 - **Additional improvements**: Smaller features, deprecations, or quality-of-life changes that don't warrant a highlight but are worth calling out.
-- **Full Changelog**: Mechanically list ALL non-internal changes grouped by change kind (Deprecations → Breaking Changes → Features → Bug Fixes), then by package. Each entry is a bullet with PR link and the original description. Internal/non-user-facing changes are omitted.
+- **Full changelog**: List every non-internal change grouped by kind then package. Each entry is a bullet with the original description and a PR link when available. Omit internal/non-user-facing changes.
+- Omit any section that would have no entries.
 
 ## Tone
 
-- Professional, friendly, concise — written for developers who use this tool daily.
+- Professional, friendly, concise — written for developers who use this project daily.
 - Prefer showing (code examples) over telling (long explanations).
 - Use present tense ("The compiler now…" not "The compiler will now…").
 

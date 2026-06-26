@@ -43,15 +43,27 @@ export type ReleaseNotesContextEnricherFactory = (
 ) => ReleaseNotesContextEnricher | Promise<ReleaseNotesContextEnricher>;
 
 /**
+ * AI CLI that can generate the release notes from the rendered prompt.
+ * `none` means only print the prompt.
+ */
+export type ReleaseNotesTool = "copilot" | "claude" | "none";
+
+/**
  * Configuration for the release notes feature in .chronus/config.yaml
  */
 export interface ReleaseNotesConfig {
   /** Path to a custom prompt template file (relative to workspace root) */
   readonly prompt?: string;
+  /**
+   * Path to write the generated release notes to (relative to workspace root).
+   * Supports the `{{version}}` and `{{slug}}` placeholders, e.g. `release-notes/{{slug}}.md`.
+   * The `--output` CLI flag takes precedence over this.
+   */
+  readonly output?: string;
   /** List of enricher module names */
   readonly enrichers?: (string | [string, Record<string, unknown>])[];
   /** AI tool to invoke (copilot, claude, or none) */
-  readonly tool?: string;
+  readonly tool?: ReleaseNotesTool;
 }
 
 /**
@@ -63,7 +75,7 @@ export interface ReleaseNotesOptions {
   readonly policy?: string | string[];
   readonly output?: string;
   readonly format?: "markdown" | "json";
-  readonly tool?: "copilot" | "claude" | "none";
+  readonly tool?: ReleaseNotesTool;
   /** Only output the raw context (no prompt wrapping) */
   readonly contextOnly?: boolean;
 }
