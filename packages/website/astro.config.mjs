@@ -29,6 +29,7 @@ export default defineConfig({
             { label: "Change Kinds", slug: "guides/change-kinds" },
             { label: "Changed Files Filter", slug: "guides/changed-files-filter" },
             { label: "Changelog Generator", slug: "guides/changelog-generator" },
+            { label: "GitHub Action", slug: "guides/github-action" },
             { label: "Prereleases", slug: "guides/prerelease" },
             { label: "Supported Environments", slug: "guides/supported-environments" },
             { label: "Version Policies", slug: "guides/version-policies" },
