@@ -1,1 +1,1 @@
-export { getPrereleaseVersionActions } from "./prerelease-versioning.js";
+export { getPrereleaseVersionActions, type PrereleaseVersionOptions } from "./prerelease-versioning.js";

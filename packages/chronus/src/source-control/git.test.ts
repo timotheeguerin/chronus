@@ -211,4 +211,36 @@ describe("git", () => {
       expect(await git.listChangedFilesSince("main")).toEqual(["feat-1.ts", "feat-2.ts"]);
     });
   });
+
+  describe("getCommitCountForPath", () => {
+    async function addFileAndCommit(message: string, paths: string[]) {
+      for (const path of paths) {
+        await testDir.addFile(path);
+      }
+      await git.add(".");
+      await git.commit(message);
+    }
+
+    beforeEach(async () => {
+      await addFileAndCommit("c1: add pkg-a", ["packages/pkg-a/a.ts"]);
+      await addFileAndCommit("c2: add pkg-b", ["packages/pkg-b/b.ts"]);
+      await addFileAndCommit("c3: touch pkg-a again", ["packages/pkg-a/a2.ts"]);
+    });
+
+    it("counts only commits touching the given folder", async () => {
+      expect(await git.getCommitCountForPath("packages/pkg-a")).toBe(2);
+      expect(await git.getCommitCountForPath("packages/pkg-b")).toBe(1);
+    });
+
+    it("returns 0 for a path with no commits", async () => {
+      expect(await git.getCommitCountForPath("packages/pkg-does-not-exist")).toBe(0);
+    });
+
+    it("only grows when a commit reverts a previous one", async () => {
+      const before = await git.getCommitCountForPath("packages/pkg-a");
+      await execAsync("git", ["revert", "--no-edit", "HEAD"], { cwd });
+      const after = await git.getCommitCountForPath("packages/pkg-a");
+      expect(after).toBe(before + 1);
+    });
+  });
 });
