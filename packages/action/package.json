@@ -1,0 +1,45 @@
+{
+  "name": "@chronus/action",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Official GitHub Action to automate chronus releases",
+  "keywords": [
+    "change",
+    "changelog",
+    "chronus",
+    "github",
+    "github-action",
+    "monorepo"
+  ],
+  "homepage": "https://github.com/timotheeguerin/chronus#readme",
+  "bugs": "https://github.com/timotheeguerin/chronus/issues",
+  "license": "MIT",
+  "author": "Microsoft",
+  "repository": "timotheeguerin/chronus.git",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "clean": "rimraf dist/ .temp/",
+    "lint": "oxlint --max-warnings=0",
+    "lint:fix": "oxlint --fix",
+    "test": "vitest run",
+    "test:watch": "vitest -w"
+  },
+  "dependencies": {
+    "@actions/core": "catalog:",
+    "@actions/exec": "catalog:",
+    "@actions/github": "catalog:",
+    "@chronus/chronus": "workspace:*",
+    "octokit": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "rimraf": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-bundle-visualizer": "catalog:"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
