@@ -20,7 +20,7 @@
     "watch": "tsc --build ./tsconfig.ws.json --watch",
     "build": "pnpm -r run build",
     "clean": "pnpm -r run clean && rimraf **/.temp/",
-    "lint": "oxlint",
+    "lint": "oxlint --max-warnings=0",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "cspell": "cspell --no-progress ."
@@ -41,7 +41,7 @@
     "vitest": "catalog:"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "packageManager": "pnpm@11.9.0"
 }
