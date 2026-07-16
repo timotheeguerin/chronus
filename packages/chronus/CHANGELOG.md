@@ -1,5 +1,26 @@
 # @chronus/chronus
 
+## 1.4.0
+
+### Bug Fixes
+
+- [#590](https://github.com/timotheeguerin/chronus/pull/590) Fix dependents not being bumped when a `^`/`workspace:^` dependency on a `0.x` package receives a minor bump. Since `^0.n.x` is locked to the minor (`>=0.n.0 <0.(n+1).0`), a minor bump is breaking and now correctly forces dependents to be released.
+- [#589](https://github.com/timotheeguerin/chronus/pull/589) Fix `chronus publish` reporting `undefined` name/version and size with npm 12+
+  
+  npm 12 changed the `npm publish --json` output to be keyed by package name instead of a flat object. The publish result parsing now handles both the new keyed format and the legacy flat format.
+
+### Features
+
+- [#582](https://github.com/timotheeguerin/chronus/pull/582) Bump minimum supported Node.js version to 22
+- [#557](https://github.com/timotheeguerin/chronus/pull/557) [API] Expose reporters
+- [#588](https://github.com/timotheeguerin/chronus/pull/588) Add `{packageCommitCount}` prerelease template variable that counts the commits touching a package's folder. Unlike `{changeCount}`, this value is monotonic (a revert is a new commit), so reverting a change and deleting its change entry no longer collides with an already published prerelease version and blocks new prereleases.
+  
+  ```bash
+  chronus version --prerelease "{nextVersion}-dev.{packageCommitCount}"
+  ```
+- [#581](https://github.com/timotheeguerin/chronus/pull/581) Replace `pacote` dependency with a lightweight `fetch`-based registry helper and `nanotar` for reading tarball manifests
+
+
 ## 1.3.1
 
 ### Bug Fixes
