@@ -135,6 +135,39 @@ describe("Assemble Release Plan", () => {
           newVersion: "1.0.1",
         });
       });
+
+      it("workspace:^ dependency on a 0.x package is bumped when the dependency gets a minor bump (0.x minor is breaking)", () => {
+        const workspace: Package[] = [
+          mkPkg("pkg-a", { version: "0.2.0" }),
+          mkPkg("pkg-b", { dependencies: { "pkg-a": "workspace:^" } }),
+        ];
+        const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
+        expect(plan.actions).toHaveLength(2);
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-a",
+          oldVersion: "0.2.0",
+          newVersion: "0.3.0",
+        });
+        expect(plan.actions[1]).toMatchObject({
+          packageName: "pkg-b",
+          oldVersion: "1.0.0",
+          newVersion: "1.0.1",
+        });
+      });
+
+      it("workspace:^ dependency on a 0.x package is NOT bumped for a patch bump (still within range)", () => {
+        const workspace: Package[] = [
+          mkPkg("pkg-a", { version: "0.2.0" }),
+          mkPkg("pkg-b", { dependencies: { "pkg-a": "workspace:^" } }),
+        ];
+        const plan = assembleReleasePlan([mkChange("pkg-a", "patch")], createChronusWorkspace(workspace, baseConfig));
+        expect(plan.actions).toHaveLength(1);
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-a",
+          oldVersion: "0.2.0",
+          newVersion: "0.2.1",
+        });
+      });
     });
 
     describe("prerelease version (x.y.z-foo.n) only increase the n regardless of the change type", () => {
