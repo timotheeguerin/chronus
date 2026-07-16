@@ -56,6 +56,7 @@ if (stdout.trim() !== "") {
       head: branchName,
       base: "main",
       body: changeStatus,
+      draft: true,
     });
   }
 } else {
