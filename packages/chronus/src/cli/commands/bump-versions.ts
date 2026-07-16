@@ -6,6 +6,7 @@ import { readChangeDescriptions } from "../../change/read.js";
 import { getPrereleaseVersionActions } from "../../prerelease-versioning/index.js";
 import { assembleReleasePlan } from "../../release-plan/assemble-release-plan.js";
 import type { ReleasePlan } from "../../release-plan/types.js";
+import { createGitSourceControl } from "../../source-control/git.js";
 import type { ChronusHost } from "../../utils/host.js";
 import { NodeChronusHost } from "../../utils/node-host.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
@@ -59,7 +60,11 @@ async function bumpPrereleaseVersion(
   filters: { only?: string[]; exclude?: string[] } = {},
 ) {
   const changes = await readChangeDescriptions(host, workspace);
-  const versionActions = await getPrereleaseVersionActions(changes, workspace, prereleaseTemplate, filters);
+  const sourceControl = createGitSourceControl(workspace.path);
+  const versionActions = await getPrereleaseVersionActions(changes, workspace, prereleaseTemplate, {
+    ...filters,
+    sourceControl,
+  });
   const maxLength = workspace.packages.reduce((max, pkg) => Math.max(max, pkg.name.length), 0);
   for (const [pkgName, action] of versionActions) {
     log(`Bumping ${pc.magenta(pkgName.padEnd(maxLength))} to ${pc.cyan(action.newVersion)}`);
