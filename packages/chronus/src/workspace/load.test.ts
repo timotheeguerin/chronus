@@ -55,6 +55,31 @@ it("doesn't include private packages", async () => {
   expect(workspace.packages[0].name).toBe("a");
 });
 
+it("marks a private package as versioned when it is part of a version policy", async () => {
+  const host = makeHost({
+    config: {
+      versionPolicies: [{ name: "grouped", type: "lockstep", step: "minor", packages: ["a", "b"] }],
+    },
+    packages: {
+      "packages/a": {
+        name: "a",
+        version: "1.0.0",
+      },
+      "packages/b": {
+        name: "b",
+        version: "1.0.0",
+        private: true,
+      },
+    },
+  });
+  const workspace = await loadChronusWorkspace(host.host, "proj");
+  // Private package `b` is versioned because it is part of a policy, so it is in `packages`.
+  expect(workspace.packages.map((p) => p.name).sort()).toEqual(["a", "b"]);
+  expect(workspace.getPackage("b").state).toBe("versioned");
+  // ...but it keeps its private flag so it is never published.
+  expect(workspace.getPackage("b").private).toBe(true);
+});
+
 it("(LEGACY) includes additionalPackages", async () => {
   const host = makeHost({
     config: {
