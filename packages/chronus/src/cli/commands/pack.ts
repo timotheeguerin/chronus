@@ -21,6 +21,10 @@ export async function pack({ reporter, dir, packDestination, only, exclude }: Pa
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, dir);
   for (const pkg of workspace.packages) {
+    // Private packages are never published/packed even when they are versioned (e.g. part of a version policy).
+    if (pkg.private) {
+      continue;
+    }
     if (!isPackageIncluded(pkg, { only, exclude })) {
       continue;
     }

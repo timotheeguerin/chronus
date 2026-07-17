@@ -1,7 +1,7 @@
 import semverSatisfies from "semver/functions/satisfies.js";
 
 import type { DependencyType, VersionType } from "../types.js";
-import { isPackageIncluded, isPackageVersioned } from "../utils/misc-utils.js";
+import { isPackageIncluded } from "../utils/misc-utils.js";
 import type { Package } from "../workspace-manager/types.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { incrementVersion } from "./increment-version.js";
@@ -102,8 +102,8 @@ export function applyDependents({
           return;
         }
 
-        // We don't bump packages that aren't versioned (plain private / ignored)
-        if (!isPackageVersioned(pkg)) {
+        // We don't bump private packages
+        if (pkg.state === "private" || pkg.state === "ignored") {
           return;
         }
         // For things that are being given a major bump, we check if we have already

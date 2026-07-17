@@ -9,11 +9,13 @@ import type { Package } from "../workspace-manager/types.js";
 import { getLocationInYamlScript } from "../yaml/location.js";
 import type { ChronusPackage, ChronusPackageState, ChronusWorkspace } from "./types.js";
 
-function getPackageState(config: ChronusResolvedConfig, pkg: Package): ChronusPackageState {
+function getPackageState(config: ChronusResolvedConfig, pkg: Package, isInVersionPolicy: boolean): ChronusPackageState {
   if (config.ignore && config.ignore.some((x) => micromatch.isMatch(pkg.name, x))) {
     return "ignored";
   }
-  if (pkg.private) {
+  // A private package is normally not versioned. But if it is explicitly listed in a version
+  // policy the user wants it versioned as part of that group (it is still never published).
+  if (pkg.private && !isInVersionPolicy) {
     return "private";
   }
   if (pkg.standalone) {
@@ -66,7 +68,7 @@ export function createChronusWorkspace(packages: Package[], config: ChronusResol
   const chronusPackages = packages.map((pkg): ChronusPackage => {
     return {
       ...pkg,
-      state: getPackageState(config, pkg),
+      state: getPackageState(config, pkg, policyPerPackage.has(pkg.name)),
       policy: policyPerPackage.get(pkg.name) ?? defaultPolicy,
     };
   });
