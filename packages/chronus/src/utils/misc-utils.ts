@@ -54,6 +54,22 @@ export function getLastJsonObject(str: string) {
   return null;
 }
 
+/**
+ * Whether a package should be versioned (i.e. get its version bumped in package.json).
+ * `versioned` and `standalone` packages are always versioned. A `private` package is
+ * normally left untouched, but if it is explicitly listed in a version policy the user
+ * clearly wants it versioned as part of that group (it is still never published).
+ */
+export function isPackageVersioned(pkg: ChronusPackage): boolean {
+  if (pkg.state === "versioned" || pkg.state === "standalone") {
+    return true;
+  }
+  if (pkg.state === "private" && pkg.policy.packages.includes(pkg.name)) {
+    return true;
+  }
+  return false;
+}
+
 export function isPackageIncluded(
   pkg: ChronusPackage,
   { only, exclude }: { only?: string[]; exclude?: string[] },

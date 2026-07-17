@@ -1,6 +1,6 @@
 import type { ChangeDescription } from "../change/types.js";
 import { getDependentsGraph } from "../dependency-graph/index.js";
-import { isPackageIncluded } from "../utils/misc-utils.js";
+import { isPackageIncluded, isPackageVersioned } from "../utils/misc-utils.js";
 import type { ChronusWorkspace } from "../workspace/types.js";
 import { applyDependents } from "./determine-dependents.js";
 import { incrementVersion } from "./increment-version.js";
@@ -24,7 +24,7 @@ export function assembleReleasePlan(
     exclude: options?.exclude,
   });
 
-  const dependentsGraph = getDependentsGraph(workspace.packages);
+  const dependentsGraph = getDependentsGraph(workspace.allPackages.filter(isPackageVersioned));
   const internalActions = new Map<string, InternalReleaseAction>();
   if (workspace.config.versionPolicies && !options?.ignorePolicies) {
     for (const policy of workspace.config.versionPolicies) {
@@ -97,7 +97,7 @@ function reduceChanges(
     const packages = change.packages
       .map((name) => workspace.getPackage(name))
       .filter((pkg) => isPackageIncluded(pkg, filters))
-      .filter((pkg) => pkg.state === "versioned" || pkg.state === "standalone");
+      .filter((pkg) => isPackageVersioned(pkg));
 
     changeApplications.push({
       usage: change.packages.length === packages.length ? "used" : packages.length === 0 ? "unused" : "partial",
