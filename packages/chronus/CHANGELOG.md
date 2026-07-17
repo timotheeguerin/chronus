@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 1.4.1
+
+### Bug Fixes
+
+- [#593](https://github.com/timotheeguerin/chronus/pull/593) Version private packages that are part of a version policy. A `private: true` package listed in a version policy is now bumped through the changeset/hotfix flow (`chronus version --ignore-policies`) and when one of its dependencies changes, while still never being published.
+
+
 ## 1.4.0
 
 ### Bug Fixes
