@@ -139,10 +139,13 @@ function willRangeBeValid(release: InternalReleaseAction, versionRange: string) 
   switch (versionRange) {
     case "*":
       return true;
+    // `^` and `~` are the `workspace:^` / `workspace:~` shorthands. Resolve them against the
+    // current version so 0.x semantics are respected (e.g. `^0.1.2` := `>=0.1.2 <0.2.0`), meaning
+    // a minor bump on a 0.x dependency is breaking and must invalidate the range.
     case "^":
-      return release.type === "minor" || release.type === "patch";
+      return semverSatisfies(incrementVersion(release), `^${release.oldVersion}`);
     case "~":
-      return release.type === "patch";
+      return semverSatisfies(incrementVersion(release), `~${release.oldVersion}`);
     default:
       return semverSatisfies(incrementVersion(release), versionRange);
   }

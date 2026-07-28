@@ -86,6 +86,20 @@ export interface GitRepository {
    * Return the commit ids that added the given files.
    */
   getCommitsThatAddFiles(files: string[]): Promise<Record<string, string>>;
+
+  /**
+   * Return the number of commits reachable from HEAD that touched the given path.
+   * This count only ever grows as new commits are added (reverts are new commits), making it
+   * suitable as a monotonic prerelease counter.
+   *
+   * Note: requires the full history to be available (e.g. `fetch-depth: 0` in CI). On a shallow
+   * clone the count will be limited to the commits present in the clone.
+   * ```bash
+   * git rev-list --count HEAD -- <path>
+   * ```
+   * @param path Path (file or directory) to count commits for. Can be absolute or relative to the repository.
+   */
+  getCommitCountForPath(path: string): Promise<number>;
 }
 
 export class GitError extends Error {
@@ -125,6 +139,7 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     listChangedFilesSince,
     getCurrentBranch,
     getCommitsThatAddFiles,
+    getCommitCountForPath,
   };
 
   async function getRepoRoot(): Promise<string> {
@@ -283,6 +298,12 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
       // eslint-disable-next-line no-constant-condition
     } while (true);
     return commits;
+  }
+
+  async function getCommitCountForPath(path: string): Promise<number> {
+    const result = await execGit(["rev-list", "--count", "HEAD", "--", path], { repositoryPath });
+    const count = Number.parseInt(trimSingleLine(result), 10);
+    return Number.isNaN(count) ? 0 : count;
   }
 
   async function deepenCloneBy({ by, repositoryPath }: { by: number; repositoryPath: string }) {

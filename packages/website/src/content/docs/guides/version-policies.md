@@ -44,3 +44,11 @@ versionPolicies:
 ```
 
 Next time `chronus version` runs, packages `a` and `b` will both be bumped to `1.3.0` (ignoring any change types defined in the changelogs). Package `c` is still versioned independently.
+
+### Private packages in a policy
+
+A package marked `private: true` is normally never versioned. However, if you add it to a
+version policy (lockstep or independent), Chronus will version it as part of that group —
+including through the changeset/hotfix flow (`chronus version --ignore-policies`) and when a
+dependency it relies on is bumped. Such a package still gets its version bumped in
+`package.json` but is never published.

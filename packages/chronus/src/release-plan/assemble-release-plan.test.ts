@@ -135,6 +135,39 @@ describe("Assemble Release Plan", () => {
           newVersion: "1.0.1",
         });
       });
+
+      it("workspace:^ dependency on a 0.x package is bumped when the dependency gets a minor bump (0.x minor is breaking)", () => {
+        const workspace: Package[] = [
+          mkPkg("pkg-a", { version: "0.2.0" }),
+          mkPkg("pkg-b", { dependencies: { "pkg-a": "workspace:^" } }),
+        ];
+        const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, baseConfig));
+        expect(plan.actions).toHaveLength(2);
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-a",
+          oldVersion: "0.2.0",
+          newVersion: "0.3.0",
+        });
+        expect(plan.actions[1]).toMatchObject({
+          packageName: "pkg-b",
+          oldVersion: "1.0.0",
+          newVersion: "1.0.1",
+        });
+      });
+
+      it("workspace:^ dependency on a 0.x package is NOT bumped for a patch bump (still within range)", () => {
+        const workspace: Package[] = [
+          mkPkg("pkg-a", { version: "0.2.0" }),
+          mkPkg("pkg-b", { dependencies: { "pkg-a": "workspace:^" } }),
+        ];
+        const plan = assembleReleasePlan([mkChange("pkg-a", "patch")], createChronusWorkspace(workspace, baseConfig));
+        expect(plan.actions).toHaveLength(1);
+        expect(plan.actions[0]).toMatchObject({
+          packageName: "pkg-a",
+          oldVersion: "0.2.0",
+          newVersion: "0.2.1",
+        });
+      });
     });
 
     describe("prerelease version (x.y.z-foo.n) only increase the n regardless of the change type", () => {
@@ -236,6 +269,60 @@ describe("Assemble Release Plan", () => {
         oldVersion: "1.0.0",
         newVersion: "1.0.1",
       });
+    });
+  });
+
+  describe("private packages that are part of a version policy", () => {
+    const lockStepWithPrivateConfig: ChronusResolvedConfig = {
+      ...baseConfig,
+      versionPolicies: [{ name: "lockStep", type: "lockstep", step: "minor", packages: ["pkg-a", "pkg-private-d"] }],
+    };
+
+    it("bumps the private package as part of the lockstep", () => {
+      const plan = assembleReleasePlan(
+        [mkChange("pkg-a", "minor")],
+        createChronusWorkspace(workspace, lockStepWithPrivateConfig),
+      );
+      expect(plan.actions).toHaveLength(2);
+      expect(plan.actions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" }),
+          expect.objectContaining({ packageName: "pkg-private-d", oldVersion: "1.0.0", newVersion: "1.1.0" }),
+        ]),
+      );
+    });
+
+    it("bumps the private package from its changeset when using --ignore-policies (hotfix flow)", () => {
+      const plan = assembleReleasePlan(
+        [mkChange("pkg-private-d", "patch")],
+        createChronusWorkspace(workspace, lockStepWithPrivateConfig),
+        { ignorePolicies: true },
+      );
+      expect(plan.actions).toHaveLength(1);
+      expect(plan.actions[0]).toMatchObject({
+        packageName: "pkg-private-d",
+        oldVersion: "1.0.0",
+        newVersion: "1.0.1",
+      });
+    });
+
+    it("bumps the private package as a dependent when a dependency changes", () => {
+      const workspace: Package[] = [
+        mkPkg("pkg-a", {}),
+        mkPkg("pkg-private-b", { private: true, dependencies: { "pkg-a": "1.0.0" } }),
+      ];
+      const config: ChronusResolvedConfig = {
+        ...baseConfig,
+        versionPolicies: [{ name: "grouped", type: "independent", packages: ["pkg-a", "pkg-private-b"] }],
+      };
+      const plan = assembleReleasePlan([mkChange("pkg-a", "minor")], createChronusWorkspace(workspace, config));
+      expect(plan.actions).toHaveLength(2);
+      expect(plan.actions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ packageName: "pkg-a", oldVersion: "1.0.0", newVersion: "1.1.0" }),
+          expect.objectContaining({ packageName: "pkg-private-b", oldVersion: "1.0.0", newVersion: "1.0.1" }),
+        ]),
+      );
     });
   });
 

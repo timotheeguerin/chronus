@@ -1,5 +1,13 @@
 # Changelog - @chronus/github
 
+## 1.1.0
+
+### Features
+
+- [#582](https://github.com/timotheeguerin/chronus/pull/582) Bump minimum supported Node.js version to 22
+- [#557](https://github.com/timotheeguerin/chronus/pull/557) Improve cli output when creating github release
+
+
 ## 1.0.6
 
 No changes, version bump only.
