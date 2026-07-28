@@ -8,7 +8,7 @@ export interface ExecResult {
   readonly stdout: Buffer;
   readonly stderr: Buffer;
 }
-export function execAsync(cmd: string, args: string[], opts: SpawnOptions = {}): Promise<ExecResult> {
+export function execAsync(cmd: string, args: string[], opts: SpawnOptions = {}, input?: string): Promise<ExecResult> {
   return new Promise((resolve, reject) => {
     const child = crosspawn(cmd, args, opts);
     let stdall = Buffer.from("");
@@ -36,5 +36,12 @@ export function execAsync(cmd: string, args: string[], opts: SpawnOptions = {}):
     child.on("close", (code) => {
       resolve({ code, stdout, stderr, stdall });
     });
+
+    if (input !== undefined && child.stdin) {
+      child.stdin.on("error", () => {
+        // Ignore EPIPE if the process closes stdin early; the close handler reports the real outcome.
+      });
+      child.stdin.end(input);
+    }
   });
 }

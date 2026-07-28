@@ -19,7 +19,8 @@
   },
   "files": [
     "cmd",
-    "dist"
+    "dist",
+    "prompts"
   ],
   "type": "module",
   "main": "dist/index.js",
@@ -27,6 +28,7 @@
     ".": "./dist/index.js",
     "./change": "./dist/change/index.js",
     "./changelog": "./dist/changelog/index.js",
+    "./release-notes": "./dist/release-notes/index.js",
     "./source-control/git": "./dist/source-control/git.js",
     "./publish": "./dist/publish/index.js",
     "./utils": "./dist/utils/index.js",

@@ -1,3 +1,4 @@
+import type { ReleaseNotesConfig } from "../release-notes/types.js";
 import type { VersionType } from "../types.js";
 import type { YamlFile } from "../yaml/types.js";
 
@@ -40,6 +41,9 @@ export interface ChronusUserConfig {
    * Using `!` will exclude that pattern.
    */
   readonly changedFiles?: readonly string[];
+
+  /** Configuration for the `release-notes` command (prompt template, enrichers, AI tool). */
+  readonly releaseNotes?: ReleaseNotesConfig;
 }
 
 export type PackageOrWorkspaceConfig = { path: string; type?: string; standalone?: boolean };
