@@ -1,0 +1,32 @@
+name: Release Action
+
+# Publishes the bundled @chronus/action to its release refs (tag + major-line branch).
+# The built dist/ is gitignored on main and only force-committed onto these refs, mirroring
+# how changesets/action distributes its build.
+on:
+  workflow_dispatch: {}
+
+concurrency: ${{ github.workflow }}
+
+permissions:
+  contents: write # to push the release tag and major-line branch
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup
+
+      - run: pnpm install
+        name: Install dependencies
+
+      - run: pnpm build
+        name: Build
+
+      - run: pnpm tsx packages/action/scripts/release.ts
+        name: Push release refs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

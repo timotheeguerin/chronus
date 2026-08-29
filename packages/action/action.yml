@@ -1,0 +1,50 @@
+name: Chronus Release
+description: Automate chronus releases by maintaining a "Version Packages" pull request.
+author: Microsoft
+
+branding:
+  icon: package
+  color: purple
+
+inputs:
+  version:
+    description: Command used to bump versions and update changelogs.
+    required: false
+    default: npx chronus version
+  cwd:
+    description: Working directory the action runs in. Defaults to the workspace root.
+    required: false
+  commit-message:
+    description: Message used for the version bump commit.
+    required: false
+    default: Bump versions
+  pr-title:
+    description: Title of the version pull request.
+    required: false
+    default: Release changes
+  pr-body:
+    description: Body of the version pull request. Defaults to a rendered summary of the release plan.
+    required: false
+  branch:
+    description: Branch the version changes are pushed to.
+    required: false
+    default: chronus/version-packages
+  base:
+    description: Base branch the pull request targets. Defaults to the repository default branch.
+    required: false
+  token:
+    description: GitHub token used to create/update the pull request.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  hasChangesets:
+    description: Whether there were pending changes to release.
+  prNumber:
+    description: Number of the created/updated version pull request.
+  prBranch:
+    description: Branch the version changes were pushed to.
+
+runs:
+  using: node20
+  main: dist/index.js
