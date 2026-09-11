@@ -1,5 +1,9 @@
 # Changelog - @chronus/github
 
+## 1.2.1
+
+No changes, version bump only.
+
 ## 1.2.0
 
 ### Features
