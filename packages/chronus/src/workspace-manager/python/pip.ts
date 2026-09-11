@@ -4,6 +4,7 @@ import { isPathAccessible } from "../../utils/fs-utils.js";
 import type { ChronusHost } from "../../utils/host.js";
 import { isDefined } from "../../utils/misc-utils.js";
 import { joinPaths, resolvePath } from "../../utils/path-utils.js";
+import { createDependencyMap } from "../dependencies.js";
 import type { Ecosystem, Package, PackageDependencySpec, PatchPackageVersion } from "../types.js";
 
 const pyprojectFile = "pyproject.toml";
@@ -115,10 +116,10 @@ export async function tryLoadPackage(
     version,
     ecosystem: "python:pip",
     relativePath,
-    dependencies: new Map([
-      ...parseDeps(project.dependencies, "prod"),
-      ...parseDeps(project["optional-dependencies"], "dev"),
-    ]),
+    dependencies: createDependencyMap(
+      parseDeps(project.dependencies, "prod"),
+      parseDeps(project["optional-dependencies"], "dev"),
+    ),
   };
 }
 

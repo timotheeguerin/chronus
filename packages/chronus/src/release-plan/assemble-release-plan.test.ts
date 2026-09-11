@@ -168,6 +168,47 @@ describe("Assemble Release Plan", () => {
           newVersion: "0.2.1",
         });
       });
+
+      it("peerDependency with an incompatible range gets bumped", () => {
+        const workspace: Package[] = [
+          mkPkg("pkg-a", {}),
+          mkPkg("pkg-b", { peerDependencies: { "pkg-a": "workspace:^" } }),
+        ];
+        const plan = assembleReleasePlan([mkChange("pkg-a", "major")], createChronusWorkspace(workspace, baseConfig));
+        expect(plan.actions).toHaveLength(2);
+        expect(plan.actions[1]).toMatchObject({
+          packageName: "pkg-b",
+          oldVersion: "1.0.0",
+          newVersion: "1.0.1",
+        });
+      });
+
+      it("peerDependency also listed as a devDependency is still treated as a prod dependency", () => {
+        const workspace: Package[] = [
+          mkPkg("pkg-a", {}),
+          mkPkg("pkg-b", {
+            peerDependencies: { "pkg-a": "workspace:^" },
+            devDependencies: { "pkg-a": "workspace:^" },
+          }),
+        ];
+        const plan = assembleReleasePlan([mkChange("pkg-a", "major")], createChronusWorkspace(workspace, baseConfig));
+        expect(plan.actions).toHaveLength(2);
+        expect(plan.actions[1]).toMatchObject({
+          packageName: "pkg-b",
+          oldVersion: "1.0.0",
+          newVersion: "1.0.1",
+        });
+      });
+
+      it("devDependency only is not bumped", () => {
+        const workspace: Package[] = [
+          mkPkg("pkg-a", {}),
+          mkPkg("pkg-b", { devDependencies: { "pkg-a": "workspace:^" } }),
+        ];
+        const plan = assembleReleasePlan([mkChange("pkg-a", "major")], createChronusWorkspace(workspace, baseConfig));
+        expect(plan.actions).toHaveLength(1);
+        expect(plan.actions[0]).toMatchObject({ packageName: "pkg-a" });
+      });
     });
 
     describe("prerelease version (x.y.z-foo.n) only increase the n regardless of the change type", () => {
