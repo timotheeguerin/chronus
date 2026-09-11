@@ -1,5 +1,12 @@
 # @chronus/chronus
 
+## 1.5.1
+
+### Bug Fixes
+
+- [#600](https://github.com/timotheeguerin/chronus/pull/600) Fix a dependency declared as both a `peerDependency` and a `devDependency` being treated as dev-only, which prevented the dependent package from being bumped when the dependency had a breaking change.
+
+
 ## 1.5.0
 
 ### Bug Fixes
