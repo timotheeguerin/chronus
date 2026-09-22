@@ -11,6 +11,8 @@ ignoredBuiltDependencies:
   - sharp
 
 catalog:
+  "@actions/core": "^1.11.1"
+  "@actions/exec": "^1.1.1"
   "@actions/github": "^9.0.0"
   "@astrojs/starlight": "0.41.0"
   "@octokit/graphql": "^9.0.1"
