@@ -30,7 +30,7 @@ Options:
 
 Verify that the packages with changes from the `baseBranch` have all been described.
 
-Configuration and pending changesets are validated on every run. Existing packages whose stable version changed since the merge base must have consumed all of their pending changesets instead of adding a new changeset for the release itself. Prerelease versions and new packages still follow the normal changeset requirement. The same command can run on ordinary and release PRs without extra flags; it does not inspect generated `CHANGELOG.md` content.
+Configuration and pending changesets are validated on every run. Existing packages whose version changed since the merge base do not need a new changeset for the release itself. Stable versions must have consumed all of their pending changesets; prerelease version changes may retain or consume them. New packages and packages whose version did not change still follow the normal changeset requirement. The same command can run on ordinary and release PRs without extra flags; it does not inspect generated `CHANGELOG.md` content.
 
 Configure exemptions in `.chronus/config.yaml` when some PRs do not need a new changeset:
 

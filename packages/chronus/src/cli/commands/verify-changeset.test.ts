@@ -151,15 +151,31 @@ it("checks staged and unstaged version bumps in the working tree", async () => {
 
 it("allows prerelease version bumps without consuming changesets", async () => {
   await setVersion("pkg-a", "1.1.0-dev.1");
-  await addChange("prerelease", "pkg-a");
   await expect(runVerify()).resolves.toBeUndefined();
 });
 
-it("does not treat prerelease version bumps as completed releases", async () => {
-  await setVersion("pkg-a", "1.1.0-dev.1");
+it("recognizes alpha-versioned package releases after consuming their changesets", async () => {
+  await gitCommand("switch", "main");
+  await setVersion("pkg-a", "0.1.0-alpha.45");
+  await commit();
+  await gitCommand("switch", "-c", "release");
+  await setVersion("pkg-a", "0.1.0-alpha.46");
+  await rm(join(testDir.path, ".chronus/changes/existing.md"));
+  await commit();
+  await expect(runVerify()).resolves.toBeUndefined();
+});
+
+it("still requires changesets for ordinary changes to an unchanged prerelease version", async () => {
+  await gitCommand("switch", "main");
+  await setVersion("pkg-a", "0.1.0-alpha.45");
+  await commit();
+  await gitCommand("switch", "-c", "feature-alpha");
+  await testDir.addFile("packages/pkg-a/index.ts", "export const value = 1;");
   await expect(runVerify()).rejects.toMatchObject({
     diagnostics: [{ code: "undocumented-package", message: expect.stringContaining("pkg-a") }],
   });
+  await addChange("new", "pkg-a");
+  await expect(runVerify()).resolves.toBeUndefined();
 });
 
 it("requires changesets to be consumed when promoting a prerelease to stable", async () => {

@@ -291,7 +291,8 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
         const paths = [...(options?.onlyDirectories ? directories : files)]
           .filter((path) => path.startsWith(baseDir + "/"))
           .map((path) => normalizePath(relative(baseDir, path)));
-        return micromatch(paths, pattern, { dot: true, ignore: options?.ignore });
+        const patterns = (Array.isArray(pattern) ? pattern : [pattern]).map((path) => path.replace(/\/+$/, ""));
+        return micromatch(paths, patterns, { dot: true, ignore: options?.ignore });
       },
       writeFile: readOnly,
       rm: readOnly,

@@ -61,10 +61,14 @@ export async function verifyChangeset({ cwd, since }: VerifyChangesetOptions): P
     }
 
     const previous = basePackages.get(pkg.name);
-    if (version.prerelease.length > 0 || previous === undefined || previous.version === pkg.version) {
+    if (previous === undefined || previous.version === pkg.version) {
       continue;
     }
     releasedPackages.add(pkg.name);
+
+    if (version.prerelease.length > 0) {
+      continue;
+    }
 
     for (const change of changes.filter((change) => change.packages.includes(pkg.name))) {
       const file = await host.readFile(resolveChangePath(workspace, change.id));

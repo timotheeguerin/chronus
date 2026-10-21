@@ -21,9 +21,9 @@ Add a new change description. Optionally specify the packages that the change ap
 
 Validate the Chronus configuration and all pending changesets, including their front matter, change kinds, and package references.
 
-For each existing versioned package whose stable version differs from the Git merge base, all pending changesets referencing that package must have been consumed. Such packages do not need a new changeset describing the release itself. Other changed packages still require an added or modified changeset.
+Existing versioned packages whose version differs from the Git merge base do not need a new changeset describing the release itself. If the new version is stable, all pending changesets referencing that package must have been consumed.
 
-Prerelease versions are exempt from the consumption rule, but their changes still require a changeset. Newly added packages also require a changeset rather than being treated as releases.
+Existing packages whose version changed to a prerelease also do not need a new changeset, and may retain or consume pending changesets. This supports both `chronus version --prerelease` builds and releases of alpha-versioned packages. Newly added packages and packages whose version did not change still follow the normal changeset requirement.
 
 Verification includes staged and unstaged changes in the current working tree. It does not inspect generated `CHANGELOG.md` content.
 
