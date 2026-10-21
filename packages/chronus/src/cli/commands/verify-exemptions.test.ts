@@ -110,6 +110,22 @@ it("still rejects malformed changesets when a branch exemption matches", async (
   await expect(verifyChangeset({ cwd: testDir.path })).rejects.toBeInstanceOf(ChronusDiagnosticError);
 });
 
+it.each(["branch", "title"] as const)(
+  "still rejects unconsumed stable-release changesets when a %s exemption matches",
+  async (kind) => {
+    await setPolicy({
+      changesetRequirement:
+        kind === "branch" ? { excludeBranches: ["feature"] } : { excludeTitleContains: ["[skip chg]"] },
+    });
+    vi.stubEnv("GH_PR_TITLE", "[skip chg] Release");
+    await testDir.writeFile("packages/pkg-a/package.json", JSON.stringify({ name: "pkg-a", version: "1.1.0" }));
+    await testDir.addFile(".chronus/changes/pending.md", mkChangeFile("pkg-a", "minor"));
+    await expect(verifyChangeset({ cwd: testDir.path })).rejects.toMatchObject({
+      diagnostics: [{ code: "unconsumed-changeset", message: expect.stringContaining("pkg-a") }],
+    });
+  },
+);
+
 it("recognizes staged changesets even when changedFiles excludes Markdown", async () => {
   await testDir.addFile(".chronus/config.yaml", mkChronusConfigFile({ changedFiles: ["**/*.ts"] }));
   await testDir.addFile(".chronus/changes/documented.md", mkChangeFile("pkg-a", "minor"));

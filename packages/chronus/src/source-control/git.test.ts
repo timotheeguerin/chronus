@@ -53,6 +53,31 @@ describe("git", () => {
       await git.commit("initial");
     });
 
+    describe("getHostAtRef", () => {
+      it("reads historical files and globs without exposing working-tree changes", async () => {
+        await testDir.addFile("packages/pkg a/package.json", '{"version":"1.0.0"}');
+        await testDir.addFile("packages/pkg a/ignored/file.txt", "ignored");
+        await testDir.addFile(".chronus/config.yaml", "baseBranch: main");
+        await git.add(".");
+        await git.commit("Initial workspace");
+        const ref = await git.getCurrentCommitId();
+        await testDir.writeFile("packages/pkg a/package.json", '{"version":"2.0.0"}');
+        await testDir.addFile("packages/new/package.json", "{}");
+
+        const host = await git.getHostAtRef(ref);
+        expect((await host.readFile(join(cwd, "packages/pkg a/package.json"))).content).toBe('{"version":"1.0.0"}');
+        expect(await host.glob("packages/*", { baseDir: cwd, onlyDirectories: true })).toEqual(["packages/pkg a"]);
+        expect(await host.glob("**/*.yaml", { baseDir: cwd })).toEqual([".chronus/config.yaml"]);
+        expect(await host.glob("**/*", { baseDir: join(cwd, "packages/pkg a"), ignore: ["ignored/**"] })).toEqual([
+          "package.json",
+        ]);
+        await expect(host.access(join(cwd, "packages/pkg a"))).resolves.toBeUndefined();
+        await expect(host.readFile(join(cwd, "packages/new/package.json"))).rejects.toMatchObject({ code: "ENOENT" });
+        await expect(host.access(join(cwd, "packages/new"))).rejects.toMatchObject({ code: "ENOENT" });
+        await expect(host.writeFile(join(cwd, "packages/pkg a/package.json"), "{}")).rejects.toThrow(/Cannot modify/);
+      });
+    });
+
     it("main default branch", async () => {
       const git = createGitSourceControl(cwd);
       expect(await git.getCurrentBranch()).toEqual("main");
@@ -209,6 +234,20 @@ describe("git", () => {
     it("resolve common base and only shows change in current branch", async () => {
       expect(await git.listChangedFilesSince(thirdCommit)).toEqual(["feat-1.ts", "feat-2.ts"]);
       expect(await git.listChangedFilesSince("main")).toEqual(["feat-1.ts", "feat-2.ts"]);
+    });
+
+    it("returns committed and staged paths relative to a nested workspace", async () => {
+      await addFileAndCommit("Add nested workspace", ["workspace/package.json"]);
+      const base = await git.getCurrentCommitId();
+      await addFileAndCommit("Change nested and external files", ["workspace/index.ts", "outside.ts"]);
+      await testDir.addFile("workspace/staged.ts");
+      await testDir.addFile("outside-staged.ts");
+      await git.add("workspace/staged.ts");
+      await git.add("outside-staged.ts");
+
+      const nestedGit = createGitSourceControl(join(cwd, "workspace"));
+      expect(await nestedGit.listChangedFilesSince(base)).toEqual(["index.ts"]);
+      expect(await nestedGit.listStagedFiles()).toEqual(["staged.ts"]);
     });
   });
 

@@ -19,7 +19,13 @@ Add a new change description. Optionally specify the packages that the change ap
 
 ## `chronus verify`
 
-Verify that the packages with changes from the `baseBranch` have all been described.
+Validate the Chronus configuration and all pending changesets, including their front matter, change kinds, and package references.
+
+For each existing versioned package whose stable version differs from the Git merge base, all pending changesets referencing that package must have been consumed. Such packages do not need a new changeset describing the release itself. Other changed packages still require an added or modified changeset.
+
+Prerelease versions are exempt from the consumption rule, but their changes still require a changeset. Newly added packages also require a changeset rather than being treated as releases.
+
+Verification includes staged and unstaged changes in the current working tree. It does not inspect generated `CHANGELOG.md` content.
 
 ### Changeset requirement exemptions
 
@@ -41,13 +47,19 @@ Branch patterns match the source branch, not the CI merge ref. Outside CI, the c
 
 An exemption skips only the requirement to add or modify a changeset. Configuration and all existing changesets are still validated. Keep `chronus verify` running on every PR instead of excluding these PRs from the workflow.
 
+Stable-version changeset consumption checks always run, even when a branch or title exemption matches.
+
 Include `edited` in the verification workflow's `pull_request` event types if title edits should re-evaluate exemptions.
 
 GitHub and Azure DevOps PR context is detected automatically where available. Other CI environments can provide `GH_PR_HEAD_REF` and `GH_PR_TITLE` explicitly. Title matching requires title metadata from the CI provider or the explicit environment variables.
 
 **Options:**
 
-- `--since` — Only compute changes since the specified branch.
+- `--since` — Compare against the merge base with the specified ref. Defaults to the configured `baseBranch` and `baseRemote`. The ref and its common history with `HEAD` must be available locally; in CI, use `fetch-depth: 0` when checking out the repository.
+
+```bash
+chronus verify --since origin/main
+```
 
 ## `chronus status`
 

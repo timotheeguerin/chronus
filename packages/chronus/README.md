@@ -30,6 +30,8 @@ Options:
 
 Verify that the packages with changes from the `baseBranch` have all been described.
 
+Configuration and pending changesets are validated on every run. Existing packages whose stable version changed since the merge base must have consumed all of their pending changesets instead of adding a new changeset for the release itself. Prerelease versions and new packages still follow the normal changeset requirement. The same command can run on ordinary and release PRs without extra flags; it does not inspect generated `CHANGELOG.md` content.
+
 Configure exemptions in `.chronus/config.yaml` when some PRs do not need a new changeset:
 
 ```yaml
@@ -44,9 +46,11 @@ verify:
 
 Branch patterns match the source branch, or the current local branch outside CI. Title fragments are literal, case-insensitive matches using PR metadata; unavailable titles do not match. There are no built-in exemptions. Matching an exemption skips only the new-changeset requirement, and the command still validates configuration and existing changesets. Keep `verify` running in CI rather than skipping the entire step.
 
+Exemptions never suppress the stable-version changeset consumption check.
+
 Options:
 
-- `--since` Only compute changes since the specified branch.
+- `--since` Compare against the merge base with the specified ref instead of the configured base branch. The ref and its common history with `HEAD` must be available locally.
 
 ### `chronus status`
 

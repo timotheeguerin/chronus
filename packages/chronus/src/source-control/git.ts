@@ -1,7 +1,14 @@
 import { existsSync } from "fs";
+import { relative } from "node:path";
 
+import micromatch from "micromatch";
+
+import { createTextFile } from "../file/create-file.js";
+import { ChronusError } from "../utils/errors.js";
 import { execAsync, type ExecResult } from "../utils/exec-async.js";
-import { resolvePath } from "../utils/path-utils.js";
+import type { ChronusHost } from "../utils/host.js";
+import { NodeIOError } from "../utils/node-host.js";
+import { getDirectoryPath, normalizePath, resolvePath } from "../utils/path-utils.js";
 
 export interface GitRepository {
   /**
@@ -64,6 +71,12 @@ export interface GitRepository {
    * @param ref Target ref.
    */
   getMergeBase(ref: string): Promise<string>;
+
+  /** Get the merge base with the configured base remote branch. */
+  getMergeBaseFromBase(baseBranch: string, baseRemote?: string): Promise<string>;
+
+  /** Read the repository at a Git ref without changing the working tree. */
+  getHostAtRef(ref: string): Promise<ChronusHost>;
 
   /**
    * Returns files changed since the given ref. Does not include any uncomitted file change.
@@ -135,6 +148,8 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
     listUntrackedOrModifiedFiles,
     listStagedFiles,
     getMergeBase,
+    getMergeBaseFromBase,
+    getHostAtRef,
     listChangedFilesFromBase,
     listChangedFilesSince,
     getCurrentBranch,
@@ -180,7 +195,7 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
   }
 
   async function listStagedFiles() {
-    return splitStdoutLines(await execGit(["diff", "--name-only", "--cached"], { repositoryPath }));
+    return splitStdoutLines(await execGit(["diff", "--relative", "--name-only", "--cached"], { repositoryPath }));
   }
 
   async function getMergeBase(ref: string) {
@@ -189,11 +204,21 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
   }
 
   async function listChangedFilesFromBase(baseBranch: string, remote?: string) {
+    return await listChangedFilesSince(await resolveBaseRef(baseBranch, remote));
+  }
+
+  async function getMergeBaseFromBase(baseBranch: string, remote?: string) {
+    return await getMergeBase(await resolveBaseRef(baseBranch, remote));
+  }
+
+  async function resolveBaseRef(baseBranch: string, remote?: string) {
     let remoteBase: string | undefined;
     if (remote) {
       try {
         const remoteName = await findRemoteFromUrl(remote);
-        remoteBase = `${remoteName}/${baseBranch}`;
+        if (remoteName !== undefined) {
+          remoteBase = `${remoteName}/${baseBranch}`;
+        }
       } catch {
         // ignore
       }
@@ -216,11 +241,66 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
         remoteBase = baseBranch;
       }
     }
-    return await listChangedFilesSince(remoteBase);
+    return remoteBase;
+  }
+
+  async function getHostAtRef(ref: string): Promise<ChronusHost> {
+    const root = await getRepoRoot();
+    const { stdout } = await execGit(["ls-tree", "-r", "-z", "--name-only", ref], {
+      repositoryPath: root,
+    });
+    const files = new Set(
+      stdout
+        .toString()
+        .split("\0")
+        .filter(Boolean)
+        .map((path) => resolvePath(root, path)),
+    );
+    const directories = new Set<string>([root]);
+    for (const file of files) {
+      let directory = getDirectoryPath(file);
+      while (!directories.has(directory)) {
+        directories.add(directory);
+        directory = getDirectoryPath(directory);
+      }
+    }
+
+    async function readOnly(): Promise<never> {
+      throw new ChronusError(`Cannot modify the repository at Git ref '${ref}'.`);
+    }
+
+    return {
+      async readFile(path) {
+        const absolutePath = resolvePath(root, path);
+        if (!files.has(absolutePath)) {
+          throw new NodeIOError("ENOENT", `File '${path}' does not exist at Git ref '${ref}'.`);
+        }
+        const { stdout } = await execGit(["show", `${ref}:${normalizePath(relative(root, absolutePath))}`], {
+          repositoryPath: root,
+        });
+        return createTextFile(stdout.toString(), absolutePath);
+      },
+      async access(path) {
+        const absolutePath = resolvePath(root, path);
+        if (!files.has(absolutePath) && !directories.has(absolutePath)) {
+          throw new NodeIOError("ENOENT", `Path '${path}' does not exist at Git ref '${ref}'.`);
+        }
+      },
+      async glob(pattern, options) {
+        const baseDir = options?.baseDir ?? root;
+        const paths = [...(options?.onlyDirectories ? directories : files)]
+          .filter((path) => path.startsWith(baseDir + "/"))
+          .map((path) => normalizePath(relative(baseDir, path)));
+        return micromatch(paths, pattern, { dot: true, ignore: options?.ignore });
+      },
+      writeFile: readOnly,
+      rm: readOnly,
+      mkdir: readOnly,
+    };
   }
 
   async function listChangedFilesSince(ref: string) {
-    return splitStdoutLines(await execGit(["diff", "--name-only", `${ref}...`], { repositoryPath }));
+    return splitStdoutLines(await execGit(["diff", "--relative", "--name-only", `${ref}...`], { repositoryPath }));
   }
 
   async function findRemoteForBranch(branch: string) {
