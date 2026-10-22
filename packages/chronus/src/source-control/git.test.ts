@@ -68,6 +68,9 @@ describe("git", () => {
         expect((await host.readFile(join(cwd, "packages/pkg a/package.json"))).content).toBe('{"version":"1.0.0"}');
         expect(await host.glob("packages/*", { baseDir: cwd, onlyDirectories: true })).toEqual(["packages/pkg a"]);
         expect(await host.glob("packages/pkg a/", { baseDir: cwd, onlyDirectories: true })).toEqual(["packages/pkg a"]);
+        expect(await host.glob("packages/pkg a///", { baseDir: cwd, onlyDirectories: true })).toEqual([
+          "packages/pkg a",
+        ]);
         expect(await host.glob("**/*.yaml", { baseDir: cwd })).toEqual([".chronus/config.yaml"]);
         expect(await host.glob("**/*", { baseDir: join(cwd, "packages/pkg a"), ignore: ["ignored/**"] })).toEqual([
           "package.json",
