@@ -21,6 +21,30 @@ Add a new change description. Optionally specify the packages that the change ap
 
 Verify that the packages with changes from the `baseBranch` have all been described.
 
+### Changeset requirement exemptions
+
+Configure repository-specific exemptions in `.chronus/config.yaml`:
+
+```yaml
+verify:
+  changesetRequirement:
+    excludeBranches:
+      - publish/**
+      - dependabot/**
+      - backmerge/**
+      - revert-*
+    excludeTitleContains:
+      - "[skip chg]"
+```
+
+Branch patterns match the source branch, not the CI merge ref. Outside CI, the current local branch is used. Title fragments are literal, case-insensitive matches; `[skip chg]` has no special meaning unless configured. If no title is available, title exclusions do not match.
+
+An exemption skips only the requirement to add or modify a changeset. Configuration and all existing changesets are still validated. Keep `chronus verify` running on every PR instead of excluding these PRs from the workflow.
+
+Include `edited` in the verification workflow's `pull_request` event types if title edits should re-evaluate exemptions.
+
+GitHub and Azure DevOps PR context is detected automatically where available. Other CI environments can provide `GH_PR_HEAD_REF` and `GH_PR_TITLE` explicitly. Title matching requires title metadata from the CI provider or the explicit environment variables.
+
 **Options:**
 
 - `--since` — Only compute changes since the specified branch.

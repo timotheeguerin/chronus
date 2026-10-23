@@ -1,5 +1,12 @@
 baseBranch: main
 baseRemote: https://github.com/timotheeguerin/chronus
+verify:
+  changesetRequirement:
+    excludeBranches:
+      - publish/**
+      - dependabot/**
+    excludeTitleContains:
+      - "[skip chg]"
 changelog: ["@chronus/github/changelog", { repo: "timotheeguerin/chronus" }]
 changeKinds:
   breaking:

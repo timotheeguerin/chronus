@@ -8,9 +8,4 @@ export interface PullRequestContext {
   prTitle?: string;
 }
 
-export interface CIContext {
-  repo?: string;
-  prNumber?: number;
-  headRef?: string;
-  prTitle?: string;
-}
+export type { CIContext } from "@chronus/chronus/utils";

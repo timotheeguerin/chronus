@@ -46,6 +46,18 @@ const releaseNotesSchema = z
   })
   .strict();
 
+const verifySchema = z
+  .object({
+    changesetRequirement: z
+      .object({
+        excludeBranches: z.array(z.string().min(1)).optional(),
+        excludeTitleContains: z.array(z.string().min(1)).optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict();
+
 const schema = z
   .object({
     baseBranch: z.string(),
@@ -58,6 +70,7 @@ const schema = z
     changeKinds: z.record(z.string(), changeKindsSchema).optional(),
     changelog: z.union([z.string(), z.tuple([z.string(), z.record(z.string(), z.unknown())])]).optional(),
     changedFiles: z.array(z.string()).optional(),
+    verify: verifySchema.optional(),
     releaseNotes: releaseNotesSchema.optional(),
   })
   .strict()

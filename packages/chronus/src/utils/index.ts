@@ -1,3 +1,4 @@
+export * from "./ci-context.js";
 export * from "./errors.js";
 export * from "./exec-async.js";
 export * from "./fs-utils.js";
