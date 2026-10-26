@@ -30,6 +30,20 @@ Options:
 
 Verify that the packages with changes from the `baseBranch` have all been described.
 
+Configure exemptions in `.chronus/config.yaml` when some PRs do not need a new changeset:
+
+```yaml
+verify:
+  changesetRequirement:
+    excludeBranches:
+      - publish/**
+      - dependabot/**
+    excludeTitleContains:
+      - "[skip chg]"
+```
+
+Branch patterns match the source branch, or the current local branch outside CI. Title fragments are literal, case-insensitive matches using PR metadata; unavailable titles do not match. There are no built-in exemptions. Matching an exemption skips only the new-changeset requirement, and the command still validates configuration and existing changesets. Keep `verify` running in CI rather than skipping the entire step.
+
 Options:
 
 - `--since` Only compute changes since the specified branch.

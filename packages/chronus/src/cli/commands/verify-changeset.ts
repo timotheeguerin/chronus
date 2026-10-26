@@ -1,5 +1,6 @@
 import pc from "picocolors";
 
+import { getChangesetRequirementExemption } from "../../change/changeset-requirement.js";
 import { getWorkspaceStatus } from "../../change/get-workspace-status.js";
 import { NodeChronusHost, loadChronusWorkspace } from "../../index.js";
 function log(...args: any[]) {
@@ -15,6 +16,11 @@ export async function verifyChangeset({ cwd, since }: VerifyChangesetOptions): P
   const host = NodeChronusHost;
   const workspace = await loadChronusWorkspace(host, cwd);
   const status = await getWorkspaceStatus(host, workspace, { since });
+  const exemption = await getChangesetRequirementExemption(workspace);
+  if (exemption !== undefined) {
+    log(pc.yellow(`Skipping new changeset requirement: ${exemption}.`));
+    return;
+  }
   const undocummentedPackages = [...status.packages.values()].filter((x) => x.changed && !x.documented);
   const documentedPackages = [...status.packages.values()].filter((x) => x.changed && x.documented);
   if (undocummentedPackages.length > 0) {

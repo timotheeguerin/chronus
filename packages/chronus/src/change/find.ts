@@ -46,7 +46,7 @@ export async function findChangeStatus(
     workspace.config.baseRemote,
   );
   const untrackedOrModifiedFiles = await sourceControl.listUntrackedOrModifiedFiles();
-  const stagedFiles = await sourceControl.listUntrackedOrModifiedFiles();
+  const stagedFiles = await sourceControl.listStagedFiles();
   const publicPackages = workspace.packages;
 
   const allChangeDescriptions = await readChangeDescriptions(host, workspace);
@@ -114,7 +114,7 @@ async function findAreaStatus(
     : filesChanged;
 
   const changeDescriptions = allChangeDescriptions.filter((x) =>
-    fileChangedThatMatter.includes(changesRelativeDir + "/" + x.id + ".md"),
+    filesChanged.includes(changesRelativeDir + "/" + x.id + ".md"),
   );
   return {
     filesChanged: fileChangedThatMatter,

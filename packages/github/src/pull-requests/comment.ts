@@ -6,7 +6,12 @@ import {
   type ChronusWorkspace,
   type PackageStatus,
 } from "@chronus/chronus";
-import { printChangeDescription, resolveChangeRelativePath, type ChangeDescription } from "@chronus/chronus/change";
+import {
+  getChangesetRequirementExemption,
+  printChangeDescription,
+  resolveChangeRelativePath,
+  type ChangeDescription,
+} from "@chronus/chronus/change";
 import { Octokit } from "octokit";
 
 import { getGithubToken } from "../utils/gh-token.js";
@@ -38,7 +43,8 @@ export async function resolveChangeStatusCommentForPr(context: PullRequestContex
     context.prTitle = pr.data.title;
   }
 
-  const content = getChangeStatusComment(workspace, status, pr.data, context as any);
+  const exemption = await getChangesetRequirementExemption(workspace, context);
+  const content = getChangeStatusComment(workspace, status, pr.data, context as any, exemption);
   return {
     content,
     prNumber: context.prNumber,
@@ -46,16 +52,25 @@ export async function resolveChangeStatusCommentForPr(context: PullRequestContex
   };
 }
 
-function getChangeStatusComment(
+export function getChangeStatusComment(
   workspace: ChronusWorkspace,
   status: ChangeStatus,
   pr: any,
   context: Required<PullRequestContext>,
+  exemption?: string,
 ): string {
   const undocummentedPackages = [...status.packages.values()].filter((x) => x.changed && !x.documented);
   const documentedPackages = [...status.packages.values()].filter((x) => x.changed && x.documented);
 
   const content = [magicString];
+
+  if (exemption !== undefined) {
+    content.push(`No new changeset is required: ${exemption}.`);
+    if (status.all.changeDescriptions.length > 0) {
+      content.push("", showChanges(status, pr, context));
+    }
+    return content.join("\n");
+  }
 
   if (undocummentedPackages.length > 0) {
     content.push(
