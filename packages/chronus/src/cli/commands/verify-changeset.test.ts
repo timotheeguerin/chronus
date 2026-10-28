@@ -1,4 +1,4 @@
-import { rename, rm } from "node:fs/promises";
+import { rename, rm, symlink } from "node:fs/promises";
 import { join } from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -227,6 +227,87 @@ it("supports adopting Chronus when the base has no Chronus configuration", async
   await testDir.addFile("packages/pkg-a/index.ts", "export const value = 1;");
   await addChange("new", "pkg-a");
   await expect(runVerify()).resolves.toBeUndefined();
+});
+
+it.each(["auto", "npm", "cargo"] as const)(
+  "supports introducing Chronus and the first %s workspace manifest together",
+  async (type) => {
+    await gitCommand("switch", "main");
+    for (const path of [".chronus", "packages", "pnpm-workspace.yaml"]) {
+      await rm(join(testDir.path, path), { recursive: true, force: true });
+    }
+    await testDir.addFile("README.md", "Existing repository");
+    if (type === "auto") {
+      await testDir.addFile("package.json", JSON.stringify({ name: "existing-root", version: "1.0.0", private: true }));
+    }
+    await commit();
+    await gitCommand("switch", "-c", "first-workspace");
+    await testDir.addFile(
+      ".chronus/config.yaml",
+      mkChronusConfigFile({ packages: type === "auto" ? undefined : [{ path: ".", type }] }),
+    );
+    if (type === "auto") {
+      await testDir.addFile("pnpm-workspace.yaml", mkPnpmWorkspaceFile());
+      await setVersion("pkg-a", "1.0.0");
+    } else if (type === "npm") {
+      await testDir.addFile("package.json", JSON.stringify({ name: "pkg-a", version: "1.0.0" }));
+    } else {
+      await testDir.addFile("Cargo.toml", '[package]\nname = "pkg-a"\nversion = "1.0.0"\n');
+    }
+    await addChange("new", "pkg-a");
+    await expect(runVerify()).resolves.toBeUndefined();
+  },
+);
+
+it("does not suppress malformed historical manifests while adopting Chronus", async () => {
+  await gitCommand("switch", "main");
+  await rm(join(testDir.path, ".chronus/config.yaml"));
+  await testDir.addFile("package.json", "invalid-json");
+  await commit();
+  await gitCommand("switch", "-c", "adopt-chronus");
+  await testDir.addFile(".chronus/config.yaml", mkChronusConfigFile({ packages: [{ path: ".", type: "npm" }] }));
+  await testDir.writeFile("package.json", JSON.stringify({ name: "pkg-a", version: "1.0.0" }));
+  await rm(join(testDir.path, ".chronus/changes/existing.md"));
+  await addChange("new", "pkg-a");
+  await expect(runVerify()).rejects.toThrow(SyntaxError);
+});
+
+it("rejects unconsumed stable changesets when an exempt workspace path has a trailing slash", async () => {
+  await testDir.addFile(
+    ".chronus/config.yaml",
+    mkChronusConfigFile({
+      packages: [{ path: "./", type: "pnpm" }],
+      verify: { changesetRequirement: { excludeBranches: ["**"] } },
+    }),
+  );
+  await commit();
+  const since = await git.getCurrentCommitId();
+  await setVersion("pkg-a", "1.1.0");
+  await expect(runVerify(since)).rejects.toMatchObject({
+    diagnostics: [{ code: "unconsumed-changeset", message: expect.stringContaining("pkg-a") }],
+  });
+});
+
+it("ignores hidden fixture manifests when loading historical packages", async () => {
+  await testDir.addFile("pnpm-workspace.yaml", mkPnpmWorkspaceFile(["packages/**"]));
+  await testDir.addFile("packages/.fixtures/package.json", "invalid-json");
+  await commit();
+  const since = await git.getCurrentCommitId();
+  await testDir.addFile("packages/pkg-a/index.ts", "export const value = 1;");
+  await addChange("new", "pkg-a");
+  await expect(runVerify(since)).resolves.toBeUndefined();
+});
+
+it("loads symlinked historical manifests before enforcing stable version consumption", async () => {
+  await rm(join(testDir.path, "packages/pkg-a/package.json"));
+  await testDir.addFile("manifests/pkg-a.json", JSON.stringify({ name: "pkg-a", version: "1.0.0" }));
+  await symlink("../../manifests/pkg-a.json", join(testDir.path, "packages/pkg-a/package.json"));
+  await commit();
+  const since = await git.getCurrentCommitId();
+  await testDir.writeFile("manifests/pkg-a.json", JSON.stringify({ name: "pkg-a", version: "1.1.0" }));
+  await expect(runVerify(since)).rejects.toMatchObject({
+    diagnostics: [{ code: "unconsumed-changeset", message: expect.stringContaining("pkg-a") }],
+  });
 });
 
 it("excludes private and ignored packages from the version consistency check", async () => {

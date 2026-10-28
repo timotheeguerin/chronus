@@ -11,7 +11,7 @@ import { throwIfDiagnostic, type Diagnostic } from "../../utils/errors.js";
 import { isPathAccessible } from "../../utils/fs-utils.js";
 import { NodeChronusHost } from "../../utils/node-host.js";
 import { resolvePath } from "../../utils/path-utils.js";
-import { loadPackages } from "../../workspace-manager/auto-discover.js";
+import { getWorkspaceManager, hasPackageManifest, loadPackages } from "../../workspace-manager/auto-discover.js";
 import { loadChronusWorkspace } from "../../workspace/load.js";
 
 function log(message: string) {
@@ -33,13 +33,23 @@ export async function verifyChangeset({ cwd, since }: VerifyChangesetOptions): P
       ? await git.getMergeBase(since)
       : await git.getMergeBaseFromBase(workspace.config.baseBranch, workspace.config.baseRemote);
   const baseHost = await git.getHostAtRef(base);
-  const baseConfig = (await isPathAccessible(baseHost, resolvePath(workspace.path, ".chronus/config.yaml")))
-    ? await resolveConfig(baseHost, workspace.path)
-    : workspace.config;
+  const hasBaseConfig = await isPathAccessible(baseHost, resolvePath(workspace.path, ".chronus/config.yaml"));
+  const baseConfig = hasBaseConfig ? await resolveConfig(baseHost, workspace.path) : workspace.config;
   const basePackageConfigs = [];
   for (const config of baseConfig.resolvedPackages) {
-    if (config.path.includes("*") || (await isPathAccessible(baseHost, resolvePath(workspace.path, config.path)))) {
+    const sourcePath = resolvePath(workspace.path, config.path);
+    if (config.path.includes("*")) {
       basePackageConfigs.push(config);
+      continue;
+    }
+    if (!(await isPathAccessible(baseHost, sourcePath))) continue;
+    if (hasBaseConfig) {
+      basePackageConfigs.push(config);
+      continue;
+    }
+    const ecosystem = await getWorkspaceManager(host, sourcePath, config.type);
+    if (await hasPackageManifest(baseHost, sourcePath, ecosystem.type)) {
+      basePackageConfigs.push({ ...config, type: ecosystem.type });
     }
   }
   const basePackages = new Map(

@@ -27,6 +27,8 @@ Existing packages whose version changed to a prerelease also do not need a new c
 
 Verification includes staged and unstaged changes in the current working tree. It does not inspect generated `CHANGELOG.md` content.
 
+Historical comparison follows symbolic links within the repository. Link targets outside the recorded Git tree are unavailable.
+
 ### Changeset requirement exemptions
 
 Configure repository-specific exemptions in `.chronus/config.yaml`:

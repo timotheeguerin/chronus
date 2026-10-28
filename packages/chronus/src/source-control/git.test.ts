@@ -1,9 +1,12 @@
+import { symlink } from "node:fs/promises";
 import { join } from "node:path";
 
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { createTestDir, type TestDir } from "../testing/index.js";
 import { execAsync } from "../utils/exec-async.js";
+import { NodeChronusHost } from "../utils/node-host.js";
+import { resolvePath } from "../utils/path-utils.js";
 import { createGitSourceControl, type GitRepository } from "./git.js";
 
 describe("git", () => {
@@ -71,7 +74,7 @@ describe("git", () => {
         expect(await host.glob("packages/pkg a///", { baseDir: cwd, onlyDirectories: true })).toEqual([
           "packages/pkg a",
         ]);
-        expect(await host.glob("**/*.yaml", { baseDir: cwd })).toEqual([".chronus/config.yaml"]);
+        expect(await host.glob(".chronus/*.yaml", { baseDir: cwd })).toEqual([".chronus/config.yaml"]);
         expect(await host.glob("**/*", { baseDir: join(cwd, "packages/pkg a"), ignore: ["ignored/**"] })).toEqual([
           "package.json",
         ]);
@@ -79,6 +82,71 @@ describe("git", () => {
         await expect(host.readFile(join(cwd, "packages/new/package.json"))).rejects.toMatchObject({ code: "ENOENT" });
         await expect(host.access(join(cwd, "packages/new"))).rejects.toMatchObject({ code: "ENOENT" });
         await expect(host.writeFile(join(cwd, "packages/pkg a/package.json"), "{}")).rejects.toThrow(/Cannot modify/);
+      });
+
+      it("normalizes directory access and includes directory glob roots", async () => {
+        await testDir.addFile("packages/pkg-a/package.json", "{}");
+        await git.add(".");
+        await git.commit("Add package");
+        const host = await git.getHostAtRef("HEAD");
+        await expect(host.access(resolvePath(cwd, "./"))).resolves.toBeUndefined();
+        await expect(host.access(`${cwd}/packages/pkg-a/`)).resolves.toBeUndefined();
+        expect(await host.glob(".", { baseDir: `${cwd}/packages/pkg-a/`, onlyDirectories: true })).toEqual(["."]);
+        for (const baseDir of [`${cwd}/`, `${cwd.replaceAll("/", "\\")}\\`]) {
+          expect(await host.glob("packages/*", { baseDir, onlyDirectories: true })).toEqual(["packages/pkg-a"]);
+        }
+      });
+
+      it("matches filesystem glob behavior for hidden directories and explicit dot paths", async () => {
+        await testDir.addFile("packages/pkg-a/package.json", "{}");
+        await testDir.addFile("packages/.fixtures/package.json", "not-json");
+        await testDir.addFile(".chronus/config.yaml", "baseBranch: main");
+        await git.add(".");
+        await git.commit("Add hidden fixtures");
+        const host = await git.getHostAtRef("HEAD");
+        const options = { baseDir: cwd, onlyDirectories: true };
+        for (const patterns of [
+          ["packages/**"],
+          ["packages/**", "!packages/pkg-a/**"],
+          ["packages/**", "!packages/pkg-a/**", "packages/pkg-a"],
+        ]) {
+          expect((await host.glob(patterns, options)).sort()).toEqual(
+            (await NodeChronusHost.glob(patterns, options)).sort(),
+          );
+        }
+        expect(await host.glob("**/*.yaml", { baseDir: cwd })).toEqual([]);
+        expect(await host.glob(".chronus/*.yaml", { baseDir: cwd })).toEqual([".chronus/config.yaml"]);
+      });
+
+      it("follows historical file and directory symlinks without reading live targets", async () => {
+        await testDir.addFile("manifests/package.json", '{"version":"1.0.0"}');
+        await testDir.addFile("packages/linked/README.md", "Linked package");
+        await symlink("../../manifests/package.json", join(cwd, "packages/linked/package.json"));
+        await symlink("linked", join(cwd, "packages/alias"), "dir");
+        await git.add(".");
+        await git.commit("Add links");
+        const host = await git.getHostAtRef("HEAD");
+        await testDir.writeFile("manifests/package.json", '{"version":"2.0.0"}');
+        expect((await host.readFile(join(cwd, "packages/alias/package.json"))).content).toBe('{"version":"1.0.0"}');
+        await expect(host.access(join(cwd, "packages/alias"))).resolves.toBeUndefined();
+        expect((await host.glob("packages/*", { baseDir: cwd, onlyDirectories: true })).sort()).toEqual([
+          "packages/alias",
+          "packages/linked",
+        ]);
+        expect(await host.glob("**/*.json", { baseDir: join(cwd, "packages/alias") })).toEqual(["package.json"]);
+      });
+
+      it("reports cyclic and dangling links instead of returning link target text", async () => {
+        await symlink("cycle-b", join(cwd, "cycle-a"));
+        await symlink("cycle-a", join(cwd, "cycle-b"));
+        await symlink("missing.json", join(cwd, "dangling"));
+        await git.add(".");
+        await git.commit("Add broken links");
+        const host = await git.getHostAtRef("HEAD");
+        await expect(host.readFile(join(cwd, "cycle-a"))).rejects.toMatchObject({ code: "ELOOP" });
+        await expect(host.access(join(cwd, "cycle-a"))).rejects.toMatchObject({ code: "ELOOP" });
+        await expect(host.readFile(join(cwd, "dangling"))).rejects.toMatchObject({ code: "ENOENT" });
+        expect(await host.glob("*", { baseDir: cwd })).toEqual(await NodeChronusHost.glob("*", { baseDir: cwd }));
       });
     });
 

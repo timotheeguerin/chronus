@@ -1,6 +1,7 @@
 import { existsSync } from "fs";
 import { relative } from "node:path";
 
+import { generateGlobTasks } from "globby";
 import micromatch from "micromatch";
 
 import { createTextFile } from "../file/create-file.js";
@@ -8,7 +9,13 @@ import { ChronusError } from "../utils/errors.js";
 import { execAsync, type ExecResult } from "../utils/exec-async.js";
 import type { ChronusHost } from "../utils/host.js";
 import { NodeIOError } from "../utils/node-host.js";
-import { getDirectoryPath, normalizePath, resolvePath } from "../utils/path-utils.js";
+import {
+  getBaseFileName,
+  getDirectoryPath,
+  getNormalizedAbsolutePath,
+  normalizePath,
+  resolvePath,
+} from "../utils/path-utils.js";
 
 export interface GitRepository {
   /**
@@ -245,23 +252,77 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
   }
 
   async function getHostAtRef(ref: string): Promise<ChronusHost> {
-    const root = await getRepoRoot();
-    const { stdout } = await execGit(["ls-tree", "-r", "-z", "--name-only", ref], {
+    const root = normalizePath(await getRepoRoot());
+    const absolutePath = (path: string) => getNormalizedAbsolutePath(normalizePath(path), root);
+    const { stdout } = await execGit(["ls-tree", "-r", "-z", "--full-tree", ref], {
       repositoryPath: root,
     });
-    const files = new Set(
-      stdout
-        .toString()
-        .split("\0")
-        .filter(Boolean)
-        .map((path) => resolvePath(root, path)),
-    );
+    const files = new Map<string, { mode: string; objectId: string }>();
     const directories = new Set<string>([root]);
-    for (const file of files) {
-      let directory = getDirectoryPath(file);
+    for (const entry of stdout.toString().split("\0").filter(Boolean)) {
+      const separator = entry.indexOf("\t");
+      const [mode, type, objectId] = entry.slice(0, separator).split(" ");
+      const path = absolutePath(entry.slice(separator + 1));
+      if (type === "blob") {
+        files.set(path, { mode, objectId });
+      } else if (type === "commit") {
+        directories.add(path);
+      }
+      let directory = getDirectoryPath(path);
       while (!directories.has(directory)) {
         directories.add(directory);
         directory = getDirectoryPath(directory);
+      }
+    }
+    const children = new Map<string, string[]>();
+    for (const path of [...directories, ...files.keys()]) {
+      if (path === root) continue;
+      const parent = getDirectoryPath(path);
+      const entries = children.get(parent) ?? [];
+      entries.push(path);
+      children.set(parent, entries);
+    }
+    const contents = new Map<string, Promise<string>>();
+    function readBlob(objectId: string): Promise<string> {
+      let content = contents.get(objectId);
+      if (content === undefined) {
+        content = execGit(["cat-file", "blob", objectId], { repositoryPath: root }).then(({ stdout }) =>
+          stdout.toString(),
+        );
+        contents.set(objectId, content);
+      }
+      return content;
+    }
+
+    async function resolveLinks(path: string): Promise<string> {
+      let resolved = absolutePath(path);
+      const visited = new Set<string>();
+      for (let links = 0; ; links++) {
+        if (links > 40 || visited.has(resolved)) {
+          throw new NodeIOError("ELOOP", `Too many symbolic links resolving '${path}' at Git ref '${ref}'.`);
+        }
+        visited.add(resolved);
+        const parts = normalizePath(relative(root, resolved)).split("/");
+        let current = root;
+        let target: string | undefined;
+        for (const [index, part] of parts.entries()) {
+          current = absolutePath(resolvePath(current, part));
+          const entry = files.get(current);
+          if (entry?.mode === "120000") {
+            const link = await readBlob(entry.objectId);
+            if (link.length === 0) break;
+            target = absolutePath(resolvePath(getDirectoryPath(current), link, ...parts.slice(index + 1)));
+            break;
+          }
+        }
+        if (target !== undefined) {
+          resolved = target;
+          continue;
+        }
+        if (directories.has(resolved) || (files.has(resolved) && files.get(resolved)?.mode !== "120000")) {
+          return resolved;
+        }
+        throw new NodeIOError("ENOENT", `Path '${path}' does not exist at Git ref '${ref}'.`);
       }
     }
 
@@ -271,26 +332,38 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
 
     return {
       async readFile(path) {
-        const absolutePath = resolvePath(root, path);
-        if (!files.has(absolutePath)) {
-          throw new NodeIOError("ENOENT", `File '${path}' does not exist at Git ref '${ref}'.`);
+        const resolved = await resolveLinks(path);
+        const entry = files.get(resolved);
+        if (entry === undefined) {
+          throw new NodeIOError("EISDIR", `Path '${path}' is a directory at Git ref '${ref}'.`);
         }
-        const { stdout } = await execGit(["show", `${ref}:${normalizePath(relative(root, absolutePath))}`], {
-          repositoryPath: root,
-        });
-        return createTextFile(stdout.toString(), absolutePath);
+        return createTextFile(await readBlob(entry.objectId), absolutePath(path));
       },
       async access(path) {
-        const absolutePath = resolvePath(root, path);
-        if (!files.has(absolutePath) && !directories.has(absolutePath)) {
-          throw new NodeIOError("ENOENT", `Path '${path}' does not exist at Git ref '${ref}'.`);
-        }
+        await resolveLinks(path);
       },
       async glob(pattern, options) {
-        const baseDir = options?.baseDir ?? root;
-        const paths = [...(options?.onlyDirectories ? directories : files)]
-          .filter((path) => path.startsWith(baseDir + "/"))
-          .map((path) => normalizePath(relative(baseDir, path)));
+        const paths: string[] = [];
+        async function visit(path: string, name: string, ancestors: ReadonlySet<string>): Promise<void> {
+          if (options?.ignore?.length && micromatch.isMatch(name, options.ignore, { dot: true })) return;
+          let resolved: string;
+          try {
+            resolved = await resolveLinks(path);
+          } catch (error) {
+            // Like filesystem globbing, omit dangling links and links that cannot be followed.
+            if (error instanceof NodeIOError && (error.code === "ENOENT" || error.code === "ELOOP")) return;
+            throw error;
+          }
+          const directory = directories.has(resolved);
+          if (directory === (options?.onlyDirectories ?? false)) paths.push(name);
+          if (!directory || ancestors.has(resolved)) return;
+          const next = new Set(ancestors).add(resolved);
+          for (const child of children.get(resolved) ?? []) {
+            const childName = getBaseFileName(child);
+            await visit(child, name === "." ? childName : `${name}/${childName}`, next);
+          }
+        }
+        await visit(absolutePath(options?.baseDir ?? root), ".", new Set());
         const patterns = (Array.isArray(pattern) ? pattern : [pattern]).map((path) => {
           let end = path.length;
           while (end > 0 && path[end - 1] === "/") {
@@ -298,7 +371,26 @@ export function createGitSourceControl(repositoryPath: string): GitRepository {
           }
           return path.slice(0, end);
         });
-        return micromatch(paths, patterns, { dot: true, ignore: options?.ignore });
+        const tasks = await generateGlobTasks(patterns, { expandDirectories: false, ignore: options?.ignore });
+        const matches = new Set<string>();
+        for (const task of tasks) {
+          const ignored = (task.options.ignore ?? []).map((pattern) => micromatch.matcher(pattern, { dot: true }));
+          for (const pattern of task.patterns) {
+            const scan = micromatch.scan(pattern);
+            for (const path of micromatch(paths, pattern)) {
+              // Directory traversal does not return the search root of a dynamic pattern.
+              if (scan.isGlob && path === (normalizePath(scan.base) || ".")) continue;
+              let current = path;
+              while (current && !ignored.some((match) => match(current))) {
+                const parent = getDirectoryPath(current);
+                if (parent === current) break;
+                current = parent;
+              }
+              if (!current) matches.add(path);
+            }
+          }
+        }
+        return [...matches];
       },
       writeFile: readOnly,
       rm: readOnly,
