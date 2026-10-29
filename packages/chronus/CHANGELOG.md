@@ -1,5 +1,19 @@
 # @chronus/chronus
 
+## 1.6.0
+
+### Bug Fixes
+
+- [#603](https://github.com/timotheeguerin/chronus/pull/603) Recognize staged changesets and changesets excluded by the `changedFiles` filter when verifying that package changes are documented.
+
+### Features
+
+- [#603](https://github.com/timotheeguerin/chronus/pull/603) Configure source-branch and PR-title exemptions under `verify.changesetRequirement` to waive the requirement for a new changeset without bypassing configuration or existing changeset validation.
+- [#602](https://github.com/timotheeguerin/chronus/pull/602) Make `chronus verify` work for both ordinary and release PRs without extra commands or flags. Existing packages whose versions changed do not need a new changeset for the release itself. Stable version changes must consume all pending changesets for that package; prerelease version changes may retain or consume them. New packages and packages whose versions did not change still require changesets for their changes.
+  
+  Configured branch and PR-title exemptions waive only the new-changeset requirement; stable-version consumption checks always run.
+
+
 ## 1.5.1
 
 ### Bug Fixes
