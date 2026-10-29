@@ -96,12 +96,11 @@ async function main() {
     )
     .command(
       "verify",
-      "Verify all packages changes have been documented",
+      "Validate Chronus data and verify package changes are documented",
       (cmd) =>
         cmd.option("since", {
           type: "string",
-          description:
-            "Verify since the the given branch. Default to the baseBranch configured in .chronus/config.yaml",
+          description: "Verify since this ref. Defaults to baseBranch in .chronus/config.yaml.",
         }),
       withErrors((args) => verifyChangeset({ cwd: process.cwd(), since: args.since })),
     )
