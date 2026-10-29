@@ -1,5 +1,12 @@
 # Changelog - @chronus/github
 
+## 1.2.2
+
+### Bug Fixes
+
+- [#603](https://github.com/timotheeguerin/chronus/pull/603) Honor configured changeset exemptions in PR status comments rather than asking for a changeset when the requirement has been waived.
+
+
 ## 1.2.1
 
 No changes, version bump only.
