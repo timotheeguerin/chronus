@@ -1,5 +1,5 @@
 import type { PackageOrWorkspaceConfig } from "../config/types.js";
-import { ChronusError, resolvePath, type ChronusHost } from "../utils/index.js";
+import { ChronusError, isPathAccessible, lookup, resolvePath, type ChronusHost } from "../utils/index.js";
 import { createNodeWorkspaceManager } from "./node/node.js";
 import { createPnpmWorkspaceManager } from "./node/pnpm.js";
 import { createRushWorkspaceManager } from "./node/rush.js";
@@ -7,13 +7,14 @@ import { PipWorkspaceManager } from "./python/pip.js";
 import { CargoWorkspaceManager } from "./rust/cargo.js";
 import type { Ecosystem, Package } from "./types.js";
 
-const ecosystems = [
-  createPnpmWorkspaceManager(),
-  createRushWorkspaceManager(),
-  createNodeWorkspaceManager(),
-  new CargoWorkspaceManager(),
-  new PipWorkspaceManager(),
+const ecosystemDefinitions = [
+  { ecosystem: createPnpmWorkspaceManager(), manifests: ["pnpm-workspace.yaml", "package.json"] },
+  { ecosystem: createRushWorkspaceManager(), manifests: ["rush.json"], searchParents: true },
+  { ecosystem: createNodeWorkspaceManager(), manifests: ["package.json"] },
+  { ecosystem: new CargoWorkspaceManager(), manifests: ["Cargo.toml"] },
+  { ecosystem: new PipWorkspaceManager(), manifests: ["pyproject.toml"] },
 ];
+const ecosystems = ecosystemDefinitions.map(({ ecosystem }) => ecosystem);
 const ecosystemMap = new Map<string, Ecosystem>(
   ecosystems.flatMap((x) => {
     return [...(x.aliases ?? []), x.type].map((alias) => [alias, x], [x.type, x]);
@@ -35,6 +36,23 @@ export async function getWorkspaceManager(host: ChronusHost, root: string, type?
     return findEcosystem(host, root);
   }
   return getEcosystem(type);
+}
+
+/** Check source-file presence without parsing, so malformed existing manifests still fail when loaded. */
+export async function hasPackageManifest(host: ChronusHost, root: string, type: string): Promise<boolean> {
+  const ecosystem = getEcosystem(type);
+  for (const definition of ecosystemDefinitions) {
+    if (definition.ecosystem !== ecosystem) continue;
+    for (const manifest of definition.manifests) {
+      const exists = (dir: string) => isPathAccessible(host, resolvePath(dir, manifest));
+      if ("searchParents" in definition && definition.searchParents) {
+        if ((await lookup(root, exists)) !== undefined) return true;
+      } else if (await exists(root)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 export async function loadPackages(

@@ -5,6 +5,7 @@ import { isPathAccessible } from "../../utils/fs-utils.js";
 import type { ChronusHost } from "../../utils/host.js";
 import { isDefined } from "../../utils/misc-utils.js";
 import { joinPaths, resolvePath } from "../../utils/path-utils.js";
+import { createDependencyMap } from "../dependencies.js";
 import type { Ecosystem, Package, PackageDependencySpec, PatchPackageVersion } from "../types.js";
 
 const cargoFile = "Cargo.toml";
@@ -125,11 +126,11 @@ export async function tryLoadCargoToml(
       name: cargoToml.package.name,
       version: cargoToml.package.version,
       relativePath: relativePath,
-      dependencies: new Map([
-        ...mapCargoDependencies(cargoToml.dependencies, "prod"),
-        ...mapCargoDependencies(cargoToml["dev-dependencies"], "dev"),
-        ...mapCargoDependencies(cargoToml["build-dependencies"], "dev"),
-      ]),
+      dependencies: createDependencyMap(
+        mapCargoDependencies(cargoToml.dependencies, "prod"),
+        mapCargoDependencies(cargoToml["dev-dependencies"], "dev"),
+        mapCargoDependencies(cargoToml["build-dependencies"], "dev"),
+      ),
     };
   } else {
     return undefined;

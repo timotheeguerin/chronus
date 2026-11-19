@@ -5,7 +5,10 @@ import type { Package, PackageId } from "../workspace-manager/types.js";
 
 export async function findUnpublishedWorkspacePackages(workspace: ChronusWorkspace): Promise<Package[]> {
   const data = await Promise.all(
-    workspace.packages.map(async (pkg) => [pkg, await isPackageVersionPublished(pkg.name, pkg.version)] as const),
+    workspace.packages
+      // Private packages are never published even when they are versioned (e.g. part of a version policy).
+      .filter((pkg) => !pkg.private)
+      .map(async (pkg) => [pkg, await isPackageVersionPublished(pkg.name, pkg.version)] as const),
   );
   return data.filter(([, published]) => !published).map(([pkg]) => pkg);
 }

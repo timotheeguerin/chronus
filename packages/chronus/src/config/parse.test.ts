@@ -3,6 +3,35 @@ import { describe, expect, it } from "vitest";
 import { ChronusDiagnosticError } from "../utils/errors.js";
 import { parseConfig } from "./parse.js";
 
+describe("verification exemptions", () => {
+  it("accepts explicit branch and title exclusions without adding defaults", () => {
+    expect(parseConfig("baseBranch: main").verify).toBeUndefined();
+    expect(
+      parseConfig(`
+baseBranch: main
+verify:
+  changesetRequirement:
+    excludeBranches: ["publish/**"]
+    excludeTitleContains: ["[skip chg]"]
+`).verify,
+    ).toEqual({
+      changesetRequirement: {
+        excludeBranches: ["publish/**"],
+        excludeTitleContains: ["[skip chg]"],
+      },
+    });
+  });
+
+  it.each(['excludeTitleContains: [""]', 'excludeBranches: "publish/**"', "excludeEverything: true"])(
+    "rejects invalid exemption settings: %s",
+    (setting) => {
+      expect(() => parseConfig(`baseBranch: main\nverify:\n  changesetRequirement:\n    ${setting}\n`)).toThrow(
+        ChronusDiagnosticError,
+      );
+    },
+  );
+});
+
 function expectConfigError(content: string): ChronusDiagnosticError {
   try {
     parseConfig(content);

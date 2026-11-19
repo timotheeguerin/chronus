@@ -28,6 +28,31 @@ interface NpmPublishResult {
   readonly integrity: string;
 }
 
+/**
+ * Normalize the parsed JSON output of `npm publish --json`.
+ * npm >=12 (and pnpm) changed the output to be an object keyed by package name:
+ *   `{ "pkg-name": { id, name, version, size, unpackedSize, ... } }`
+ * while older versions returned the flat object directly:
+ *   `{ id, name, version, size, unpackedSize, ... }`
+ * This handles both shapes and returns the flat result (or `null` when it can't be resolved).
+ */
+export function normalizeNpmPublishResult(json: unknown, packageName?: string): NpmPublishResult | null {
+  if (json === null || typeof json !== "object") {
+    return null;
+  }
+  const record = json as Record<string, unknown>;
+  if (typeof record.version === "string") {
+    // Flat/legacy format.
+    return record as unknown as NpmPublishResult;
+  }
+  // Keyed format: prefer the entry matching the package name, otherwise take the first entry.
+  const entry = (packageName !== undefined ? record[packageName] : undefined) ?? Object.values(record)[0];
+  if (entry !== null && typeof entry === "object" && typeof (entry as NpmPublishResult).version === "string") {
+    return entry as NpmPublishResult;
+  }
+  return null;
+}
+
 async function isDir(path: string) {
   try {
     const s = await stat(path);
@@ -76,13 +101,13 @@ export async function publishPackageWithNpm(
   if (result.code !== 0) {
     return processError(pkg, result);
   }
-  const parsedResult: NpmPublishResult = getLastJsonObject(result.stdout.toString());
+  const parsedResult = normalizeNpmPublishResult(getLastJsonObject(result.stdout.toString()), pkg.name);
   return {
     published: true,
-    name: parsedResult.name,
-    version: parsedResult.version,
-    size: parsedResult.size,
-    unpackedSize: parsedResult.unpackedSize,
+    name: parsedResult?.name ?? pkg.name,
+    version: parsedResult?.version ?? pkg.version,
+    size: parsedResult?.size ?? 0,
+    unpackedSize: parsedResult?.unpackedSize ?? 0,
   };
 }
 
@@ -117,13 +142,13 @@ export async function publishPackageWithPnpm(
       unpackedSize: tabballManifest.dist?.unpackedSize ?? 0,
     };
   } else {
-    const parsedResult: NpmPublishResult = json;
+    const parsedResult = normalizeNpmPublishResult(json, pkg.name);
     return {
       published: true,
-      name: parsedResult.name,
-      version: parsedResult.version,
-      size: parsedResult.size,
-      unpackedSize: parsedResult.unpackedSize,
+      name: parsedResult?.name ?? pkg.name,
+      version: parsedResult?.version ?? pkg.version,
+      size: parsedResult?.size ?? 0,
+      unpackedSize: parsedResult?.unpackedSize ?? 0,
     };
   }
 }

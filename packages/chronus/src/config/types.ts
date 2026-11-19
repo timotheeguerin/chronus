@@ -1,3 +1,4 @@
+import type { ReleaseNotesConfig } from "../release-notes/types.js";
 import type { VersionType } from "../types.js";
 import type { YamlFile } from "../yaml/types.js";
 
@@ -40,6 +41,21 @@ export interface ChronusUserConfig {
    * Using `!` will exclude that pattern.
    */
   readonly changedFiles?: readonly string[];
+
+  /** Controls when changed packages require a new or modified changeset. */
+  readonly verify?: VerifyConfig;
+
+  /** Configuration for the `release-notes` command (prompt template, enrichers, AI tool). */
+  readonly releaseNotes?: ReleaseNotesConfig;
+}
+
+export interface VerifyConfig {
+  readonly changesetRequirement?: {
+    /** Source branch globs that do not require a new changeset. */
+    readonly excludeBranches?: readonly string[];
+    /** Case-insensitive literal PR title fragments that do not require a new changeset. */
+    readonly excludeTitleContains?: readonly string[];
+  };
 }
 
 export type PackageOrWorkspaceConfig = { path: string; type?: string; standalone?: boolean };

@@ -41,12 +41,11 @@ export async function findChangeStatus(
   workspace: ChronusWorkspace,
   options?: FindChangeStatusOptions,
 ): Promise<ChangeStatus> {
-  const filesChanged = await sourceControl.listChangedFilesFromBase(
-    options?.since ?? workspace.config.baseBranch,
-    workspace.config.baseRemote,
-  );
+  const filesChanged = options?.since
+    ? await sourceControl.listChangedFilesSince(options.since)
+    : await sourceControl.listChangedFilesFromBase(workspace.config.baseBranch, workspace.config.baseRemote);
   const untrackedOrModifiedFiles = await sourceControl.listUntrackedOrModifiedFiles();
-  const stagedFiles = await sourceControl.listUntrackedOrModifiedFiles();
+  const stagedFiles = await sourceControl.listStagedFiles();
   const publicPackages = workspace.packages;
 
   const allChangeDescriptions = await readChangeDescriptions(host, workspace);
@@ -114,7 +113,7 @@ async function findAreaStatus(
     : filesChanged;
 
   const changeDescriptions = allChangeDescriptions.filter((x) =>
-    fileChangedThatMatter.includes(changesRelativeDir + "/" + x.id + ".md"),
+    filesChanged.includes(changesRelativeDir + "/" + x.id + ".md"),
   );
   return {
     filesChanged: fileChangedThatMatter,

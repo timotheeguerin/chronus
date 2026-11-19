@@ -1,6 +1,7 @@
 import { isPathAccessible } from "../../utils/fs-utils.js";
 import type { ChronusHost } from "../../utils/host.js";
 import { isDefined, resolvePath } from "../../utils/index.js";
+import { createDependencyMap } from "../dependencies.js";
 import type { Package, PackageDependencySpec, PackageJson } from "../types.js";
 import type { NodePackage } from "./node.js";
 
@@ -45,12 +46,12 @@ export function createPackageFromPackageJson(pkgJson: PackageJson, ecosystem: st
     name: pkgJson.name!,
     version: pkgJson.version!,
     private: pkgJson.private,
-    dependencies: new Map([
-      ...mapDependencies(pkgJson, "dependencies", "prod"),
-      ...mapDependencies(pkgJson, "peerDependencies", "prod"),
-      ...mapDependencies(pkgJson, "optionalDependencies", "prod"),
-      ...mapDependencies(pkgJson, "devDependencies", "dev"),
-    ]),
+    dependencies: createDependencyMap(
+      mapDependencies(pkgJson, "dependencies", "prod"),
+      mapDependencies(pkgJson, "peerDependencies", "prod"),
+      mapDependencies(pkgJson, "optionalDependencies", "prod"),
+      mapDependencies(pkgJson, "devDependencies", "dev"),
+    ),
     manifest: pkgJson,
   };
 }

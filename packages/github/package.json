@@ -1,6 +1,6 @@
 {
   "name": "@chronus/github",
-  "version": "1.0.6",
+  "version": "1.2.1",
   "description": "chronus",
   "keywords": [
     "change",
@@ -26,7 +26,8 @@
   "exports": {
     ".": "./dist/index.js",
     "./pull-requests": "./dist/pull-requests/index.js",
-    "./changelog": "./dist/changelog/index.js"
+    "./changelog": "./dist/changelog/index.js",
+    "./release-notes": "./dist/release-notes/index.js"
   },
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",

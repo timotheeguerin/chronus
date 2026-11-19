@@ -1,5 +1,26 @@
 # Changelog - @chronus/github
 
+## 1.2.1
+
+No changes, version bump only.
+
+## 1.2.0
+
+### Features
+
+- [#575](https://github.com/timotheeguerin/chronus/pull/575) Enrich `chronus ai-release-notes` with GitHub pull request and author information.
+  
+  When generating release notes, each change is now linked to the pull request that introduced it and credited to its author, so the resulting notes can reference PRs and contributors. If no GitHub token is available the changes are left unchanged.
+
+
+## 1.1.0
+
+### Features
+
+- [#582](https://github.com/timotheeguerin/chronus/pull/582) Bump minimum supported Node.js version to 22
+- [#557](https://github.com/timotheeguerin/chronus/pull/557) Improve cli output when creating github release
+
+
 ## 1.0.6
 
 No changes, version bump only.
